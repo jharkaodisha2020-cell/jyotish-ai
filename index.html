@@ -334,37 +334,46 @@ select option{background:#0C0602}
   </div>
 </div>
 
-<!-- ═══ REGISTER ═══ -->
-<div class="pg" id="pg-register">
-  <div class="wrap"><div class="back" onclick="nav('landing')">← Back</div>
-    <div class="auth-box">
-      <div class="auth-title">Create Account</div>
-      <div class="auth-sub od">ଆଜି ଆରମ୍ଭ କରନ୍ତୁ · Start Your Journey</div>
-      <div class="g2">
-        <div class="fg"><label>First Name</label><input id="r-fn" placeholder="Priya"/></div>
-        <div class="fg"><label>Last Name</label><input id="r-ln" placeholder="Sharma"/></div>
-      </div>
-      <div class="fg"><label>Email</label><input id="r-em" type="email" placeholder="you@email.com"/></div>
-      <div class="fg"><label>Mobile</label><input id="r-mb" type="tel" placeholder="9876543210" maxlength="10"/></div>
-      <div class="fg"><label>Password</label><input id="r-pw" type="password" placeholder="Min 8 characters"/></div>
-      <button class="btn" onclick="doRegister()">Create Account ✦</button>
-      <div id="r-err" class="err"></div>
-      <div class="auth-sw">Have account? <a onclick="nav('login')">Sign In</a></div>
-    </div>
-  </div>
-</div>
+<!-- register merged into login OTP flow -->
 
-<!-- ═══ LOGIN ═══ -->
+<!-- ═══ LOGIN / REGISTER (OTP unified) ═══ -->
 <div class="pg" id="pg-login">
   <div class="wrap"><div class="back" onclick="nav('landing')">← Back</div>
     <div class="auth-box">
-      <div class="auth-title">Welcome Back</div>
-      <div class="auth-sub">Sign in to your account</div>
-      <div class="fg"><label>Email</label><input id="l-em" type="email" placeholder="you@email.com"/></div>
-      <div class="fg"><label>Password</label><input id="l-pw" type="password" placeholder="Password"/></div>
-      <button class="btn" onclick="doLogin()">Sign In ✦</button>
-      <div id="l-err" class="err"></div>
-      <div class="auth-sw">New user? <a onclick="nav('register')">Create Account</a></div>
+      <div style="text-align:center;margin-bottom:18px">
+        <svg width="44" height="44" viewBox="0 0 44 44" style="margin:0 auto 10px;display:block"><circle cx="22" cy="22" r="20" stroke="#3D2710" stroke-width="1" fill="none"/><text x="22" y="27" text-anchor="middle" font-size="16" fill="#B8870A" font-family="serif">ॐ</text></svg>
+        <div class="auth-title" id="otp-title">Sign In / Register</div>
+        <div class="auth-sub" id="otp-sub">Enter your email to receive a one-time password</div>
+      </div>
+
+      <!-- STEP 1: Email entry -->
+      <div id="otp-step1">
+        <div class="fg"><label>Full Name (new users only)</label><input id="otp-name" placeholder="Your full name"/></div>
+        <div class="fg"><label>Email Address</label><input id="otp-email" type="email" placeholder="you@gmail.com"/></div>
+        <button class="btn" id="otp-send-btn" onclick="sendOTP()">Send OTP to Email ✦</button>
+        <div id="otp-err1" class="err"></div>
+        <div style="font-size:11px;color:var(--muted);text-align:center;margin-top:10px">A 6-digit code will be sent to your email · Free · Instant</div>
+      </div>
+
+      <!-- STEP 2: OTP entry -->
+      <div id="otp-step2" style="display:none">
+        <div style="text-align:center;margin-bottom:16px">
+          <div style="font-size:28px;margin-bottom:6px">📧</div>
+          <div style="font-size:13px;color:var(--ink)">OTP sent to <span id="otp-email-show" style="color:var(--gold-lt);font-weight:700"></span></div>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px">Check your inbox and spam folder</div>
+        </div>
+        <div class="fg">
+          <label>Enter 6-digit OTP</label>
+          <input id="otp-code" type="number" placeholder="Enter OTP" maxlength="6" style="font-size:22px;letter-spacing:6px;text-align:center;font-family:'Cinzel',serif"/>
+        </div>
+        <button class="btn" id="otp-verify-btn" onclick="verifyOTP()">Verify & Sign In ✦</button>
+        <div id="otp-err2" class="err"></div>
+        <div style="text-align:center;margin-top:12px">
+          <span style="font-size:12px;color:var(--muted)">Didn't receive? </span>
+          <a onclick="backToEmail()" style="font-size:12px;color:var(--gold);cursor:pointer">Try again</a>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
@@ -902,7 +911,30 @@ return{calc,RASHI_N,RASHI_OD,P_OD,NAK_NAMES,NAK_OD};
 })();
 
 /* ─── APP STATE ─────────────────────────────────────────*/
-const S={user:null,plan:null,kGender:'Male',lang:'en',calcResult:null};
+/* ── SUPABASE CONFIG ── */
+const SUPA_URL = 'https://dnpbuwldcxmrptildfpq.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRucGJ1d2xkY3htcnB0aWxkZnBxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUyMDE3MDcsImV4cCI6MjA5MDc3NzcwN30.VGAGQTn-aXjAMtJCMcsI4svJRz89wkcAZuzE2gtgMM8';
+const RAZORPAY_KEY = 'rzp_test_ShszVrJI2L7M7d';
+
+/* ── SUPABASE HELPERS ── */
+async function supaFetch(path, opts={}){
+  const res = await fetch(SUPA_URL+path, {
+    headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+(S.token||SUPA_KEY),'Content-Type':'application/json','Prefer':'return=representation',...(opts.headers||{})},
+    ...opts
+  });
+  const data = await res.json().catch(()=>({}));
+  return {data, ok: res.ok, status: res.status};
+}
+async function supaAuth(path, body){
+  const res = await fetch(SUPA_URL+'/auth/v1'+path, {
+    method:'POST',
+    headers:{'apikey':SUPA_KEY,'Content-Type':'application/json'},
+    body: JSON.stringify(body)
+  });
+  return await res.json();
+}
+
+const S={user:null,token:null,plan:null,kGender:'Male',lang:'en',calcResult:null};
 const PLANS={basic:{n:'Jataka Reading',od:'ଜାତକ ପଠନ',price:100,days:365,tag:'One-Time'},monthly:{n:'Monthly Predictions',od:'ମାସିକ ଭବିଷ୍ୟ',price:50,days:30,tag:'Monthly'},yearly:{n:'Varshik Annual',od:'ବାର୍ଷିକ',price:500,days:365,tag:'Annual'}};
 
 /* ─── STARS ─────────────────────────────────────────────*/
@@ -936,7 +968,7 @@ function dashGo(tab){
 /* ─── PLAN ──────────────────────────────────────────────*/
 function pickPlan(p){
   S.plan=p;
-  S.user?activatePlan():nav('register');
+  S.user?activatePlan():nav('login');
 }
 function activatePlan(){
   // In testing mode: directly activate without payment
@@ -950,27 +982,153 @@ function activatePlan(){
 }
 
 /* ─── AUTH ──────────────────────────────────────────────*/
-function doRegister(){
-  const fn=g('r-fn').value.trim(),ln=g('r-ln').value.trim();
-  const em=g('r-em').value.trim(),mb=g('r-mb').value.trim(),pw=g('r-pw').value;
-  const err=g('r-err');err.textContent='';
-  if(!fn||!em||!pw){err.textContent='Please fill name, email and password.';return;}
-  if(pw.length<8){err.textContent='Password min 8 characters.';return;}
-  S.user={name:fn+' '+ln,email:em,mobile:mb,plan:null,planExpiry:null,planStart:null,kundlis:[],joined:new Date().toLocaleDateString('en-IN')};
-  saveU();setNav(true);
-  S.plan?activatePlan():(buildDash(),nav('dash'));
+/* ── OTP AUTH ─────────────────────────────────────────*/
+async function sendOTP(){
+  const email=g('otp-email').value.trim();
+  const name=g('otp-name').value.trim();
+  const err=g('otp-err1');err.textContent='';
+  if(!email){err.textContent='Please enter your email address.';return;}
+  if(!/^[^@]+@[^@]+\.[^@]+$/.test(email)){err.textContent='Please enter a valid email address.';return;}
+  const btn=g('otp-send-btn');
+  btn.disabled=true;btn.textContent='Sending OTP...';
+  // Store name for profile creation after verify
+  S._pendingName=name||email.split('@')[0];
+  S._pendingEmail=email;
+  // Send OTP via Supabase
+  const res=await supaAuth('/otp',{email,options:{emailRedirectTo:null}});
+  btn.disabled=false;btn.textContent='Send OTP to Email ✦';
+  if(res.error){err.textContent=res.error.message||'Failed to send OTP. Try again.';return;}
+  // Show OTP entry step
+  g('otp-step1').style.display='none';
+  g('otp-step2').style.display='block';
+  g('otp-email-show').textContent=email;
+  g('otp-title').textContent='Enter Your OTP';
+  g('otp-sub').textContent='6-digit code sent to your email';
+  toast('OTP sent to '+email+' ✦');
 }
-function doLogin(){
-  const em=g('l-em').value.trim(),pw=g('l-pw').value;
-  const err=g('l-err');err.textContent='';
-  if(!em||!pw){err.textContent='Please enter email and password.';return;}
-  const saved=localStorage.getItem('jyotish_user');
-  if(saved){S.user=JSON.parse(saved);}
-  else{S.user={name:em.split('@')[0],email:em,mobile:'',plan:null,planExpiry:null,planStart:null,kundlis:[],joined:new Date().toLocaleDateString('en-IN')};}
-  saveU();setNav(true);buildDash();nav('dash');
+
+async function verifyOTP(){
+  const email=S._pendingEmail;
+  const token=g('otp-code').value.trim();
+  const err=g('otp-err2');err.textContent='';
+  if(!token||token.length<6){err.textContent='Please enter the 6-digit OTP.';return;}
+  const btn=g('otp-verify-btn');
+  btn.disabled=true;btn.textContent='Verifying...';
+  // Verify OTP with Supabase
+  const res=await supaAuth('/verify',{type:'email',email,token});
+  if(res.error){
+    err.textContent=res.error.message||'Invalid OTP. Please try again.';
+    btn.disabled=false;btn.textContent='Verify & Sign In ✦';
+    return;
+  }
+  S.token=res.access_token;
+  // Check if user profile exists
+  const {data:existing}=await supaFetch('/rest/v1/users?id=eq.'+res.user.id+'&select=*');
+  let userRow=Array.isArray(existing)&&existing.length?existing[0]:null;
+  if(!userRow){
+    // New user — create profile
+    const {data:created}=await supaFetch('/rest/v1/users',{
+      method:'POST',
+      body:JSON.stringify({id:res.user.id,name:S._pendingName,mobile:'',plan:null})
+    });
+    userRow=Array.isArray(created)&&created.length?created[0]:{id:res.user.id,name:S._pendingName,plan:null,planExpiry:null};
+  }
+  S.user={...userRow,email:res.user.email};
+  S.token=res.access_token;
+  // Persist session
+  localStorage.setItem('jyotish_session',JSON.stringify({token:res.access_token,user:S.user}));
+  setNav(true);
+  btn.disabled=false;btn.textContent='Verify & Sign In ✦';
+  if(S.plan){showRazorpay();}
+  else{buildDash();nav('dash');}
 }
-function saveU(){localStorage.setItem('jyotish_user',JSON.stringify(S.user));}
-function logout(){S.user=null;localStorage.removeItem('jyotish_user');setNav(false);nav('landing');}
+
+function backToEmail(){
+  g('otp-step1').style.display='block';
+  g('otp-step2').style.display='none';
+  g('otp-title').textContent='Sign In / Register';
+  g('otp-sub').textContent='Enter your email to receive a one-time password';
+  g('otp-code').value='';
+  g('otp-err2').textContent='';
+}
+
+async function logout(){
+  await supaAuth('/logout',{}).catch(()=>{});
+  S.user=null;S.token=null;S.plan=null;S.calcResult=null;
+  localStorage.removeItem('jyotish_session');
+  setNav(false);nav('landing');
+}
+
+function saveU(){
+  // Save to Supabase (fire and forget)
+  if(S.user&&S.token){
+    supaFetch('/rest/v1/users?id=eq.'+S.user.id,{
+      method:'PATCH',
+      body:JSON.stringify({plan:S.user.plan,plan_start:S.user.plan_start,plan_expiry:S.user.plan_expiry,name:S.user.name})
+    });
+  }
+  localStorage.setItem('jyotish_session',JSON.stringify({token:S.token,user:S.user}));
+}
+
+/* ── RAZORPAY PAYMENT ──────────────────────────────────*/
+function pickPlan(p){
+  S.plan=p;
+  if(!S.user){nav('login');}
+  else{showRazorpay();}
+}
+
+function showRazorpay(){
+  const pl=PLANS[S.plan];
+  const options={
+    key: RAZORPAY_KEY,
+    amount: pl.price*100, // paise
+    currency: 'INR',
+    name: 'Jyotish AI',
+    description: pl.n+' — '+pl.od,
+    image: 'https://jyotishaiodisha.netlify.app/favicon.ico',
+    prefill:{email:S.user.email||'',name:S.user.name||''},
+    theme:{color:'#B8870A'},
+    modal:{ondismiss:()=>toast('Payment cancelled. Try again anytime.')},
+    handler: async function(response){
+      await onPaymentSuccess(response);
+    }
+  };
+  const rzp=new Razorpay(options);
+  rzp.on('payment.failed',function(resp){
+    toast('Payment failed: '+resp.error.description);
+  });
+  rzp.open();
+}
+
+async function onPaymentSuccess(response){
+  g('load-msg').textContent='Activating your plan...';
+  g('load-sub').textContent='Payment received ✦';
+  nav('loading');
+  const pl=PLANS[S.plan];
+  const expiry=new Date(Date.now()+pl.days*86400000).toISOString();
+  const start=new Date().toISOString();
+  // Save payment record
+  await supaFetch('/rest/v1/payments',{
+    method:'POST',
+    body:JSON.stringify({
+      user_id:S.user.id,plan:S.plan,amount:pl.price,
+      razorpay_payment_id:response.razorpay_payment_id,status:'success'
+    })
+  });
+  // Update user plan
+  S.user.plan=S.plan;
+  S.user.plan_start=start;
+  S.user.plan_expiry=expiry;
+  await supaFetch('/rest/v1/users?id=eq.'+S.user.id,{
+    method:'PATCH',
+    body:JSON.stringify({plan:S.plan,plan_start:start,plan_expiry:expiry})
+  });
+  saveU();
+  buildDash();nav('dash');
+  toast('Payment successful! '+pl.n+' activated ✦');
+}
+
+async function activatePlan(){showRazorpay();}
 
 /* ─── DASHBOARD ─────────────────────────────────────────*/
 function buildDash(){
@@ -1070,7 +1228,11 @@ Respond ONLY with this exact JSON (no markdown, no extra text):
       catch(e){reading=buildFallbackReading(result);}
       result.reading=reading;
       S.calcResult=result;
-      // Save
+      // Save to Supabase
+      const kundliRow={user_id:S.user.id,name:nm,dob,tob,place:pob,gotra,gender:kG,
+        rashi:result.planets[0].rashiName,lagna:result.ascendant.rashiName,result};
+      supaFetch('/rest/v1/kundlis',{method:'POST',body:JSON.stringify(kundliRow)});
+      // Also keep local cache for dashboard history
       if(!S.user.kundlis)S.user.kundlis=[];
       S.user.kundlis.push({nm,date:new Date().toLocaleDateString('en-IN'),ascName:result.ascendant.rashiName,rashiName:result.planets[0].rashiName,result});
       saveU();
@@ -1782,10 +1944,26 @@ function pyNumColor(n){
 
 
 /* ─── INIT ──────────────────────────────────────────────*/
-(function init(){
-  const saved=localStorage.getItem('jyotish_user');
-  if(saved){try{S.user=JSON.parse(saved);setNav(true);}catch(e){}}
+(async function init(){
+  // Restore session from localStorage
+  const saved=localStorage.getItem('jyotish_session');
+  if(saved){
+    try{
+      const sess=JSON.parse(saved);
+      if(sess.token&&sess.user){
+        S.token=sess.token;S.user=sess.user;
+        // Refresh user data from Supabase
+        const {data,ok}=await supaFetch('/rest/v1/users?id=eq.'+sess.user.id+'&select=*');
+        if(ok&&Array.isArray(data)&&data.length){
+          S.user={...data[0],email:sess.user.email};
+          saveU();
+        }
+        setNav(true);
+      }
+    }catch(e){console.log('Session restore error',e);}
+  }
 })();
 </script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </body>
 </html>
