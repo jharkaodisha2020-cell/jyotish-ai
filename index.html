@@ -208,6 +208,35 @@ select option{background:#0C0602}
 .tab.on{background:var(--maroon);color:var(--cream)}
 /* section title */
 .sec-title{font-family:'Cinzel',serif;font-size:15px;color:var(--cream);margin:20px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+/* chat */
+.chat-fab{position:fixed;bottom:80px;right:18px;width:52px;height:52px;border-radius:50%;background:var(--gold);border:none;cursor:pointer;display:none;align-items:center;justify-content:center;font-size:22px;z-index:300;box-shadow:0 4px 16px rgba(0,0,0,.4);transition:transform .15s}
+.chat-fab:hover{transform:scale(1.08)}
+.chat-fab.show{display:flex}
+.chat-page{position:fixed;inset:0;background:var(--bg);z-index:400;display:none;flex-direction:column}
+.chat-page.open{display:flex}
+.chat-header{display:flex;align-items:center;gap:12px;padding:14px 16px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0}
+.chat-header-title{font-family:'Cinzel',serif;font-size:15px;color:var(--cream);flex:1}
+.chat-close{background:transparent;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:4px}
+.chat-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
+.chat-bubble{max-width:85%;padding:10px 14px;border-radius:12px;font-size:13px;line-height:1.7}
+.chat-bubble.user{background:var(--maroon);color:var(--cream);align-self:flex-end;border-bottom-right-radius:3px}
+.chat-bubble.ai{background:var(--surface);border:1px solid var(--border);color:var(--ink);align-self:flex-start;border-bottom-left-radius:3px}
+.chat-bubble.ai.thinking{color:var(--muted);font-style:italic}
+.chat-input-row{display:flex;gap:8px;padding:12px 16px;background:var(--surface);border-top:1px solid var(--border);flex-shrink:0}
+.chat-input{flex:1;background:#0C0602;border:1px solid var(--border);border-radius:22px;padding:10px 16px;font-size:13px;color:var(--ink);font-family:'Lato',sans-serif;outline:none;resize:none;max-height:80px}
+.chat-input:focus{border-color:var(--gold)}
+.chat-send{background:var(--gold);border:none;border-radius:50%;width:40px;height:40px;cursor:pointer;font-size:16px;flex-shrink:0;transition:opacity .15s}
+.chat-send:hover{opacity:.85}
+.chat-send:disabled{opacity:.4;cursor:not-allowed}
+.chat-suggestions{display:flex;flex-wrap:wrap;gap:6px;padding:0 16px 10px}
+.chat-sug{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-size:11px;color:var(--muted);cursor:pointer;transition:all .15s;font-family:'Lato',sans-serif}
+.chat-sug:hover{border-color:var(--gold);color:var(--gold)}
+/* pdf button */
+.pdf-btn{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--gold);border-radius:9px;padding:11px 16px;color:var(--gold-lt);font-family:'Cinzel',serif;font-size:13px;cursor:pointer;width:100%;margin-bottom:12px;transition:all .15s;justify-content:center}
+.pdf-btn:hover{background:var(--gold);color:var(--bg)}
+.pdf-lang-row{display:flex;gap:8px;margin-bottom:12px}
+.pdf-lang-btn{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:9px;font-size:12px;cursor:pointer;color:var(--muted);font-family:'Lato',sans-serif;transition:all .15s;text-align:center}
+.pdf-lang-btn.on{background:var(--maroon);color:var(--cream);border-color:var(--maroon)}
 /* numerology */
 .num-hero{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin:16px 0}
 .ncircle{width:78px;height:78px;border-radius:50%;border:1px solid var(--border);background:var(--surface);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;transition:border-color .2s}
@@ -242,6 +271,8 @@ select option{background:#0C0602}
 .cross-insight{background:linear-gradient(135deg,#1E0A00,var(--surface));border:1px solid var(--gold);border-radius:10px;padding:14px;margin-bottom:10px}
 .cross-title{font-family:'Cinzel',serif;font-size:12px;color:var(--gold-lt);margin-bottom:6px}
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body>
 
@@ -265,6 +296,36 @@ select option{background:#0C0602}
   <button class="bni" id="bn-anka" onclick="dashGo('anka')"><div class="bni-ic">🔢</div><div class="bni-lb">Anka</div></button>
   <button class="bni" id="bn-predict" onclick="dashGo('predict')"><div class="bni-ic">🔮</div><div class="bni-lb">Predict</div></button>
   <button class="bni" id="bn-profile" onclick="dashGo('profile')"><div class="bni-ic">👤</div><div class="bni-lb">Profile</div></button>
+</div>
+
+<!-- CHAT FAB -->
+<button class="chat-fab" id="chat-fab" onclick="openChat()">💬</button>
+
+<!-- CHAT PAGE -->
+<div class="chat-page" id="chat-page">
+  <div class="chat-header">
+    <svg width="28" height="28" viewBox="0 0 28 28"><circle cx="14" cy="14" r="13" fill="#1E110A" stroke="#B8870A" stroke-width=".8"/><text x="14" y="18" text-anchor="middle" font-size="11" fill="#B8870A" font-family="serif">ॐ</text></svg>
+    <div>
+      <div class="chat-header-title">Jyotish AI — Astro Chat</div>
+      <div style="font-size:10px;color:var(--muted)">Ask anything about your Kundli · ଜ୍ୟୋତିଷ ପ୍ରଶ୍ନ</div>
+    </div>
+    <button class="chat-close" onclick="closeChat()">✕</button>
+  </div>
+  <div class="chat-messages" id="chat-messages">
+    <div class="chat-bubble ai">Namaste 🙏 I am your Jyotish AI guide. Ask me anything about your Kundli, planetary positions, Dasha periods, Yogas, Anka Shastra, or life predictions. I can answer in English or Odia — ଓଡ଼ିଆରେ ମଧ୍ୟ ଉତ୍ତର ଦେଇ ପାରିବି।</div>
+  </div>
+  <div class="chat-suggestions" id="chat-suggestions">
+    <button class="chat-sug" onclick="chatSuggest(this)">What does my Lagna mean?</button>
+    <button class="chat-sug" onclick="chatSuggest(this)">Explain my current Dasha</button>
+    <button class="chat-sug" onclick="chatSuggest(this)">Which is my lucky gemstone?</button>
+    <button class="chat-sug" onclick="chatSuggest(this)">When will I get married?</button>
+    <button class="chat-sug" onclick="chatSuggest(this)">What are my career prospects?</button>
+    <button class="chat-sug" onclick="chatSuggest(this)">ମୋ ରାଶି ଫଳ କ'ଣ?</button>
+  </div>
+  <div class="chat-input-row">
+    <textarea class="chat-input" id="chat-input" placeholder="Ask your astrology question..." rows="1" onkeydown="chatKey(event)"></textarea>
+    <button class="chat-send" id="chat-send-btn" onclick="sendChat()">➤</button>
+  </div>
 </div>
 
 <!-- ═══ LANDING ═══ -->
@@ -440,6 +501,11 @@ select option{background:#0C0602}
 <div class="pg" id="pg-result">
   <div class="wrap">
     <div class="back" onclick="dashGo('kundli')">← New Reading</div>
+    <div class="pdf-lang-row">
+      <button class="pdf-lang-btn on" id="pdfl-en" onclick="setPdfLang('en')">English PDF</button>
+      <button class="pdf-lang-btn" id="pdfl-od" onclick="setPdfLang('od')">ଓଡ଼ିଆ PDF</button>
+    </div>
+    <button class="pdf-btn" onclick="downloadPDF()">⬇ Download Kundli Report</button>
     <div class="lang-toggle">
       <button class="lt-btn on" id="lt-en" onclick="setLang('en')">English</button>
       <button class="lt-btn" id="lt-od" onclick="setLang('od')">ଓଡ଼ିଆ</button>
@@ -925,13 +991,14 @@ async function supaFetch(path, opts={}){
   const data = await res.json().catch(()=>({}));
   return {data, ok: res.ok, status: res.status};
 }
-async function supaAuth(path, body){
+async function supaAuth(path, body, method='POST'){
   const res = await fetch(SUPA_URL+'/auth/v1'+path, {
-    method:'POST',
-    headers:{'apikey':SUPA_KEY,'Content-Type':'application/json'},
-    body: JSON.stringify(body)
+    method,
+    headers:{'apikey':SUPA_KEY,'Content-Type':'application/json','Authorization':'Bearer '+(S.token||SUPA_KEY)},
+    body: body?JSON.stringify(body):undefined
   });
-  return await res.json();
+  if(res.status===204)return{};
+  return await res.json().catch(()=>({}));
 }
 
 const S={user:null,token:null,plan:null,kGender:'Male',lang:'en',calcResult:null};
@@ -952,7 +1019,16 @@ function setNav(li){
     ?`<span style="font-size:11px;color:var(--gold-lt)">✦ ${S.user.name.split(' ')[0]}</span>`
     :`<button class="nbtn" onclick="nav('login')">Login</button><button class="nbtn hi" onclick="nav('plans')">Get Started</button>`;
   document.getElementById('bnav').classList.toggle('on',li);
+  const fab=document.getElementById('chat-fab');
+  if(fab)fab.classList.toggle('show',li);
 }
+let pdfLang='en';
+function setPdfLang(l){
+  pdfLang=l;
+  g('pdfl-en').classList.toggle('on',l==='en');
+  g('pdfl-od').classList.toggle('on',l==='od');
+}
+
 function dashGo(tab){
   ['dash','kundli','anka','predict','profile'].forEach(t=>{
     const el=document.getElementById('bn-'+t);
@@ -994,8 +1070,12 @@ async function sendOTP(){
   // Store name for profile creation after verify
   S._pendingName=name||email.split('@')[0];
   S._pendingEmail=email;
-  // Send OTP via Supabase
-  const res=await supaAuth('/otp',{email,options:{emailRedirectTo:null}});
+  // Send OTP via Supabase (email OTP method)
+  const res=await supaAuth('/otp',{
+    email,
+    type:'email',
+    options:{shouldCreateUser:true}
+  });
   btn.disabled=false;btn.textContent='Send OTP to Email ✦';
   if(res.error){err.textContent=res.error.message||'Failed to send OTP. Try again.';return;}
   // Show OTP entry step
@@ -1015,7 +1095,7 @@ async function verifyOTP(){
   const btn=g('otp-verify-btn');
   btn.disabled=true;btn.textContent='Verifying...';
   // Verify OTP with Supabase
-  const res=await supaAuth('/verify',{type:'email',email,token});
+  const res=await supaAuth('/verify',{type:'email',email,token:String(token)});
   if(res.error){
     err.textContent=res.error.message||'Invalid OTP. Please try again.';
     btn.disabled=false;btn.textContent='Verify & Sign In ✦';
@@ -1053,7 +1133,7 @@ function backToEmail(){
 }
 
 async function logout(){
-  await supaAuth('/logout',{}).catch(()=>{});
+  await supaAuth('/logout',null,'POST').catch(()=>{});
   S.user=null;S.token=null;S.plan=null;S.calcResult=null;
   localStorage.removeItem('jyotish_session');
   setNav(false);nav('landing');
@@ -1942,6 +2022,332 @@ function pyNumColor(n){
   return c[n]||'var(--muted)';
 }
 
+
+
+/* ═══════════════════════════════════════════════
+   PDF DOWNLOAD — English + Odia
+═══════════════════════════════════════════════*/
+async function downloadPDF(){
+  if(!S.calcResult){toast('Please generate a Kundli first.');return;}
+  const btn=document.querySelector('.pdf-btn');
+  btn.textContent='⏳ Generating PDF...';btn.disabled=true;
+  const isOd=pdfLang==='od';
+  const res=S.calcResult;
+  const r=res.reading||{};
+  const {planets,moonNak,ascendant,dashas,currDasha,yogas,input}=res;
+
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  const W=210,margin=15;
+  let y=margin;
+
+  // ── Fonts & helpers ──
+  const gold=[184,135,10],maroon=[92,21,21],cream=[245,237,216],dark=[26,14,6];
+  const addText=(text,x,yPos,opts={})=>{
+    doc.setFontSize(opts.size||11);
+    doc.setTextColor(...(opts.color||[40,25,10]));
+    if(opts.bold)doc.setFont('helvetica','bold');
+    else doc.setFont('helvetica','normal');
+    doc.text(String(text),x,yPos,{align:opts.align||'left',maxWidth:opts.maxWidth||180});
+  };
+  const addLine=(yPos,col=cream)=>{
+    doc.setDrawColor(...col);doc.setLineWidth(0.3);
+    doc.line(margin,yPos,W-margin,yPos);
+  };
+  const checkPage=(needed=20)=>{
+    if(y+needed>285){doc.addPage();y=margin;}
+  };
+
+  // ── PAGE 1: HEADER ──
+  doc.setFillColor(...dark);doc.rect(0,0,W,40,'F');
+  doc.setFillColor(...gold);doc.rect(0,38,W,1,'F');
+  addText(isOd?'ଜ୍ୟୋତିଷ AI — ଜନ୍ମ କୁଣ୍ଡଳୀ':'Jyotish AI — Birth Kundli Report',W/2,16,{size:18,bold:true,color:[245,237,216],align:'center'});
+  addText('ॐ तत् सत्',W/2,26,{size:11,color:gold,align:'center'});
+  addText(isOd?'ଲାହିରି ଆୟନାଂଶ · VSOP87 ଗ୍ରହ ଇଞ୍ଜିନ':'Lahiri Ayanamsa · VSOP87 Planetary Engine · '+new Date().toLocaleDateString('en-IN'),W/2,33,{size:8,color:[160,130,80],align:'center'});
+  y=52;
+
+  // ── PERSONAL INFO BOX ──
+  doc.setFillColor(30,17,10);doc.roundedRect(margin,y,W-margin*2,32,3,3,'F');
+  doc.setDrawColor(...gold);doc.setLineWidth(0.5);doc.roundedRect(margin,y,W-margin*2,32,3,3,'S');
+  addText(input.nm,W/2,y+9,{size:15,bold:true,color:cream,align:'center'});
+  addText(`${new Date(input.dStr).toDateString()} · ${input.tStr} IST · ${input.place}`,W/2,y+17,{size:9,color:[160,130,80],align:'center'});
+  if(input.gotra)addText((isOd?'ଗୋତ୍ର: ':'Gotra: ')+input.gotra,W/2,y+24,{size:9,color:[160,130,80],align:'center'});
+  y+=38;
+
+  // ── KEY NUMBERS ──
+  const chips=[
+    {l:isOd?'ଲଗ୍ନ':'Lagna',v:ascendant.rashiName+' '+ascendant.deg+'°'},
+    {l:isOd?'ରାଶି':'Rashi',v:planets[0].rashiName},
+    {l:isOd?'ନକ୍ଷତ୍ର':'Nakshatra',v:moonNak.name},
+    {l:'Pada',v:String(moonNak.pada)},
+    {l:'Ayanamsa',v:res.ayanamsa+'°'},
+    {l:'Mahadasha',v:currDasha.planet},
+  ];
+  const chipW=(W-margin*2)/3,chipH=14;
+  chips.forEach((c,i)=>{
+    const cx=margin+(i%3)*chipW,cy=y+Math.floor(i/3)*chipH;
+    doc.setFillColor(40,22,8);doc.rect(cx,cy,chipW,chipH,'F');
+    doc.setDrawColor(60,40,18);doc.rect(cx,cy,chipW,chipH,'S');
+    addText(c.l,cx+chipW/2,cy+4.5,{size:7,color:[138,112,85],align:'center'});
+    addText(c.v,cx+chipW/2,cy+10,{size:9,bold:true,color:cream,align:'center'});
+  });
+  y+=chipH*2+8;
+
+  // ── SECTION: PLANETS ──
+  checkPage(60);
+  doc.setFillColor(...maroon);doc.rect(margin,y,W-margin*2,7,'F');
+  addText(isOd?'✦ ଗ୍ରହ ସ୍ଥିତି (ସାଇଡ଼େରିଆଲ)':'✦ Planetary Positions (Sidereal · Lahiri)',margin+3,y+5,{size:10,bold:true,color:cream});
+  y+=10;
+  const pHeaders=isOd?['ଗ୍ରହ','ରାଶି','ଡିଗ୍ରୀ','ଭାବ','ନକ୍ଷତ୍ର','ପାଦ','ସ୍ଥିତି']:['Planet','Rashi','Degree','House','Nakshatra','Pada','Dignity'];
+  const pRows=planets.map(p=>[
+    isOd?p.od:p.name,
+    isOd?p.rashiOd:p.rashiName,
+    p.degInRashi+'°',
+    'H'+p.house,
+    isOd?p.nakOd.substring(0,10):p.nakName.substring(0,12),
+    p.pada,
+    p.dignity
+  ]);
+  doc.autoTable({
+    head:[pHeaders],body:pRows,startY:y,margin:{left:margin,right:margin},
+    styles:{fontSize:8,cellPadding:2.5,textColor:[245,237,216],fillColor:[30,17,10],lineColor:[60,40,18],lineWidth:0.3},
+    headStyles:{fillColor:maroon,textColor:cream,fontStyle:'bold',fontSize:8},
+    alternateRowStyles:{fillColor:[40,22,8]},
+    columnStyles:{6:{cellWidth:24}},
+    didParseCell:(data)=>{
+      if(data.section==='body'&&data.column.index===6){
+        const v=data.cell.raw;
+        if(v==='Exalted')data.cell.styles.textColor=[125,200,125];
+        else if(v==='Debilitated')data.cell.styles.textColor=[226,75,74];
+        else if(v==='Own Sign')data.cell.styles.textColor=[125,184,240];
+      }
+    }
+  });
+  y=doc.lastAutoTable.finalY+8;
+
+  // ── SECTION: YOGAS ──
+  checkPage(40);
+  doc.setFillColor(...maroon);doc.rect(margin,y,W-margin*2,7,'F');
+  addText(isOd?'✦ ଯୋଗ ଓ ବିଶେଷ ସଂଯୋଗ':'✦ Yogas & Special Combinations',margin+3,y+5,{size:10,bold:true,color:cream});
+  y+=10;
+  yogas.slice(0,5).forEach(yg=>{
+    checkPage(18);
+    doc.setFillColor(40,22,8);doc.roundedRect(margin,y,W-margin*2,16,2,2,'F');
+    doc.setDrawColor(60,40,18);doc.roundedRect(margin,y,W-margin*2,16,2,2,'S');
+    addText(yg.name,margin+3,y+6,{size:9,bold:true,color:gold});
+    const desc=yg.desc.substring(0,110)+(yg.desc.length>110?'...':'');
+    addText(desc,margin+3,y+12,{size:7.5,color:[200,178,140],maxWidth:W-margin*2-6});
+    y+=19;
+  });
+  y+=4;
+
+  // ── SECTION: DASHA ──
+  checkPage(50);
+  doc.setFillColor(...maroon);doc.rect(margin,y,W-margin*2,7,'F');
+  addText(isOd?'✦ ବିଂଶୋତ୍ତରୀ ଦଶା':'✦ Vimshottari Dasha Timeline',margin+3,y+5,{size:10,bold:true,color:cream});
+  y+=10;
+  const dRows=dashas.map(d=>{
+    const isCurr=d.planet===currDasha.planet;
+    return[d.planet+(isCurr?' ◀ NOW':''),d.start.toLocaleDateString('en-IN'),d.end.toLocaleDateString('en-IN'),d.years.toFixed(1)+' yrs'];
+  });
+  doc.autoTable({
+    head:[['Mahadasha','Start','End','Duration']],body:dRows,startY:y,margin:{left:margin,right:margin},
+    styles:{fontSize:8,cellPadding:2.5,textColor:[245,237,216],fillColor:[30,17,10],lineColor:[60,40,18],lineWidth:0.3},
+    headStyles:{fillColor:maroon,textColor:cream,fontStyle:'bold'},
+    alternateRowStyles:{fillColor:[40,22,8]},
+    didParseCell:(data)=>{
+      if(data.section==='body'&&data.cell.raw&&data.cell.raw.includes('NOW')){
+        data.cell.styles.textColor=gold;data.cell.styles.fontStyle='bold';
+      }
+    }
+  });
+  y=doc.lastAutoTable.finalY+8;
+
+  // ── PAGE 2: AI PREDICTIONS ──
+  doc.addPage();y=margin;
+  doc.setFillColor(...dark);doc.rect(0,0,W,14,'F');
+  addText(isOd?'AI ଭବିଷ୍ୟ ଓ ଜୀବନ ଫଳ':'AI Predictions & Life Reading',W/2,9,{size:13,bold:true,color:cream,align:'center'});
+  y=20;
+
+  const sections=[
+    {k:'overview',l:{en:'Overview & Personality',od:'ବ୍ୟକ୍ତିତ୍ୱ ସାରାଂଶ'}},
+    {k:'strengths',l:{en:'Strengths & Gifts',od:'ଶକ୍ତି ଓ ପ୍ରତିଭା'}},
+    {k:'career',l:{en:'Career & Finance',od:'କ୍ୟାରିୟର ଓ ଅର୍ଥ'}},
+    {k:'love',l:{en:'Love & Relationships',od:'ପ୍ରେମ ଓ ସମ୍ପର୍କ'}},
+    {k:'health',l:{en:'Health',od:'ସ୍ୱାସ୍ଥ୍ୟ'}},
+    {k:'dasha',l:{en:'Current Dasha Effect',od:'ଦଶା ଫଳ'}},
+  ];
+  sections.forEach(sec=>{
+    const txt=r[sec.k+'_'+(isOd?'od':'en')]||'';
+    if(!txt)return;
+    const lbl=sec.l[isOd?'od':'en'];
+    const lines=doc.splitTextToSize(txt,W-margin*2-4);
+    const h=lines.length*5+14;
+    checkPage(h);
+    doc.setFillColor(30,17,10);doc.roundedRect(margin,y,W-margin*2,h,2,2,'F');
+    doc.setDrawColor(60,40,18);doc.roundedRect(margin,y,W-margin*2,h,2,2,'S');
+    doc.setFillColor(...maroon);doc.roundedRect(margin,y,W-margin*2,7,2,2,'F');
+    addText(lbl,margin+3,y+5,{size:8,bold:true,color:cream});
+    doc.setFontSize(8.5);doc.setTextColor(225,210,180);doc.setFont('helvetica','normal');
+    doc.text(lines,margin+3,y+12);
+    y+=h+5;
+  });
+
+  // ── REMEDIES ──
+  checkPage(40);
+  doc.setFillColor(...maroon);doc.rect(margin,y,W-margin*2,7,'F');
+  addText(isOd?'✦ ଉପଚାର ଓ ରତ୍ନ':'✦ Remedies & Gemstones',margin+3,y+5,{size:10,bold:true,color:cream});
+  y+=10;
+  const rems=isOd?r.remedies_od:r.remedies||[];
+  const gems=isOd?r.gemstones_od:r.gemstones||[];
+  [...(rems||[]),...(gems||[])].forEach((rem,i)=>{
+    checkPage(10);
+    doc.setFillColor(40,22,8);doc.rect(margin,y,W-margin*2,8,'F');
+    addText((i<(rems||[]).length?'🔸 ':'💎 ')+rem,margin+3,y+5.5,{size:8,color:[200,178,140],maxWidth:W-margin*2-6});
+    y+=9;
+  });
+  y+=4;
+
+  // ── LUCKY FACTORS ──
+  checkPage(30);
+  doc.setFillColor(...maroon);doc.rect(margin,y,W-margin*2,7,'F');
+  addText(isOd?'✦ ଭାଗ୍ୟ ତଥ୍ୟ':'✦ Lucky Factors',margin+3,y+5,{size:10,bold:true,color:cream});
+  y+=10;
+  const luckys=[
+    [isOd?'ଭାଗ୍ୟ ରଙ୍ଗ':'Lucky Color', isOd?r.luckyColor_od:r.luckyColor_en],
+    [isOd?'ଭାଗ୍ୟ ସଂଖ୍ୟା':'Lucky Number', String(r.luckyNumber)],
+    [isOd?'ଭାଗ୍ୟ ଦିନ':'Lucky Day', isOd?r.luckyDay_od:r.luckyDay_en],
+    ['Beeja Mantra', r.mantra||''],
+  ];
+  doc.autoTable({
+    body:luckys,startY:y,margin:{left:margin,right:margin},
+    styles:{fontSize:9,cellPadding:3,textColor:cream,fillColor:[30,17,10],lineColor:[60,40,18],lineWidth:0.3},
+    alternateRowStyles:{fillColor:[40,22,8]},
+    columnStyles:{0:{fontStyle:'bold',textColor:gold,cellWidth:45}}
+  });
+  y=doc.lastAutoTable.finalY+6;
+
+  // ── FOOTER ──
+  const pageCount=doc.internal.getNumberOfPages();
+  for(let i=1;i<=pageCount;i++){
+    doc.setPage(i);
+    doc.setFillColor(...dark);doc.rect(0,287,W,10,'F');
+    doc.setFontSize(7);doc.setTextColor(138,112,85);
+    doc.text('Jyotish AI · jyotishaiodisha.netlify.app · Generated '+new Date().toLocaleDateString('en-IN'),W/2,293,{align:'center'});
+    doc.text('Page '+i+' of '+pageCount,W-margin,293,{align:'right'});
+  }
+
+  const fname=(input.nm||'Kundli').replace(/\s+/g,'_')+'_Kundli_'+(isOd?'Odia':'English')+'.pdf';
+  doc.save(fname);
+  btn.textContent='⬇ Download Kundli Report';btn.disabled=false;
+  toast('PDF downloaded: '+fname+' ✦');
+}
+
+/* ═══════════════════════════════════════════════
+   AI ASTRO CHAT
+═══════════════════════════════════════════════*/
+const chatHistory=[];
+
+function openChat(){
+  document.getElementById('chat-page').classList.add('open');
+  document.getElementById('chat-input').focus();
+}
+function closeChat(){
+  document.getElementById('chat-page').classList.remove('open');
+}
+function chatKey(e){
+  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChat();}
+}
+function chatSuggest(btn){
+  document.getElementById('chat-input').value=btn.textContent;
+  document.getElementById('chat-suggestions').style.display='none';
+  sendChat();
+}
+function addChatBubble(text,role,id){
+  const msgs=document.getElementById('chat-messages');
+  const div=document.createElement('div');
+  div.className='chat-bubble '+role;
+  if(id)div.id=id;
+  div.textContent=text;
+  msgs.appendChild(div);
+  msgs.scrollTop=msgs.scrollHeight;
+  return div;
+}
+
+async function sendChat(){
+  const input=document.getElementById('chat-input');
+  const sendBtn=document.getElementById('chat-send-btn');
+  const msg=input.value.trim();
+  if(!msg)return;
+  input.value='';
+  document.getElementById('chat-suggestions').style.display='none';
+
+  addChatBubble(msg,'user');
+  chatHistory.push({role:'user',content:msg});
+
+  sendBtn.disabled=true;
+  const thinkId='think-'+Date.now();
+  addChatBubble('Consulting the stars...','ai thinking',thinkId);
+
+  // Build context from current Kundli
+  let kundliContext='';
+  if(S.calcResult){
+    const res=S.calcResult;
+    const p=res.planets||[];
+    kundliContext=`
+USER KUNDLI DATA (use this for personalized answers):
+Name: ${res.input?.nm}, DOB: ${res.input?.dStr}, TOB: ${res.input?.tStr}, Place: ${res.input?.place}
+Lagna: ${res.ascendant?.rashiName} ${res.ascendant?.deg}°
+Moon Rashi: ${p[1]?.rashiName}, Sun Rashi: ${p[0]?.rashiName}
+Nakshatra: ${res.moonNak?.name} Pada ${res.moonNak?.pada} (Lord: ${res.moonNak?.lord})
+Ayanamsa: ${res.ayanamsa}°
+Planets: ${p.map(pl=>pl.name+' in '+pl.rashiName+' H'+pl.house+' ('+pl.dignity+')').join(', ')}
+Current Mahadasha: ${res.currDasha?.planet} (ends ${res.currDasha?.end?.toLocaleDateString('en-IN')})
+Current Antardasha: ${res.currAntar?.planet}
+Yogas: ${(res.yogas||[]).map(y=>y.name).join(', ')}`;
+  }
+
+  const systemPrompt=`You are Jyotish AI — a highly knowledgeable Vedic astrologer and numerologist with deep expertise in Parashari Jyotish, Nakshatra analysis, Dasha interpretation, Yogas, and Anka Shastra. You give warm, accurate, personalized answers.
+
+${kundliContext}
+
+INSTRUCTIONS:
+- Answer in the same language the user writes in (English or Odia)
+- If the user writes in Odia, respond fully in Odia script
+- Reference the user's actual planetary positions when relevant
+- Be specific, not generic — mention actual planets, signs, houses
+- Keep answers concise but complete (3-6 sentences ideal)
+- End with one practical remedy or insight when appropriate
+- Never say you cannot predict — give your best Jyotish analysis`;
+
+  try{
+    const messages=[...chatHistory.slice(-8)]; // last 8 messages for context
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:600,
+        system:systemPrompt,
+        messages
+      })
+    });
+    const data=await resp.json();
+    const reply=data.content?.[0]?.text||'I could not generate a response. Please try again.';
+
+    // Remove thinking bubble
+    const thinkEl=document.getElementById(thinkId);
+    if(thinkEl)thinkEl.remove();
+
+    addChatBubble(reply,'ai');
+    chatHistory.push({role:'assistant',content:reply});
+  }catch(e){
+    const thinkEl=document.getElementById(thinkId);
+    if(thinkEl)thinkEl.textContent='Connection error. Please try again.';
+  }
+  sendBtn.disabled=false;
+  document.getElementById('chat-input').focus();
+}
 
 /* ─── INIT ──────────────────────────────────────────────*/
 (async function init(){
