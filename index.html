@@ -208,6 +208,34 @@ select option{background:#0C0602}
 .tab.on{background:var(--maroon);color:var(--cream)}
 /* section title */
 .sec-title{font-family:'Cinzel',serif;font-size:15px;color:var(--cream);margin:20px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+/* services */
+.svc-tabs{display:flex;gap:0;overflow-x:auto;border:1px solid var(--border);border-radius:8px;margin-bottom:14px;scrollbar-width:none}
+.svc-tabs::-webkit-scrollbar{display:none}
+.svc-tab{flex-shrink:0;padding:9px 14px;font-size:10px;font-weight:700;cursor:pointer;border:none;background:transparent;color:var(--muted);font-family:'Lato',sans-serif;text-transform:uppercase;letter-spacing:.3px;transition:all .15s;white-space:nowrap}
+.svc-tab.on{background:var(--maroon);color:var(--cream)}
+.svc-section{display:none}.svc-section.on{display:block}
+.chakra-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.chakra-card{background:#0C0602;border:1px solid var(--border);border-radius:9px;padding:12px;text-align:center}
+.chakra-dot{width:36px;height:36px;border-radius:50%;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.chakra-name{font-size:12px;font-weight:700;color:var(--cream);margin-bottom:3px}
+.chakra-name-od{font-size:10px;color:var(--muted);margin-bottom:6px}
+.chakra-status{font-size:10px;font-weight:700;border-radius:4px;padding:2px 8px;display:inline-block}
+.chakra-open{background:rgba(99,192,91,.15);color:#63C05B;border:1px solid rgba(99,192,91,.3)}
+.chakra-blocked{background:rgba(226,75,74,.15);color:#E24B4A;border:1px solid rgba(226,75,74,.3)}
+.chakra-partial{background:rgba(184,135,10,.15);color:var(--gold-lt);border:1px solid rgba(184,135,10,.3)}
+.chakra-bar-wrap{margin-top:6px}
+.chakra-bar-track{background:rgba(255,255,255,.05);border-radius:3px;height:5px;overflow:hidden;margin-top:3px}
+.chakra-bar-fill{height:100%;border-radius:3px;transition:width .6s}
+.health-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:12px}
+.health-item{background:#0C0602;border:1px solid var(--border);border-radius:8px;padding:10px}
+.health-lbl{font-size:9px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px}
+.health-val{font-size:12px;color:var(--cream);font-weight:700;line-height:1.4}
+.mob-digit{display:inline-flex;flex-direction:column;align-items:center;background:#0C0602;border:1px solid var(--border);border-radius:6px;padding:6px 10px;margin:3px}
+.mob-d{font-family:'Cinzel',serif;font-size:18px;font-weight:700;color:var(--cream)}
+.mob-v{font-size:9px;color:var(--gold);margin-top:1px}
+.score-ring{width:80px;height:80px;border-radius:50%;border:3px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 10px;position:relative}
+.score-n{font-family:'Cinzel',serif;font-size:22px;font-weight:700;color:var(--gold-lt)}
+.score-l{font-size:8px;color:var(--muted);text-transform:uppercase}
 /* chat */
 .chat-fab{position:fixed;bottom:80px;right:18px;width:52px;height:52px;border-radius:50%;background:var(--gold);border:none;cursor:pointer;display:none;align-items:center;justify-content:center;font-size:22px;z-index:300;box-shadow:0 4px 16px rgba(0,0,0,.4);transition:transform .15s}
 .chat-fab:hover{transform:scale(1.08)}
@@ -294,6 +322,7 @@ select option{background:#0C0602}
   <button class="bni on" id="bn-dash" onclick="dashGo('dash')"><div class="bni-ic">🏠</div><div class="bni-lb">Home</div></button>
   <button class="bni" id="bn-kundli" onclick="dashGo('kundli')"><div class="bni-ic">☀</div><div class="bni-lb">Kundli</div></button>
   <button class="bni" id="bn-anka" onclick="dashGo('anka')"><div class="bni-ic">🔢</div><div class="bni-lb">Anka</div></button>
+  <button class="bni" id="bn-services" onclick="dashGo('services')"><div class="bni-ic">🌟</div><div class="bni-lb">Services</div></button>
   <button class="bni" id="bn-predict" onclick="dashGo('predict')"><div class="bni-ic">🔮</div><div class="bni-lb">Predict</div></button>
   <button class="bni" id="bn-profile" onclick="dashGo('profile')"><div class="bni-ic">👤</div><div class="bni-lb">Profile</div></button>
 </div>
@@ -597,6 +626,107 @@ select option{background:#0C0602}
         </div>
       </div>
     </div>
+  </div>
+</div>
+
+
+<!-- ═══ SERVICES ═══ -->
+<div class="pg" id="pg-services">
+  <div class="wrap">
+    <div style="font-family:'Cinzel',serif;font-size:17px;color:var(--cream);margin:14px 0 2px">Special Services</div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:14px" class="od">ବିଶେଷ ସେବା — AI Powered</div>
+
+    <!-- SERVICE TABS -->
+    <div class="svc-tabs">
+      <button class="svc-tab on" id="st-mobile" onclick="svcTab('mobile')">📱 Mobile No.</button>
+      <button class="svc-tab" id="st-name" onclick="svcTab('name')">✍ Name Correction</button>
+      <button class="svc-tab" id="st-chakra" onclick="svcTab('chakra')">🕉 Seven Chakra</button>
+      <button class="svc-tab" id="st-health" onclick="svcTab('health')">💚 Health Report</button>
+    </div>
+
+    <!-- MOBILE NUMEROLOGY -->
+    <div class="svc-section on" id="ss-mobile">
+      <div class="card">
+        <div class="sh">📱 Mobile Number Numerology</div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:12px">Your mobile number carries a powerful vibration that affects daily luck, business success, and relationships.</div>
+        <div class="fg"><label>Your Mobile Number</label><input id="mob-num" type="tel" placeholder="Enter 10-digit mobile number" maxlength="10" oninput="this.value=this.value.replace(/[^0-9]/g,'')"/></div>
+        <div class="fg"><label>Your Name (optional)</label><input id="mob-name" placeholder="For personalized reading"/></div>
+        <div class="fg"><label>Your Mulank / Birth Number (optional)</label><input id="mob-mulank" type="number" placeholder="1-9" min="1" max="9"/></div>
+        <div id="mob-err" class="err"></div>
+        <button class="btn" onclick="analyzeMobile()">✦ Analyze My Number</button>
+      </div>
+      <div id="mob-result" style="display:none"></div>
+    </div>
+
+    <!-- NAME CORRECTION -->
+    <div class="svc-section" id="ss-name">
+      <div class="card">
+        <div class="sh">✍ Name Correction Report</div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:12px">Your name vibration must align with your birth number and destiny number for maximum life success.</div>
+        <div class="fg"><label>Current Full Name</label><input id="nc-name" placeholder="Your current full name"/></div>
+        <div class="fg"><label>Date of Birth</label><input id="nc-dob" type="date"/></div>
+        <div class="fg"><label>Purpose / Goal</label>
+          <select id="nc-purpose">
+            <option value="career">Career & Business Success</option>
+            <option value="marriage">Marriage & Relationships</option>
+            <option value="wealth">Wealth & Financial Growth</option>
+            <option value="health">Health & Wellbeing</option>
+            <option value="overall">Overall Life Harmony</option>
+          </select>
+        </div>
+        <div id="nc-err" class="err"></div>
+        <button class="btn" onclick="analyzeNameCorrection()">✦ Generate Name Report</button>
+      </div>
+      <div id="nc-result" style="display:none"></div>
+    </div>
+
+    <!-- SEVEN CHAKRA -->
+    <div class="svc-section" id="ss-chakra">
+      <div class="card">
+        <div class="sh">🕉 Seven Chakra Report</div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:12px">Based on your birth chart planetary positions, discover which chakras are open, blocked, or imbalanced.</div>
+        <div class="fg"><label>Date of Birth</label><input id="ch-dob" type="date"/></div>
+        <div class="fg"><label>Time of Birth</label><input id="ch-tob" type="time"/></div>
+        <div class="fg"><label>Current Life Challenges (select all that apply)</label>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px" id="chakra-challenges">
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;text-transform:none;letter-spacing:0;cursor:pointer"><input type="checkbox" value="anxiety"> Anxiety/Fear</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;text-transform:none;letter-spacing:0;cursor:pointer"><input type="checkbox" value="financial"> Financial issues</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;text-transform:none;letter-spacing:0;cursor:pointer"><input type="checkbox" value="relationships"> Relationship problems</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;text-transform:none;letter-spacing:0;cursor:pointer"><input type="checkbox" value="confidence"> Low confidence</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;text-transform:none;letter-spacing:0;cursor:pointer"><input type="checkbox" value="health"> Health issues</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;text-transform:none;letter-spacing:0;cursor:pointer"><input type="checkbox" value="spiritual"> Spiritual disconnection</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;text-transform:none;letter-spacing:0;cursor:pointer"><input type="checkbox" value="communication"> Communication problems</label>
+          </div>
+        </div>
+        <div id="ch-err" class="err"></div>
+        <button class="btn" onclick="analyzeChakra()">✦ Generate Chakra Report</button>
+      </div>
+      <div id="ch-result" style="display:none"></div>
+    </div>
+
+    <!-- HEALTH REPORT -->
+    <div class="svc-section" id="ss-health">
+      <div class="card">
+        <div class="sh">💚 Vedic Health Report</div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:12px">Your birth chart reveals constitutional health strengths, vulnerabilities, and periods of caution — based on 6th house, ascendant lord, and planetary positions.</div>
+        <div class="fg"><label>Date of Birth</label><input id="hr-dob" type="date"/></div>
+        <div class="fg"><label>Time of Birth</label><input id="hr-tob" type="time"/></div>
+        <div class="fg"><label>Place of Birth</label><input id="hr-pob" placeholder="e.g. Bhubaneswar, Odisha"/></div>
+        <div class="fg"><label>Current Health Concerns (optional)</label>
+          <input id="hr-concern" placeholder="e.g. digestion, stress, back pain, skin issues"/>
+        </div>
+        <div class="fg"><label>Gender</label>
+          <div class="grow-row">
+            <button class="gbtn on" id="hr-gm" onclick="setHRG('Male')">Male / ପୁରୁଷ</button>
+            <button class="gbtn" id="hr-gf" onclick="setHRG('Female')">Female / ସ୍ତ୍ରୀ</button>
+          </div>
+        </div>
+        <div id="hr-err" class="err"></div>
+        <button class="btn" onclick="analyzeHealth()">✦ Generate Health Report</button>
+      </div>
+      <div id="hr-result" style="display:none"></div>
+    </div>
+
   </div>
 </div>
 
@@ -1030,13 +1160,14 @@ function setPdfLang(l){
 }
 
 function dashGo(tab){
-  ['dash','kundli','anka','predict','profile'].forEach(t=>{
+  ['dash','kundli','anka','services','predict','profile'].forEach(t=>{
     const el=document.getElementById('bn-'+t);
     if(el)el.classList.toggle('on',t===tab);
   });
   if(tab==='dash'){buildDash();nav('dash');}
   else if(tab==='kundli'){nav('form');}
   else if(tab==='anka'){nav('anka');}
+  else if(tab==='services'){nav('services');}
   else if(tab==='predict'){buildPredict();nav('predict');}
   else if(tab==='profile'){buildProfile();nav('profile');}
 }
@@ -1223,6 +1354,7 @@ function buildDash(){
   g('act-grid').innerHTML=`
     <div class="ac" onclick="dashGo('kundli')"><div class="ac-ic">☀</div><div class="ac-nm">New Kundli</div><div class="ac-sub">Birth chart</div></div>
     <div class="ac" onclick="dashGo('anka')"><div class="ac-ic">🔢</div><div class="ac-nm">Anka Shastra</div><div class="ac-sub">Numerology</div></div>
+    <div class="ac" onclick="dashGo('services')"><div class="ac-ic">🌟</div><div class="ac-nm">Services</div><div class="ac-sub">Chakra · Health · Name</div></div>
     <div class="ac ${isM?'':'locked'}" onclick="${isM?"dashGo('predict')":"toast('Upgrade to Monthly plan')"}"><div class="ac-ic">🔮</div><div class="ac-nm">Monthly</div><div class="ac-sub">Predictions</div>${!isM?'<div class="lock-tag">Upgrade</div>':''}</div>
     <div class="ac ${isY?'':'locked'}" onclick="${isY?"toast('Guna Milan coming soon!')":"toast('Upgrade to Annual plan')"}"><div class="ac-ic">💑</div><div class="ac-nm">Guna Milan</div><div class="ac-sub">Kundli match</div>${!isY?'<div class="lock-tag">Annual Only</div>':''}</div>
     <div class="ac" onclick="dashGo('profile')"><div class="ac-ic">👤</div><div class="ac-nm">Profile</div><div class="ac-sub">Account</div></div>`;
@@ -2347,6 +2479,460 @@ INSTRUCTIONS:
   }
   sendBtn.disabled=false;
   document.getElementById('chat-input').focus();
+}
+
+
+/* ═══════════════════════════════════════════════════════
+   SERVICES ENGINE
+   Mobile Numerology · Name Correction · Seven Chakra · Health
+═══════════════════════════════════════════════════════*/
+
+/* ── SERVICE TAB SWITCHER ── */
+function svcTab(tab){
+  ['mobile','name','chakra','health'].forEach(t=>{
+    const sec=document.getElementById('ss-'+t);
+    const btn=document.getElementById('st-'+t);
+    if(sec)sec.classList.toggle('on',t===tab);
+    if(btn)btn.classList.toggle('on',t===tab);
+  });
+}
+
+/* ─────────────────────────────────────
+   MOBILE NUMEROLOGY
+─────────────────────────────────────*/
+const CHEIRO_MOB={A:1,B:2,C:3,D:4,E:5,F:8,G:3,H:5,I:1,J:1,K:2,L:3,M:4,N:5,O:7,P:8,Q:1,R:2,S:3,T:4,U:6,V:6,W:6,X:5,Y:1,Z:7};
+function reduceNum(n){while(n>9&&n!==11&&n!==22)n=String(n).split('').reduce((a,b)=>a+Number(b),0);return n;}
+
+const MOB_NUM_DATA={
+  1:{vibe:'Leadership & Authority',planet:'Sun',effect:'Attracts opportunities for authority, recognition, and leadership. Business numbers ending in 1 attract clients who respect you.',lucky:true,color:'#C8850A'},
+  2:{vibe:'Partnership & Cooperation',planet:'Moon',effect:'Brings emotional connections and partnerships. Good for service businesses, counselling, healthcare.',lucky:true,color:'#4A7FA5'},
+  3:{vibe:'Creativity & Growth',planet:'Jupiter',effect:'Attracts abundance, creative clients, and expansion. Excellent for business, education, and entertainment.',lucky:true,color:'#8A6A1A'},
+  4:{vibe:'Stability & Hard Work',planet:'Rahu',effect:'Creates a solid, reliable impression. Good for technical and engineering work but can cause delays.',lucky:false,color:'#3A5A8A'},
+  5:{vibe:'Change & Communication',planet:'Mercury',effect:'Dynamic number attracting varied contacts and opportunities. Perfect for sales, media, and trading.',lucky:true,color:'#2D6B2D'},
+  6:{vibe:'Harmony & Service',planet:'Venus',effect:'Attracts warm, loyal relationships and clients. Excellent for hospitality, beauty, healthcare, and family businesses.',lucky:true,color:'#8A3A6A'},
+  7:{vibe:'Wisdom & Spirituality',planet:'Ketu',effect:'Attracts deep thinkers and spiritual seekers. Good for research, astrology, and consulting but may cause isolation.',lucky:false,color:'#5C408A'},
+  8:{vibe:'Power & Material Success',planet:'Saturn',effect:'Powerful karmic number. Can bring great success or great obstacles. Requires discipline and ethical living.',lucky:false,color:'#3A3A5C'},
+  9:{vibe:'Universal Service',planet:'Mars',effect:'Attracts people who need help. Excellent for NGOs, medicine, military, and humanitarian work.',lucky:true,color:'#8A1A1A'},
+};
+
+async function analyzeMobile(){
+  const num=g('mob-num').value.trim();
+  const name=g('mob-name').value.trim();
+  const mulank=parseInt(g('mob-mulank').value)||0;
+  const err=g('mob-err');err.textContent='';
+  if(!num||num.length<10){err.textContent='Please enter a valid 10-digit mobile number.';return;}
+
+  const btn=event.target;btn.disabled=true;btn.textContent='Analyzing...';
+
+  // Calculate digit values
+  const digits=[...num].map(Number);
+  const total=digits.reduce((a,b)=>a+b,0);
+  const mobileNum=reduceNum(total);
+  const lastDigit=digits[digits.length-1];
+  const firstDigit=digits[0];
+  const sumPairs=[];
+  for(let i=0;i<digits.length-1;i+=2)sumPairs.push(reduceNum(digits[i]+(digits[i+1]||0)));
+  const dominantNum=reduceNum(sumPairs.reduce((a,b)=>a+b,0));
+
+  const mData=MOB_NUM_DATA[mobileNum]||MOB_NUM_DATA[1];
+  const lastData=MOB_NUM_DATA[lastDigit]||MOB_NUM_DATA[1];
+  const isCompatible=mulank?Math.abs(mobileNum-mulank)<=2||(mobileNum+mulank)%9<=1:true;
+
+  // AI reading
+  const prompt=`You are a Mobile Numerology expert. Analyze this mobile number: ${num}
+Total digit sum: ${total} → Mobile Number: ${mobileNum} (${mData.vibe}, ruled by ${mData.planet})
+Last digit: ${lastDigit} — First digit: ${firstDigit} — Dominant pattern number: ${dominantNum}
+${name?'Person name: '+name:''}${mulank?'Birth number (Mulank): '+mulank:''}
+${mulank?'Compatibility: '+(isCompatible?'COMPATIBLE':'TENSION — suggest alternatives'):''}
+
+Provide analysis in this EXACT JSON (no markdown):
+{"overall":"2 sentences about the overall vibration of this specific number","career":"2 sentences about career and business effects","relationships":"2 sentences about relationships and social effects","luck":"2 sentences about luck periods and timing","warning":"1 sentence about any caution for this number","bestUseFor":"4 professions or purposes this number is best suited for","avoid":"2 things to avoid with this number","remedy":"1 specific mantra or remedy to balance the number energy","alternatives":"3 alternative last-3-digit endings that would be more favorable","od_overall":"2 sentences in Odia script about overall vibration"}`;
+
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,messages:[{role:'user',content:prompt}]})});
+    const data=await resp.json();
+    const raw=data.content?.[0]?.text||'';
+    let r;try{r=JSON.parse(raw.replace(/```json|```/g,'').trim());}catch(e){r=null;}
+
+    const digitHTML=[...num].map((d,i)=>`<div class="mob-digit"><div class="mob-d">${d}</div><div class="mob-v">${reduceNum(parseInt(d))||d}</div></div>`).join('');
+    const compatBadge=mulank?`<span class="badge ${isCompatible?'badge-success':'badge-failed'}">${isCompatible?'✓ Compatible with Mulank '+mulank:'⚠ Tension with Mulank '+mulank}</span>`:'';
+
+    g('mob-result').style.display='block';
+    g('mob-result').innerHTML=`
+    <div class="result-hero">
+      <div class="rname">${num}</div>
+      <div class="rsub">${name?name+' · ':''}Mobile Number Analysis</div>
+      <div class="divg">✦ ॐ ✦</div>
+      <div class="chips">
+        <div class="chip"><div class="chip-l">Mobile Number</div><div class="chip-v" style="font-size:22px">${mobileNum}</div></div>
+        <div class="chip"><div class="chip-l">Vibration</div><div class="chip-v">${mData.vibe}</div></div>
+        <div class="chip"><div class="chip-l">Ruling Planet</div><div class="chip-v">${mData.planet}</div></div>
+        <div class="chip"><div class="chip-l">Last Digit</div><div class="chip-v">${lastDigit} (${MOB_NUM_DATA[lastDigit]?.planet||''})</div></div>
+      </div>
+      ${compatBadge?`<div style="margin-top:10px">${compatBadge}</div>`:''}
+    </div>
+    <div class="card">
+      <div class="sh">✦ Digit Breakdown</div>
+      <div style="display:flex;flex-wrap:wrap;gap:2px;margin-bottom:10px">${digitHTML}</div>
+      <div class="calc-note">Sum: <span>${digits.join('+')}=${total}</span> → Mobile Number: <span>${mobileNum}</span> (${mData.planet})</div>
+    </div>
+    ${r?`<div class="card">
+      <div class="sh">✦ Complete Analysis</div>
+      <div class="rlbl">Overall Vibration</div><div class="rtxt">${r.overall||''}</div>
+      <div class="rlbl">Career & Business</div><div class="rtxt">${r.career||''}</div>
+      <div class="rlbl">Relationships & Social</div><div class="rtxt">${r.relationships||''}</div>
+      <div class="rlbl">Luck & Timing</div><div class="rtxt">${r.luck||''}</div>
+      ${r.warning?`<div class="rlbl">Caution</div><div class="rtxt" style="color:#E8A870">${r.warning}</div>`:''}
+      <div class="rlbl od">ଓଡ଼ିଆ ବିଶ୍ଲେଷଣ</div><div class="rtxt od">${r.od_overall||''}</div>
+    </div>
+    <div class="card">
+      <div class="sh">✦ Best Use & Alternatives</div>
+      <div class="rlbl">Best suited for</div>
+      <div style="margin-bottom:10px">${(r.bestUseFor||[]).map(s=>`<span class="pill pill-g">${s}</span>`).join('')}</div>
+      <div class="rlbl">Avoid</div>
+      <div style="margin-bottom:10px">${(r.avoid||[]).map(s=>`<span class="pill pill-w">${s}</span>`).join('')}</div>
+      <div class="rlbl">Balancing Remedy</div><div class="rtxt">${r.remedy||''}</div>
+      ${r.alternatives?`<div class="rlbl">Better alternative endings</div><div>${(r.alternatives||[]).map(a=>`<span class="pill pill-b">${a}</span>`).join('')}</div>`:''}
+    </div>`:''}`;
+  }catch(e){g('mob-err').textContent='Analysis failed. Please try again.';}
+  btn.disabled=false;btn.textContent='✦ Analyze My Number';
+}
+
+/* ─────────────────────────────────────
+   NAME CORRECTION
+─────────────────────────────────────*/
+async function analyzeNameCorrection(){
+  const name=g('nc-name').value.trim();
+  const dob=g('nc-dob').value;
+  const purpose=g('nc-purpose').value;
+  const err=g('nc-err');err.textContent='';
+  if(!name){err.textContent='Please enter your full name.';return;}
+  if(!dob){err.textContent='Please enter your date of birth.';return;}
+
+  const btn=event.target;btn.disabled=true;btn.textContent='Generating Report...';
+
+  // Calculate current name numbers
+  const clean=name.toUpperCase().replace(/[^A-Z]/g,'');
+  const letters=[...clean].map(c=>({c,v:CHEIRO_MOB[c]||0}));
+  const nameTotal=letters.reduce((a,b)=>a+b.v,0);
+  const namank=reduceNum(nameTotal);
+
+  // Birth numbers
+  const dt=new Date(dob);
+  const day=dt.getDate(),mm=dt.getMonth()+1,yyyy=dt.getFullYear();
+  const mulank=reduceNum(day);
+  const bhagya=reduceNum(String(day).split('').reduce((a,b)=>a+Number(b),0)+
+    String(mm).split('').reduce((a,b)=>a+Number(b),0)+
+    String(yyyy).split('').reduce((a,b)=>a+Number(b),0));
+
+  const compatible=Math.abs(namank-mulank)<=2||(namank+mulank)%9<=1||(namank+bhagya)%9<=1||namank===mulank||namank===bhagya;
+
+  const prompt=`You are a Vedic numerology and name correction expert using Cheiro's system.
+
+Person: ${name}, DOB: ${dob}, Purpose: ${purpose}
+Current Name Number (Namank): ${namank}
+Mulank (Birth Number): ${mulank}
+Bhagyanka (Destiny Number): ${bhagya}
+Name-Birth Compatibility: ${compatible?'GOOD ALIGNMENT':'TENSION — correction needed'}
+Letter values: ${letters.map(l=>l.c+'='+l.v).join(', ')}
+
+Provide a complete name correction report in EXACT JSON (no markdown):
+{"compatibility_score":75,"compatibility_analysis":"2 sentences about how current name aligns with birth numbers","vibration_analysis":"2 sentences about what the current name number ${namank} brings to this person","strengths_of_current":"2 strengths the current name provides","weaknesses":"2 weaknesses or blocks the current name causes","correction_needed":${compatible?'false':'true'},"suggested_names":["Alternate spelling 1 with brief reason","Alternate spelling 2 with brief reason","Alternate spelling 3 with brief reason"],"letters_to_add":"Specific letters or sounds to add to strengthen the name","letters_to_avoid":"Letters or sounds to avoid","ideal_namank":${mulank},"remedy_if_no_change":"Mantra or remedy if person cannot change name","career_impact":"1 sentence on career impact of current name","marriage_impact":"1 sentence on relationship impact","od_summary":"2 sentences in Odia script about the name analysis"}`;
+
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:900,messages:[{role:'user',content:prompt}]})});
+    const data=await resp.json();
+    const raw=data.content?.[0]?.text||'';
+    let r;try{r=JSON.parse(raw.replace(/```json|```/g,'').trim());}catch(e){r=null;}
+
+    const letterHTML=letters.map(l=>`<div class="lchip"><div class="lchip-c">${l.c}</div><div class="lchip-n">${l.v}</div></div>`).join('');
+    const score=r?.compatibility_score||65;
+    const scoreColor=score>=75?'var(--green-l)':score>=55?'var(--gold-lt)':'var(--red-l)';
+
+    g('nc-result').style.display='block';
+    g('nc-result').innerHTML=`
+    <div class="result-hero">
+      <div class="rname">${name}</div>
+      <div class="rsub">Name Correction Report · ${new Date(dob).toDateString()}</div>
+      <div class="divg">✦ ॐ ✦</div>
+      <div class="chips">
+        <div class="chip"><div class="chip-l">Namank</div><div class="chip-v">${namank}</div></div>
+        <div class="chip"><div class="chip-l">Mulank</div><div class="chip-v">${mulank}</div></div>
+        <div class="chip"><div class="chip-l">Bhagyanka</div><div class="chip-v">${bhagya}</div></div>
+        <div class="chip"><div class="chip-l">Alignment</div><div class="chip-v" style="color:${compatible?'var(--green-l)':'var(--red-l)'}">${compatible?'Good':'Needs Fix'}</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="sh">✦ Name Number Breakdown</div>
+      <div class="letter-chips">${letterHTML}</div>
+      <div class="calc-note">Sum = <span>${nameTotal}</span> → Namank = <span>${namank}</span></div>
+      <div style="display:flex;align-items:center;gap:12px;margin-top:12px">
+        <div class="score-ring" style="border-color:${scoreColor}">
+          <div class="score-n" style="color:${scoreColor}">${score}</div>
+          <div class="score-l">Score</div>
+        </div>
+        <div style="flex:1">
+          <div style="font-size:11px;color:${scoreColor};font-weight:700;margin-bottom:4px">${score>=75?'Strong Alignment':score>=55?'Moderate Alignment':'Correction Recommended'}</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.6">${r?.compatibility_analysis||'Analyzing name-birth number alignment...'}</div>
+        </div>
+      </div>
+    </div>
+    ${r?`<div class="card">
+      <div class="sh">✦ Detailed Analysis</div>
+      <div class="rlbl">Name Vibration (${namank})</div><div class="rtxt">${r.vibration_analysis||''}</div>
+      <div class="rlbl">Current Name Strengths</div>
+      <div style="margin-bottom:10px">${Array.isArray(r.strengths_of_current)?r.strengths_of_current.map(s=>`<span class="pill pill-g">${s}</span>`).join(''):'—'}</div>
+      <div class="rlbl">Weaknesses / Blocks</div>
+      <div style="margin-bottom:10px">${Array.isArray(r.weaknesses)?r.weaknesses.map(s=>`<span class="pill pill-w">${s}</span>`).join(''):'—'}</div>
+      <div class="rlbl">Career Impact</div><div class="rtxt">${r.career_impact||''}</div>
+      <div class="rlbl">Relationship Impact</div><div class="rtxt">${r.marriage_impact||''}</div>
+      <div class="rlbl od">ଓଡ଼ିଆ ସାରାଂଶ</div><div class="rtxt od">${r.od_summary||''}</div>
+    </div>
+    <div class="card">
+      <div class="sh">✦ ${r.correction_needed?'Suggested Corrections':'Your Name is Well-Aligned'}</div>
+      ${r.correction_needed&&Array.isArray(r.suggested_names)?`
+      <div class="rlbl">Suggested Name Spellings (targeting Namank ${r.ideal_namank||mulank})</div>
+      ${r.suggested_names.map(s=>`<div class="cross-insight"><div class="cross-title">${s.split(' — ')[0]||s}</div><div style="font-size:12px;color:var(--muted)">${s.split(' — ')[1]||''}</div></div>`).join('')}
+      <div class="rlbl">Letters to Add</div><div class="rtxt">${r.letters_to_add||''}</div>
+      <div class="rlbl">Letters to Avoid</div><div class="rtxt">${r.letters_to_avoid||''}</div>`:'<div class="rtxt" style="color:var(--green-l)">Your current name vibrates harmoniously with your birth numbers. Continue using it confidently.</div>'}
+      <div class="rlbl">Remedy if No Name Change</div><div class="rtxt">${r.remedy_if_no_change||''}</div>
+    </div>`:''}`;
+  }catch(e){g('nc-err').textContent='Report generation failed. Please try again.';}
+  btn.disabled=false;btn.textContent='✦ Generate Name Report';
+}
+
+/* ─────────────────────────────────────
+   SEVEN CHAKRA REPORT
+─────────────────────────────────────*/
+const CHAKRAS=[
+  {id:'muladhara',name:'Muladhara',nameOd:'ମୂଳାଧାର',element:'Earth',color:'#E24B4A',planet:'Saturn',location:'Root — Base of spine',governs:'Security, survival, grounding, finances',mantra:'LAM',symbol:'🔴'},
+  {id:'svadhisthana',name:'Svadhisthana',nameOd:'ସ୍ୱାଧିଷ୍ଠାନ',element:'Water',color:'#E8782A',planet:'Jupiter',location:'Sacral — Below navel',governs:'Creativity, emotions, sexuality, pleasure',mantra:'VAM',symbol:'🟠'},
+  {id:'manipura',name:'Manipura',nameOd:'ମଣିପୁର',element:'Fire',color:'#D4A017',planet:'Mars & Sun',location:'Solar Plexus — Above navel',governs:'Willpower, confidence, self-esteem, digestion',mantra:'RAM',symbol:'🟡'},
+  {id:'anahata',name:'Anahata',nameOd:'ଅନାହତ',element:'Air',color:'#63C05B',planet:'Venus',location:'Heart — Centre of chest',governs:'Love, compassion, forgiveness, relationships',mantra:'YAM',symbol:'💚'},
+  {id:'vishuddha',name:'Vishuddha',nameOd:'ବିଶୁଦ୍ଧ',element:'Space/Ether',color:'#4A9FD4',planet:'Mercury',location:'Throat — Neck area',governs:'Communication, truth, self-expression',mantra:'HAM',symbol:'🔵'},
+  {id:'ajna',name:'Ajna',nameOd:'ଆଜ୍ଞା',element:'Light',color:'#5C408A',planet:'Moon & Ketu',location:'Third Eye — Between eyebrows',governs:'Intuition, wisdom, psychic ability, insight',mantra:'OM',symbol:'🟣'},
+  {id:'sahasrara',name:'Sahasrara',nameOd:'ସହସ୍ରାର',element:'Thought',color:'#8A3A8A',planet:'Sun & Rahu',location:'Crown — Top of head',governs:'Spiritual connection, consciousness, enlightenment',mantra:'AUM',symbol:'⚪'},
+];
+
+let hrGender='Male';
+function setHRG(g2){
+  hrGender=g2;
+  ['m','f'].forEach(x=>g('hr-g'+x)?.classList.toggle('on',x===(g2==='Male'?'m':'f')));
+}
+
+async function analyzeChakra(){
+  const dob=g('ch-dob').value;
+  const tob=g('ch-tob').value;
+  const err=g('ch-err');err.textContent='';
+  if(!dob||!tob){err.textContent='Please enter date and time of birth.';return;}
+
+  const challenges=[...document.querySelectorAll('#chakra-challenges input:checked')].map(c=>c.value);
+  const btn=event.target;btn.disabled=true;btn.textContent='Generating Report...';
+
+  // Calculate basic chakra states from planetary positions
+  let planets=[];
+  try{planets=E.calc('Seeker',dob,tob,'Bhubaneswar','','').planets;}catch(e){}
+
+  // Map planets to chakras
+  const planetChakraMap={Saturn:0,Jupiter:1,Mars:2,Sun:2,Venus:3,Mercury:4,Moon:5,Ketu:5,Rahu:6};
+  const chakraScores=CHAKRAS.map(()=>60); // base score
+  planets.forEach(p=>{
+    const idx=planetChakraMap[p.name];
+    if(idx!==undefined){
+      if(p.dignity==='Exalted')chakraScores[idx]=Math.min(95,chakraScores[idx]+25);
+      else if(p.dignity==='Own Sign')chakraScores[idx]=Math.min(88,chakraScores[idx]+15);
+      else if(p.dignity==='Debilitated')chakraScores[idx]=Math.max(20,chakraScores[idx]-30);
+      else if(p.house&&[6,8,12].includes(p.house))chakraScores[idx]=Math.max(30,chakraScores[idx]-15);
+    }
+  });
+  // Adjust for reported challenges
+  const challengeMap={anxiety:5,financial:0,relationships:3,confidence:2,health:2,spiritual:6,communication:4};
+  challenges.forEach(c=>{
+    if(challengeMap[c]!==undefined)chakraScores[challengeMap[c]]=Math.max(20,chakraScores[challengeMap[c]]-20);
+  });
+
+  const prompt=`You are a Kundalini and Chakra healing expert with deep knowledge of Vedic astrology's connection to the chakra system.
+
+DOB: ${dob}, TOB: ${tob}
+Reported challenges: ${challenges.join(', ')||'none specified'}
+Planetary analysis suggests these chakra openness levels:
+${CHAKRAS.map((c,i)=>c.name+': '+chakraScores[i]+'% ('+(chakraScores[i]>=75?'Open':chakraScores[i]>=50?'Partially open':'Blocked')+')').join('\n')}
+
+Generate a complete chakra report in EXACT JSON (no markdown):
+{"chakras":[{"name":"Muladhara","status":"Open/Partially Open/Blocked","score":75,"effect":"1 sentence about how this chakra is manifesting in life","healing":"1 specific healing practice","od_effect":"1 sentence in Odia"},...for all 7 chakras in order],"most_blocked":"name of most blocked chakra","most_open":"name of most open chakra","overall_energy":"2 sentences about overall chakra energy and kundalini state","meditation":"specific meditation technique for this person","pranayama":"specific breathing exercise","daily_practice":"3 daily practices to balance all chakras","urgent_focus":"which chakra needs most attention and why","od_overall":"2 sentences in Odia about overall chakra state"}`;
+
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
+    const data=await resp.json();
+    const raw=data.content?.[0]?.text||'';
+    let r;try{r=JSON.parse(raw.replace(/```json|```/g,'').trim());}catch(e){r=null;}
+
+    const chakraCards=(r?.chakras||CHAKRAS.map((c,i)=>({name:c.name,status:chakraScores[i]>=75?'Open':chakraScores[i]>=50?'Partially Open':'Blocked',score:chakraScores[i],effect:'Analysis based on planetary positions.',healing:'Practice '+c.mantra+' mantra chanting.',od_effect:''}))).map((ch,i)=>{
+      const chakra=CHAKRAS[i]||{};
+      const statusClass=ch.status==='Open'?'chakra-open':ch.status==='Blocked'?'chakra-blocked':'chakra-partial';
+      return`<div class="chakra-card">
+        <div class="chakra-dot" style="background:${chakra.color}20;border:2px solid ${chakra.color}">${chakra.symbol||'⭕'}</div>
+        <div class="chakra-name">${ch.name||chakra.name}</div>
+        <div class="chakra-name-od od">${chakra.nameOd}</div>
+        <span class="chakra-status ${statusClass}">${ch.status}</span>
+        <div class="chakra-bar-wrap">
+          <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--muted)"><span>${chakra.element}</span><span>${ch.score||chakraScores[i]}%</span></div>
+          <div class="chakra-bar-track"><div class="chakra-bar-fill" style="width:${ch.score||chakraScores[i]}%;background:${chakra.color}"></div></div>
+        </div>
+      </div>`;}).join('');
+
+    g('ch-result').style.display='block';
+    g('ch-result').innerHTML=`
+    <div class="result-hero">
+      <div class="rname">Seven Chakra Report</div>
+      <div class="rsub">${new Date(dob).toDateString()} · ${tob}</div>
+      <div class="divg">✦ ॐ ✦</div>
+      ${r?`<div class="chips">
+        <div class="chip"><div class="chip-l">Most Open</div><div class="chip-v" style="color:var(--green-l)">${r.most_open||'—'}</div></div>
+        <div class="chip"><div class="chip-l">Needs Focus</div><div class="chip-v" style="color:var(--red-l)">${r.most_blocked||'—'}</div></div>
+      </div>`:''}
+    </div>
+    <div class="card">
+      <div class="sh">✦ Chakra Status Overview</div>
+      <div class="chakra-grid">${chakraCards}</div>
+    </div>
+    ${r?`<div class="card">
+      <div class="sh">✦ Detailed Chakra Analysis</div>
+      ${(r.chakras||[]).map((ch,i)=>`<div style="margin-bottom:14px;padding-bottom:12px;border-bottom:.5px solid var(--border)">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
+          <span style="font-size:16px">${CHAKRAS[i]?.symbol||'⭕'}</span>
+          <div>
+            <div style="font-family:'Cinzel',serif;font-size:12px;color:var(--gold-lt)">${ch.name}</div>
+            <span class="chakra-status ${ch.status==='Open'?'chakra-open':ch.status==='Blocked'?'chakra-blocked':'chakra-partial'}" style="font-size:9px">${ch.status}</span>
+          </div>
+        </div>
+        <div class="rlbl">Effect on your life</div><div class="rtxt">${ch.effect||''}</div>
+        <div class="rlbl">Healing practice</div><div class="rtxt">${ch.healing||''}</div>
+        ${ch.od_effect?`<div class="rtxt od" style="font-size:12px">${ch.od_effect}</div>`:''}
+      </div>`).join('')}
+    </div>
+    <div class="card">
+      <div class="sh">✦ Healing Practices</div>
+      <div class="rlbl">Overall Energy</div><div class="rtxt">${r.overall_energy||''}</div>
+      <div class="rlbl">Recommended Meditation</div><div class="rtxt">${r.meditation||''}</div>
+      <div class="rlbl">Pranayama (Breathing)</div><div class="rtxt">${r.pranayama||''}</div>
+      <div class="rlbl">Daily Practices</div>
+      <div style="margin-bottom:10px">${(r.daily_practice||[]).map(p=>`<span class="pill pill-g">${p}</span>`).join('')}</div>
+      <div class="rlbl">Urgent Focus</div><div class="rtxt" style="color:#E8A870">${r.urgent_focus||''}</div>
+      <div class="rlbl od">ଓଡ଼ିଆ ସାରାଂଶ</div><div class="rtxt od">${r.od_overall||''}</div>
+    </div>`:''}`;
+  }catch(e){g('ch-err').textContent='Report generation failed. Please try again.';}
+  btn.disabled=false;btn.textContent='✦ Generate Chakra Report';
+}
+
+/* ─────────────────────────────────────
+   HEALTH REPORT
+─────────────────────────────────────*/
+const HEALTH_PLANETS={
+  Sun:{body:'Heart, spine, right eye, bones, vitality',season:'Summer',diet:'Warm, energizing foods'},
+  Moon:{body:'Mind, lungs, blood, stomach, left eye, fluids',season:'Monsoon',diet:'Cooling, nourishing foods'},
+  Mars:{body:'Blood, muscles, bone marrow, bile, surgery risks',season:'Summer/dry',diet:'Cooling, anti-inflammatory'},
+  Mercury:{body:'Nervous system, skin, speech, respiratory',season:'Autumn',diet:'Light, easily digestible'},
+  Jupiter:{body:'Liver, fat tissue, arteries, hearing',season:'Winter',diet:'Moderate, balanced'},
+  Venus:{body:'Reproductive system, kidneys, beauty, hormones',season:'Spring',diet:'Sweet, cooling'},
+  Saturn:{body:'Bones, teeth, joints, chronic conditions, nerves',season:'Winter',diet:'Warm, grounding'},
+  Rahu:{body:'Unusual diseases, skin, hidden conditions',season:'Variable',diet:'Detoxifying'},
+  Ketu:{body:'Wounds, fevers, spiritual diseases, past karma',season:'Variable',diet:'Purifying, sattvic'},
+};
+
+let hrG='Male';
+function setHRG(gen){hrG=gen;['m','f'].forEach(x=>g('hr-g'+x)?.classList.toggle('on',x===(gen==='Male'?'m':'f')));}
+
+async function analyzeHealth(){
+  const dob=g('hr-dob').value,tob=g('hr-tob').value,pob=g('hr-pob').value.trim();
+  const concern=g('hr-concern').value.trim();
+  const err=g('hr-err');err.textContent='';
+  if(!dob||!tob||!pob){err.textContent='Please fill date, time, and place of birth.';return;}
+
+  const btn=event.target;btn.disabled=true;btn.textContent='Generating Report...';
+
+  let calcData=null;
+  try{calcData=E.calc('Patient',dob,tob,pob,'',hrG);}catch(e){}
+
+  const planetsStr=calcData?calcData.planets.map(p=>`${p.name} in ${p.rashiName} H${p.house} (${p.dignity})`).join(', '):'Data unavailable';
+  const asc=calcData?calcData.ascendant.rashiName:'Unknown';
+  const sixth=calcData?calcData.planets.find(p=>p.house===6):'none';
+  const eighth=calcData?calcData.planets.find(p=>p.house===8):'none';
+  const ascLord=calcData?['Mars','Venus','Mercury','Moon','Sun','Mercury','Venus','Mars','Jupiter','Saturn','Saturn','Jupiter'][calcData.ascendant.rashi]:'Unknown';
+
+  const prompt=`You are a Vedic medical astrology expert (Ayurvedic Jyotish). Generate a comprehensive health report.
+
+DOB: ${dob}, TOB: ${tob}, Place: ${pob}, Gender: ${hrG}
+Lagna (Ascendant): ${asc}
+Lagna Lord: ${ascLord}
+6th House (disease): ${sixth?sixth.name+' in '+sixth.rashiName:'empty'}
+8th House (chronic/surgery): ${eighth?eighth.name+' in '+eighth.rashiName:'empty'}
+All planets: ${planetsStr}
+Current concerns: ${concern||'none specified'}
+
+Generate complete health report in EXACT JSON (no markdown):
+{"constitution":"Vata/Pitta/Kapha constitution in 2 sentences","strong_areas":["body system 1","body system 2","body system 3"],"vulnerable_areas":["vulnerable area 1 with planet causing it","vulnerable area 2","vulnerable area 3"],"current_risks":"2 sentences about current health risks based on planetary positions","digestive_health":"1 sentence about digestive constitution","mental_health":"1 sentence about mental/emotional health tendencies","longevity":"1 sentence about general vitality and longevity indicators","diet_advice":"3 specific dietary recommendations for this chart","yoga_asanas":["asana 1 — benefit","asana 2 — benefit","asana 3 — benefit"],"herbs":["Ayurvedic herb 1 — use","herb 2 — use"],"avoid":["food or habit to avoid 1","avoid 2"],"favourable_periods":"1 sentence about health-favourable time periods","cautious_periods":"1 sentence about periods requiring health caution","mantra":"health mantra suitable for this chart","od_summary":"2 sentences in Odia about overall health picture"}`;
+
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
+    const data=await resp.json();
+    const raw=data.content?.[0]?.text||'';
+    let r;try{r=JSON.parse(raw.replace(/```json|```/g,'').trim());}catch(e){r=null;}
+
+    const planetHealthCards=calcData?calcData.planets.slice(0,7).map(p=>{
+      const hData=HEALTH_PLANETS[p.name]||{body:'General vitality',diet:'Balanced'};
+      const risk=p.dignity==='Debilitated'||[6,8,12].includes(p.house);
+      return`<div class="health-item" style="${risk?'border-color:rgba(226,75,74,.3)':''}">
+        <div class="health-lbl">${p.name} ${risk?'⚠':'✓'}</div>
+        <div class="health-val" style="font-size:11px;color:${risk?'var(--red-l)':'var(--cream)'}">${p.rashiName} H${p.house} · ${p.dignity}</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:3px">${hData.body.split(',')[0]}</div>
+      </div>`;}).join(''):'' ;
+
+    g('hr-result').style.display='block';
+    g('hr-result').innerHTML=`
+    <div class="result-hero">
+      <div class="rname">Vedic Health Report</div>
+      <div class="rsub">${new Date(dob).toDateString()} · ${pob} · ${hrG}</div>
+      <div class="divg">✦ ॐ ✦</div>
+      ${r?`<div class="chips">
+        <div class="chip"><div class="chip-l">Lagna</div><div class="chip-v">${asc}</div></div>
+        <div class="chip"><div class="chip-l">Lagna Lord</div><div class="chip-v">${ascLord}</div></div>
+        <div class="chip"><div class="chip-l">6th House</div><div class="chip-v">${sixth?sixth.name:'Empty'}</div></div>
+      </div>`:''}
+    </div>
+    <div class="card">
+      <div class="sh">✦ Planetary Health Mapping</div>
+      <div class="health-grid">${planetHealthCards}</div>
+    </div>
+    ${r?`<div class="card">
+      <div class="sh">✦ Health Constitution</div>
+      <div class="rlbl">Ayurvedic Constitution (Prakriti)</div><div class="rtxt">${r.constitution||''}</div>
+      <div class="rlbl">Strong Body Systems</div>
+      <div style="margin-bottom:10px">${(r.strong_areas||[]).map(s=>`<span class="pill pill-g">${s}</span>`).join('')}</div>
+      <div class="rlbl">Vulnerable Areas</div>
+      <div style="margin-bottom:10px">${(r.vulnerable_areas||[]).map(s=>`<span class="pill pill-w">${s}</span>`).join('')}</div>
+      <div class="rlbl">Current Health Risks</div><div class="rtxt">${r.current_risks||''}</div>
+      <div class="rlbl">Digestive Health</div><div class="rtxt">${r.digestive_health||''}</div>
+      <div class="rlbl">Mental & Emotional Health</div><div class="rtxt">${r.mental_health||''}</div>
+      <div class="rlbl">Vitality & Longevity</div><div class="rtxt">${r.longevity||''}</div>
+      <div class="rlbl od">ଓଡ଼ିଆ ସ୍ୱାସ୍ଥ୍ୟ ଚିଠା</div><div class="rtxt od">${r.od_summary||''}</div>
+    </div>
+    <div class="card">
+      <div class="sh">✦ Diet, Yoga & Remedies</div>
+      <div class="rlbl">Dietary Recommendations</div>
+      <div style="margin-bottom:10px">${(r.diet_advice||[]).map(s=>`<span class="pill pill-g">${s}</span>`).join('')}</div>
+      <div class="rlbl">Yoga Asanas</div>
+      <div style="margin-bottom:10px">${(r.yoga_asanas||[]).map(s=>`<span class="pill pill-b">${s}</span>`).join('')}</div>
+      <div class="rlbl">Ayurvedic Herbs</div>
+      <div style="margin-bottom:10px">${(r.herbs||[]).map(s=>`<span class="pill pill-g">${s}</span>`).join('')}</div>
+      <div class="rlbl">Avoid</div>
+      <div style="margin-bottom:10px">${(r.avoid||[]).map(s=>`<span class="pill pill-w">${s}</span>`).join('')}</div>
+      <div class="rlbl">Favourable Periods</div><div class="rtxt" style="color:var(--green-l)">${r.favourable_periods||''}</div>
+      <div class="rlbl">Cautious Periods</div><div class="rtxt" style="color:#E8A870">${r.cautious_periods||''}</div>
+      <div class="rlbl">Health Mantra</div><div class="rtxt" style="font-family:serif;font-size:15px;color:var(--gold-lt)">${r.mantra||''}</div>
+    </div>`:''}`;
+  }catch(e){g('hr-err').textContent='Report generation failed. Please try again.';}
+  btn.disabled=false;btn.textContent='✦ Generate Health Report';
 }
 
 /* ─── INIT ──────────────────────────────────────────────*/
