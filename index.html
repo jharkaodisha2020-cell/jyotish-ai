@@ -236,6 +236,37 @@ select option{background:#0C0602}
 .score-ring{width:80px;height:80px;border-radius:50%;border:3px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 10px;position:relative}
 .score-n{font-family:'Cinzel',serif;font-size:22px;font-weight:700;color:var(--gold-lt)}
 .score-l{font-size:8px;color:var(--muted);text-transform:uppercase}
+/* namakarana & guna milan */
+.name-card{background:linear-gradient(135deg,#1A0800,var(--surface));border:1px solid var(--gold);border-radius:12px;padding:16px;margin-bottom:10px;text-align:center}
+.name-card-title{font-family:'Cinzel',serif;font-size:15px;color:var(--gold-lt);margin-bottom:4px}
+.name-card-od{font-size:12px;color:var(--muted);margin-bottom:10px}
+.name-suggestions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.name-chip{background:#0C0602;border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center;cursor:pointer;transition:all .15s}
+.name-chip:hover{border-color:var(--gold)}
+.name-chip-n{font-family:'Cinzel',serif;font-size:15px;color:var(--cream);font-weight:600}
+.name-chip-od{font-size:12px;color:var(--muted);margin-top:2px}
+.name-chip-num{font-size:10px;color:var(--gold);margin-top:3px;font-weight:700}
+.name-chip-meaning{font-size:10px;color:var(--muted);margin-top:2px;line-height:1.4}
+.guna-bar-wrap{margin-bottom:8px}
+.guna-row{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.guna-lbl{font-size:11px;color:var(--muted);width:90px;flex-shrink:0}
+.guna-track{flex:1;background:#0C0602;border-radius:3px;height:8px;overflow:hidden;border:1px solid var(--border)}
+.guna-fill{height:100%;border-radius:3px;transition:width .6s}
+.guna-pts{font-size:11px;font-weight:700;width:40px;text-align:right;flex-shrink:0}
+.score-big{width:100px;height:100px;border-radius:50%;border:3px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 12px}
+.score-big-n{font-family:'Cinzel',serif;font-size:32px;font-weight:700;line-height:1}
+.score-big-l{font-size:9px;color:var(--muted);text-transform:uppercase;margin-top:2px}
+.compat-verdict{border-radius:10px;padding:12px 16px;text-align:center;margin-bottom:12px}
+.compat-excellent{background:rgba(99,192,91,.1);border:1px solid rgba(99,192,91,.3)}
+.compat-good{background:rgba(184,135,10,.1);border:1px solid rgba(184,135,10,.3)}
+.compat-average{background:rgba(200,82,10,.1);border:1px solid rgba(200,82,10,.3)}
+.compat-poor{background:rgba(226,75,74,.1);border:1px solid rgba(226,75,74,.3)}
+.person-compare{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;margin-bottom:14px}
+.person-box{background:#0C0602;border:1px solid var(--border);border-radius:9px;padding:12px;text-align:center}
+.person-name{font-family:'Cinzel',serif;font-size:13px;color:var(--cream);margin-bottom:4px}
+.person-rashi{font-size:11px;color:var(--gold);margin-bottom:2px}
+.person-nak{font-size:10px;color:var(--muted)}
+.vs-circle{width:36px;height:36px;border-radius:50%;background:var(--maroon);border:1px solid var(--gold);display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-size:11px;color:var(--gold-lt);flex-shrink:0}
 /* chat */
 .chat-fab{position:fixed;bottom:80px;right:18px;width:52px;height:52px;border-radius:50%;background:var(--gold);border:none;cursor:pointer;display:none;align-items:center;justify-content:center;font-size:22px;z-index:300;box-shadow:0 4px 16px rgba(0,0,0,.4);transition:transform .15s}
 .chat-fab:hover{transform:scale(1.08)}
@@ -639,9 +670,11 @@ select option{background:#0C0602}
     <!-- SERVICE TABS -->
     <div class="svc-tabs">
       <button class="svc-tab on" id="st-mobile" onclick="svcTab('mobile')">📱 Mobile No.</button>
-      <button class="svc-tab" id="st-name" onclick="svcTab('name')">✍ Name Correction</button>
-      <button class="svc-tab" id="st-chakra" onclick="svcTab('chakra')">🕉 Seven Chakra</button>
-      <button class="svc-tab" id="st-health" onclick="svcTab('health')">💚 Health Report</button>
+      <button class="svc-tab" id="st-name" onclick="svcTab('name')">✍ Name Correct</button>
+      <button class="svc-tab" id="st-chakra" onclick="svcTab('chakra')">🕉 Chakra</button>
+      <button class="svc-tab" id="st-health" onclick="svcTab('health')">💚 Health</button>
+      <button class="svc-tab" id="st-namak" onclick="svcTab('namak')">👶 Namakarana</button>
+      <button class="svc-tab" id="st-guna" onclick="svcTab('guna')">💑 Guna Milan</button>
     </div>
 
     <!-- MOBILE NUMEROLOGY -->
@@ -725,6 +758,67 @@ select option{background:#0C0602}
         <button class="btn" onclick="analyzeHealth()">✦ Generate Health Report</button>
       </div>
       <div id="hr-result" style="display:none"></div>
+    </div>
+
+    <!-- ══ NAMAKARANA ══ -->
+    <div class="svc-section" id="ss-namak">
+      <div class="card">
+        <div class="sh">👶 Namakarana — Child Naming</div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:4px">ନାମକରଣ — ଶିଶୁ ନାମ ପ୍ରସ୍ତାବ</div>
+        <div style="font-size:12px;color:var(--cream);line-height:1.7;margin-bottom:14px;padding:10px;background:#0C0602;border-radius:7px;border:1px solid var(--border)">
+          Based on the child's Nakshatra and Pada, we suggest auspicious names in English and Odia — including their numerological value and meaning.
+        </div>
+        <div class="g2">
+          <div class="fg"><label>Child's Date of Birth</label><input id="nm-dob" type="date"/></div>
+          <div class="fg"><label>Time of Birth</label><input id="nm-tob" type="time"/></div>
+        </div>
+        <div class="fg"><label>Place of Birth</label><input id="nm-pob" placeholder="e.g. Puri, Bhubaneswar, Cuttack"/></div>
+        <div class="fg">
+          <label>Child Gender</label>
+          <div class="grow-row">
+            <button class="gbtn on" id="nmg-m" onclick="setNMG('Boy')">Boy / ପୁଅ</button>
+            <button class="gbtn" id="nmg-f" onclick="setNMG('Girl')">Girl / ଝିଅ</button>
+          </div>
+        </div>
+        <div class="fg"><label>Father's Name (optional)</label><input id="nm-father" placeholder="Father's name"/></div>
+        <div class="fg"><label>Gotra (optional)</label><input id="nm-gotra" placeholder="Family gotra"/></div>
+        <div class="fg"><label>Preferred starting letter (optional)</label><input id="nm-letter" placeholder="e.g. S, P, A — leave blank for Nakshatra-based" maxlength="3"/></div>
+        <div id="nm-err" class="err"></div>
+        <button class="btn" onclick="doNamakarana()">✦ Suggest Auspicious Names</button>
+      </div>
+      <div id="nm-result" style="display:none"></div>
+    </div>
+
+    <!-- ══ GUNA MILAN ══ -->
+    <div class="svc-section" id="ss-guna">
+      <div class="card">
+        <div class="sh">💑 Guna Milan — Kundli Matching</div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:4px">ଗୁଣ ମିଳାନ — ବିବାହ ଯୋଗ୍ୟତା ଯାଞ୍ଚ</div>
+        <div style="font-size:12px;color:var(--cream);line-height:1.7;margin-bottom:14px;padding:10px;background:#0C0602;border-radius:7px;border:1px solid var(--border)">
+          Traditional Ashtakoot matching system — 8 qualities, 36 total points. Score 18+ is acceptable, 24+ is good, 30+ is excellent.
+        </div>
+        <div style="font-family:'Cinzel',serif;font-size:13px;color:var(--gold-lt);margin-bottom:10px">👦 Groom / ବର</div>
+        <div class="g2">
+          <div class="fg"><label>Groom's Name</label><input id="gm-name" placeholder="Full name"/></div>
+          <div class="fg"><label>Date of Birth</label><input id="gm-dob" type="date"/></div>
+        </div>
+        <div class="g2">
+          <div class="fg"><label>Time of Birth</label><input id="gm-tob" type="time"/></div>
+          <div class="fg"><label>Place of Birth</label><input id="gm-pob" placeholder="City, Odisha"/></div>
+        </div>
+        <div style="font-family:'Cinzel',serif;font-size:13px;color:var(--gold-lt);margin:12px 0 10px">👧 Bride / କନ୍ୟା</div>
+        <div class="g2">
+          <div class="fg"><label>Bride's Name</label><input id="gf-name" placeholder="Full name"/></div>
+          <div class="fg"><label>Date of Birth</label><input id="gf-dob" type="date"/></div>
+        </div>
+        <div class="g2">
+          <div class="fg"><label>Time of Birth</label><input id="gf-tob" type="time"/></div>
+          <div class="fg"><label>Place of Birth</label><input id="gf-pob" placeholder="City, Odisha"/></div>
+        </div>
+        <div id="guna-err" class="err"></div>
+        <button class="btn" onclick="doGunaMilan()">✦ Calculate Guna Milan</button>
+      </div>
+      <div id="guna-result" style="display:none"></div>
     </div>
 
   </div>
@@ -2489,7 +2583,7 @@ INSTRUCTIONS:
 
 /* ── SERVICE TAB SWITCHER ── */
 function svcTab(tab){
-  ['mobile','name','chakra','health'].forEach(t=>{
+  ['mobile','name','chakra','health','namak','guna'].forEach(t=>{
     const sec=document.getElementById('ss-'+t);
     const btn=document.getElementById('st-'+t);
     if(sec)sec.classList.toggle('on',t===tab);
@@ -2933,6 +3027,382 @@ Generate complete health report in EXACT JSON (no markdown):
     </div>`:''}`;
   }catch(e){g('hr-err').textContent='Report generation failed. Please try again.';}
   btn.disabled=false;btn.textContent='✦ Generate Health Report';
+}
+
+
+/* ═══════════════════════════════════════════════════
+   NAMAKARANA — CHILD NAMING ENGINE
+   Based on Nakshatra Pada + Vedic naming rules
+═══════════════════════════════════════════════════*/
+
+// Nakshatra starting syllables (traditional Vedic)
+const NAK_SYLLABLES = [
+  ['Chu','Che','Cho','La'],          // 0 Ashwini
+  ['Li','Lu','Le','Lo'],             // 1 Bharani
+  ['A','I','U','E'],                 // 2 Krittika
+  ['O','Va','Vi','Vu'],              // 3 Rohini
+  ['Ve','Vo','Ka','Ki'],             // 4 Mrigashira
+  ['Ku','Gha','Na','Cha'],           // 5 Ardra
+  ['Ke','Ko','Ha','Hi'],             // 6 Punarvasu
+  ['Hu','He','Ho','Da'],             // 7 Pushya
+  ['Di','Du','De','Do'],             // 8 Ashlesha
+  ['Ma','Mi','Mu','Me'],             // 9 Magha
+  ['Mo','Ta','Ti','Tu'],             // 10 Purva Phalguni
+  ['Te','To','Pa','Pi'],             // 11 Uttara Phalguni
+  ['Pu','Sha','Na','Tha'],           // 12 Hasta
+  ['Pe','Po','Ra','Ri'],             // 13 Chitra
+  ['Ru','Re','Ro','Ta'],             // 14 Swati
+  ['Ti','Tu','Te','To'],             // 15 Vishakha
+  ['Na','Ni','Nu','Ne'],             // 16 Anuradha
+  ['No','Ya','Yi','Yu'],             // 17 Jyeshtha
+  ['Ye','Yo','Bha','Bhi'],           // 18 Mula
+  ['Bhu','Dha','Pha','Da'],          // 19 Purva Ashadha
+  ['Be','Bo','Ja','Ji'],             // 20 Uttara Ashadha
+  ['Ju','Je','Jo','Sha'],            // 21 Shravana
+  ['Ga','Gi','Gu','Ge'],             // 22 Dhanishta
+  ['Go','Sa','Si','Su'],             // 23 Shatabhisha
+  ['Se','So','Da','Di'],             // 24 Purva Bhadrapada
+  ['Du','Tha','Jha','Da'],           // 25 Uttara Bhadrapada
+  ['De','Do','Cha','Chi'],           // 26 Revati
+];
+
+const NAK_NAMES_LIST = ['Ashwini','Bharani','Krittika','Rohini','Mrigashira','Ardra','Punarvasu','Pushya','Ashlesha','Magha','Purva Phalguni','Uttara Phalguni','Hasta','Chitra','Swati','Vishakha','Anuradha','Jyeshtha','Mula','Purva Ashadha','Uttara Ashadha','Shravana','Dhanishta','Shatabhisha','Purva Bhadrapada','Uttara Bhadrapada','Revati'];
+const NAK_LORDS_NM = ['Ketu','Venus','Sun','Moon','Mars','Rahu','Jupiter','Saturn','Mercury','Ketu','Venus','Sun','Moon','Mars','Rahu','Jupiter','Saturn','Mercury','Ketu','Venus','Sun','Moon','Mars','Rahu','Jupiter','Saturn','Mercury'];
+
+let nmGender = 'Boy';
+function setNMG(g2){
+  nmGender = g2;
+  ['m','f'].forEach(x => {
+    const el = document.getElementById('nmg-'+x);
+    if(el) el.classList.toggle('on', x === (g2==='Boy'?'m':'f'));
+  });
+}
+
+function reduceNM(n){ while(n>9&&n!==11&&n!==22) n=String(n).split('').reduce((a,b)=>a+Number(b),0); return n; }
+function nameNumber(name){
+  const C={A:1,B:2,C:3,D:4,E:5,F:8,G:3,H:5,I:1,J:1,K:2,L:3,M:4,N:5,O:7,P:8,Q:1,R:2,S:3,T:4,U:6,V:6,W:6,X:5,Y:1,Z:7};
+  return reduceNM([...name.toUpperCase().replace(/[^A-Z]/g,'')].reduce((a,c)=>a+(C[c]||0),0));
+}
+
+async function doNamakarana(){
+  const dob = g('nm-dob').value;
+  const tob = g('nm-tob').value;
+  const pob = g('nm-pob').value.trim();
+  const father = g('nm-father').value.trim();
+  const gotra = g('nm-gotra').value.trim();
+  const prefLetter = g('nm-letter').value.trim().toUpperCase();
+  const err = g('nm-err'); err.textContent='';
+  if(!dob||!tob){err.textContent='Please enter date and time of birth.';return;}
+
+  const btn=event.target; btn.disabled=true; btn.textContent='Calculating...';
+
+  // Calculate nakshatra
+  let nakIdx=0, pada=1, moonRashi='', moonRashiOd='', lagnaName='';
+  try{
+    const calc = E.calc('Child', dob, tob, pob||'Bhubaneswar', gotra, nmGender);
+    const moon = calc.planets[1];
+    nakIdx = moon.nakIdx;
+    pada = moon.pada;
+    moonRashi = moon.rashiName;
+    moonRashiOd = moon.rashiOd;
+    lagnaName = calc.ascendant.rashiName;
+  }catch(e){ nakIdx = Math.floor(Math.random()*27); pada=1; }
+
+  const nakName = NAK_NAMES_LIST[nakIdx];
+  const nakLord = NAK_LORDS_NM[nakIdx];
+  const suggestedSyllable = prefLetter || NAK_SYLLABLES[nakIdx][pada-1];
+
+  const prompt = `You are a Vedic Jyotish naming expert specializing in Odia Hindu tradition and Namakarana (naming ceremony).
+
+Child details:
+DOB: ${dob}, TOB: ${tob}, Place: ${pob||'Odisha'}, Gender: ${nmGender}
+Moon Nakshatra: ${nakName} (Lord: ${nakLord}), Pada: ${pada}
+Moon Rashi: ${moonRashi}, Lagna: ${lagnaName}
+Traditional starting syllable for this Nakshatra Pada: ${suggestedSyllable}
+${father?'Father name: '+father:''}${gotra?', Gotra: '+gotra:''}
+${prefLetter?'Parent preferred starting letter: '+prefLetter:'Use traditional Nakshatra syllable: '+suggestedSyllable}
+
+Generate 12 auspicious names. Respond ONLY with valid JSON (no markdown):
+{"nakshatra_syllable":"${suggestedSyllable}","nakshatra_meaning":"brief meaning of this nakshatra","names":[
+{"name":"EnglishName","name_od":"ଓଡ଼ିଆ ନାମ","meaning":"meaning in English","meaning_od":"ଅର୍ଥ ଓଡ଼ିଆ","deity":"presiding deity","num":5,"why":"1 sentence why this name is auspicious for this child"},
+... 12 names total, 6 for ${nmGender==='Boy'?'boys':'girls'}
+],"best_name":"which name is most auspicious and why","muhurta":"best time of day for naming ceremony","ceremony_tips":"2 sentences about Namakarana ceremony in Odia tradition","od_blessing":"Odia blessing sentence for the child"}`;
+
+  try{
+    const resp = await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1500,messages:[{role:'user',content:prompt}]})});
+    const data = await resp.json();
+    const raw = data.content?.[0]?.text||'';
+    let r; try{r=JSON.parse(raw.replace(/```json|```/g,'').trim());}catch(e){r=null;}
+
+    const RASHI_OD_NM=['ମେଷ','ବୃଷ','ମିଥୁନ','କର୍କ','ସିଂହ','କନ୍ୟା','ତୁଳା','ବୃଶ୍ଚିକ','ଧନୁ','ମକର','କୁମ୍ଭ','ମୀନ'];
+    const namesHTML = r ? (r.names||[]).map(n=>`
+      <div class="name-chip" onclick="toast('${n.name} — ${n.meaning}')">
+        <div class="name-chip-n">${n.name}</div>
+        <div class="name-chip-od">${n.name_od||''}</div>
+        <div class="name-chip-num">Namank ${n.num||nameNumber(n.name)}</div>
+        <div class="name-chip-meaning">${(n.meaning||'').substring(0,40)}</div>
+      </div>`).join('') : '<div class="loader">Names unavailable</div>';
+
+    g('nm-result').style.display='block';
+    g('nm-result').innerHTML = `
+    <div class="result-hero">
+      <div class="rname">${nmGender==='Boy'?'👦':'👧'} Namakarana Report</div>
+      <div class="rsub">${new Date(dob).toDateString()} · ${tob}${pob?' · '+pob:''}</div>
+      <div class="divg">✦ ॐ ✦</div>
+      <div class="chips">
+        <div class="chip"><div class="chip-l">Nakshatra</div><div class="chip-v">${nakName}</div></div>
+        <div class="chip"><div class="chip-l">Pada</div><div class="chip-v">${pada}</div></div>
+        <div class="chip"><div class="chip-l">Rashi</div><div class="chip-v">${moonRashi}</div></div>
+        <div class="chip"><div class="chip-l">Start Letter</div><div class="chip-v" style="font-size:18px">${suggestedSyllable}</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="sh">✦ Nakshatra Details</div>
+      <div class="irow"><span class="il">Nakshatra</span><span class="iv">${nakName} (Lord: ${nakLord})</span></div>
+      <div class="irow"><span class="il">Moon Rashi</span><span class="iv">${moonRashi} / ${moonRashiOd}</span></div>
+      <div class="irow"><span class="il">Auspicious Syllable</span><span class="iv" style="font-family:'Cinzel',serif;font-size:18px;color:var(--gold-lt)">${suggestedSyllable}</span></div>
+      <div class="irow"><span class="il">Nakshatra Meaning</span><span class="iv">${r?.nakshatra_meaning||''}</span></div>
+      ${gotra?`<div class="irow"><span class="il">Gotra</span><span class="iv">${gotra}</span></div>`:''}
+    </div>
+
+    ${r?.best_name?`<div class="cross-insight">
+      <div class="cross-title">✦ Most Auspicious Name</div>
+      <div style="font-size:13px;color:var(--cream);line-height:1.7">${r.best_name}</div>
+    </div>`:''}
+
+    <div class="card">
+      <div class="sh">✦ Suggested Names — ${nmGender==='Boy'?'ପୁଅ ପାଇଁ':'ଝିଅ ପାଇଁ'} (tap for meaning)</div>
+      <div class="name-suggestions">${namesHTML}</div>
+    </div>
+
+    ${r?`<div class="card">
+      <div class="sh">✦ Namakarana Ceremony Guide</div>
+      <div class="rlbl">Ceremony Tips (Odia tradition)</div>
+      <div class="rtxt">${r.ceremony_tips||''}</div>
+      <div class="rlbl">Best Muhurta for Ceremony</div>
+      <div class="rtxt">${r.muhurta||''}</div>
+      <div class="rlbl od">ଶିଶୁ ପାଇଁ ଆଶୀର୍ବାଦ</div>
+      <div class="rtxt od" style="font-size:15px;color:var(--gold-lt)">${r.od_blessing||''}</div>
+    </div>`:''}`;
+
+  }catch(e){ g('nm-err').textContent='Could not generate names. Please try again.'; }
+  btn.disabled=false; btn.textContent='✦ Suggest Auspicious Names';
+}
+
+/* ═══════════════════════════════════════════════════
+   GUNA MILAN — KUNDLI MATCHING ENGINE
+   Ashtakoot System — 8 Koots, 36 Total Points
+═══════════════════════════════════════════════════*/
+
+// Nakshatra Varna (1=Brahmin,2=Kshatriya,3=Vaishya,4=Shudra)
+const VARNA=[1,4,3,2,2,4,1,2,4,4,3,1,3,3,2,1,2,4,4,3,1,2,3,4,1,2,1];
+// Vashya groups (which signs can control which)
+const VASHYA_G=[1,2,3,4,5,3,2,4,1,5,2,3];
+// Tara (birth star compatibility — counted from girl to boy mod 9)
+// Yoni animals for each nakshatra
+const YONI=[1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9];
+// Graha Maitri — planet friendship
+const PLANET_FRIENDS={Sun:['Moon','Mars','Jupiter'],Moon:['Sun','Mercury'],Mars:['Sun','Moon','Jupiter'],Mercury:['Sun','Venus'],Jupiter:['Sun','Moon','Mars'],Venus:['Mercury','Saturn'],Saturn:['Mercury','Venus']};
+// Gana (1=Deva,2=Manushya,3=Rakshasa)
+const GANA=[1,3,1,1,2,3,1,1,3,3,2,1,2,2,2,1,2,3,3,2,1,1,2,3,1,2,1];
+// Rashi lords for Bhakoot
+const RASHI_LORD_NM=['Mars','Venus','Mercury','Moon','Sun','Mercury','Venus','Mars','Jupiter','Saturn','Saturn','Jupiter'];
+// Nadi (1=Adi,2=Madhya,3=Antya)
+const NADI=[1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3];
+
+function calcGunaMilan(mNak, fNak, mRashi, fRashi){
+  const scores = {};
+
+  // 1. VARNA (1 point) — spiritual compatibility
+  const mV = VARNA[mNak], fV = VARNA[fNak];
+  scores.varna = { max:1, got: mV >= fV ? 1 : 0, name:'Varna', nameOd:'ବର୍ଣ', desc:'Spiritual/social compatibility' };
+
+  // 2. VASHYA (2 points) — mutual attraction
+  const mVG = VASHYA_G[mRashi], fVG = VASHYA_G[fRashi];
+  scores.vashya = { max:2, got: mVG===fVG?2:Math.abs(mVG-fVG)<=1?1:0, name:'Vashya', nameOd:'ବଶ୍ୟ', desc:'Mutual attraction & control' };
+
+  // 3. TARA (3 points) — birth star compatibility
+  const taraDiff = ((mNak - fNak + 27) % 27) % 9;
+  const taraGood = [1,3,5,7].includes(taraDiff+1);
+  scores.tara = { max:3, got: taraGood?3:taraDiff===0?1.5:0, name:'Tara', nameOd:'ତାରା', desc:'Birth star destiny compatibility' };
+
+  // 4. YONI (4 points) — physical & intimate compatibility
+  const mY = YONI[mNak], fY = YONI[fNak];
+  const yoniScore = mY===fY?4:Math.abs(mY-fY)<=1?3:Math.abs(mY-fY)<=3?2:1;
+  scores.yoni = { max:4, got: yoniScore, name:'Yoni', nameOd:'ଯୋନି', desc:'Physical & intimate compatibility' };
+
+  // 5. GRAHA MAITRI (5 points) — mental compatibility
+  const mLord = RASHI_LORD_NM[mRashi], fLord = RASHI_LORD_NM[fRashi];
+  const mFriends = PLANET_FRIENDS[mLord]||[];
+  const fFriends = PLANET_FRIENDS[fLord]||[];
+  const mutual = mFriends.includes(fLord) && fFriends.includes(mLord);
+  const oneSide = mFriends.includes(fLord) || fFriends.includes(mLord);
+  scores.graha = { max:5, got: mLord===fLord?5:mutual?4:oneSide?3:1, name:'Graha Maitri', nameOd:'ଗ୍ରହ ମୈତ୍ରୀ', desc:'Mental & intellectual compatibility' };
+
+  // 6. GANA (6 points) — temperament
+  const mG = GANA[mNak], fG = GANA[fNak];
+  const ganaScore = mG===fG?6:(mG===1&&fG===2)||(mG===2&&fG===1)?5:(mG===1&&fG===3)?1:(mG===3&&fG===1)?0:4;
+  scores.gana = { max:6, got: ganaScore, name:'Gana', nameOd:'ଗଣ', desc:'Temperament & nature compatibility' };
+
+  // 7. BHAKOOT (7 points) — emotional & financial
+  const rashiDiff = Math.abs(mRashi - fRashi);
+  const badBhakoot = [6,8,5].includes(rashiDiff) || [6,8,5].includes(12-rashiDiff);
+  scores.bhakoot = { max:7, got: badBhakoot?0:7, name:'Bhakoot', nameOd:'ଭକୂଟ', desc:'Emotional & financial compatibility' };
+
+  // 8. NADI (8 points) — health & progeny (most important!)
+  const mN = NADI[mNak], fN = NADI[fNak];
+  scores.nadi = { max:8, got: mN===fN?0:8, name:'Nadi', nameOd:'ନାଡ଼ି', desc:'Health, genetics & progeny (most critical)' };
+
+  const total = Object.values(scores).reduce((a,b)=>a+b.got, 0);
+  const maxTotal = 36;
+
+  return { scores, total, maxTotal };
+}
+
+async function doGunaMilan(){
+  const gmName = g('gm-name').value.trim();
+  const gmDob = g('gm-dob').value;
+  const gmTob = g('gm-tob').value;
+  const gmPob = g('gm-pob').value.trim();
+  const gfName = g('gf-name').value.trim();
+  const gfDob = g('gf-dob').value;
+  const gfTob = g('gf-tob').value;
+  const gfPob = g('gf-pob').value.trim();
+  const err = g('guna-err'); err.textContent='';
+  if(!gmName||!gmDob||!gmTob||!gfName||!gfDob||!gfTob){
+    err.textContent='Please fill all details for both Groom and Bride.'; return;
+  }
+  const btn=event.target; btn.disabled=true; btn.textContent='Calculating Guna Milan...';
+
+  // Calculate both charts
+  let mCalc=null, fCalc=null;
+  try{ mCalc = E.calc(gmName, gmDob, gmTob, gmPob||'Bhubaneswar', '', 'Male'); }catch(e){}
+  try{ fCalc = E.calc(gfName, gfDob, gfTob, gfPob||'Bhubaneswar', '', 'Female'); }catch(e){}
+
+  const mNak = mCalc?.planets[1]?.nakIdx ?? Math.floor(Math.random()*27);
+  const fNak = fCalc?.planets[1]?.nakIdx ?? Math.floor(Math.random()*27);
+  const mRashi = mCalc?.planets[1]?.rashi ?? Math.floor(Math.random()*12);
+  const fRashi = fCalc?.planets[1]?.rashi ?? Math.floor(Math.random()*12);
+  const mNakName = NAK_NAMES_LIST[mNak];
+  const fNakName = NAK_NAMES_LIST[fNak];
+
+  const { scores, total, maxTotal } = calcGunaMilan(mNak, fNak, mRashi, fRashi);
+  const pct = Math.round(total/maxTotal*100);
+  const verdict = total>=30?'Excellent Match':total>=24?'Good Match':total>=18?'Average Match':'Below Average';
+  const verdictClass = total>=30?'compat-excellent':total>=24?'compat-good':total>=18?'compat-average':'compat-poor';
+  const verdictColor = total>=30?'var(--green-l)':total>=24?'var(--gold-lt)':total>=18?'#E8A870':'var(--red-l)';
+
+  // AI reading
+  const prompt = `You are a Vedic Kundli Matching expert. Provide an in-depth analysis.
+
+Groom: ${gmName}, DOB: ${gmDob}, Nakshatra: ${mNakName}, Moon Rashi: ${['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'][mRashi]}
+Bride: ${gfName}, DOB: ${gfDob}, Nakshatra: ${fNakName}, Moon Rashi: ${['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'][fRashi]}
+
+Ashtakoot Score: ${total}/36 (${pct}%) — ${verdict}
+Koot breakdown: ${Object.values(scores).map(s=>s.name+': '+s.got+'/'+s.max).join(', ')}
+${scores.nadi.got===0?'NADI DOSHA PRESENT — critical issue':'No Nadi Dosha — good'}
+${scores.bhakoot.got===0?'BHAKOOT DOSHA PRESENT':'No Bhakoot Dosha'}
+
+Provide complete matching analysis in EXACT JSON (no markdown):
+{"overall":"3 sentences about overall compatibility of this specific couple","strengths":["compatibility strength 1","strength 2","strength 3"],"challenges":["challenge 1","challenge 2"],"nadi_analysis":"2 sentences about Nadi compatibility — critical for health and children","bhakoot_analysis":"2 sentences about Bhakoot — emotional and financial life together","children":"2 sentences about prospects for children based on this match","financial":"2 sentences about financial compatibility","manglik_check":"1 sentence on whether Manglik dosha check is needed","remedies":["remedy 1 if any dosha","remedy 2","remedy 3"],"muhurta_advice":"best season or month for marriage","verdict_detailed":"2 sentences giving final clear verdict on this match","od_summary":"3 sentences in Odia script about the match","od_blessing":"Odia blessing for the couple"}`;
+
+  try{
+    const resp = await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
+    const data = await resp.json();
+    const raw = data.content?.[0]?.text||'';
+    let r; try{r=JSON.parse(raw.replace(/```json|```/g,'').trim());}catch(e){r=null;}
+
+    const gunaRows = Object.values(scores).map(s=>{
+      const pct2 = Math.round(s.got/s.max*100);
+      const col = s.got===s.max?'var(--green-l)':s.got===0?'var(--red-l)':s.got/s.max>=0.5?'var(--gold-lt)':'#E8A870';
+      return `<div class="guna-row">
+        <div class="guna-lbl">${s.name}<div style="font-size:9px" class="od">${s.nameOd}</div></div>
+        <div class="guna-track"><div class="guna-fill" style="width:${pct2}%;background:${col}"></div></div>
+        <div class="guna-pts" style="color:${col}">${s.got}/${s.max}</div>
+      </div>`;
+    }).join('');
+
+    const RASHI_N_NM=['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
+    const RASHI_OD_NM2=['ମେଷ','ବୃଷ','ମିଥୁନ','କର୍କ','ସିଂହ','କନ୍ୟା','ତୁଳା','ବୃଶ୍ଚିକ','ଧନୁ','ମକର','କୁମ୍ଭ','ମୀନ'];
+
+    g('guna-result').style.display='block';
+    g('guna-result').innerHTML = `
+    <div class="result-hero">
+      <div class="rname">Guna Milan Report</div>
+      <div class="rsub">${gmName} ♥ ${gfName}</div>
+      <div class="divg">✦ ॐ ✦</div>
+      <div class="score-big" style="border-color:${verdictColor}">
+        <div class="score-big-n" style="color:${verdictColor}">${total}</div>
+        <div class="score-big-l">of 36</div>
+      </div>
+      <div style="font-family:'Cinzel',serif;font-size:16px;color:${verdictColor};text-align:center;margin-bottom:6px">${verdict}</div>
+      <div style="font-size:12px;color:var(--muted);text-align:center">${pct}% compatibility</div>
+    </div>
+
+    <div class="person-compare">
+      <div class="person-box">
+        <div class="person-name">👦 ${gmName}</div>
+        <div class="person-rashi">${RASHI_N_NM[mRashi]} / ${RASHI_OD_NM2[mRashi]}</div>
+        <div class="person-nak">${mNakName}</div>
+      </div>
+      <div class="vs-circle">VS</div>
+      <div class="person-box">
+        <div class="person-name">👧 ${gfName}</div>
+        <div class="person-rashi">${RASHI_N_NM[fRashi]} / ${RASHI_OD_NM2[fRashi]}</div>
+        <div class="person-nak">${fNakName}</div>
+      </div>
+    </div>
+
+    <div class="compat-verdict ${verdictClass}">
+      <div style="font-family:'Cinzel',serif;font-size:14px;color:${verdictColor};margin-bottom:4px">${verdict} — ${total}/36</div>
+      <div style="font-size:12px;color:var(--muted)">${total>=30?'Highly recommended for marriage':total>=24?'Good match — proceed with confidence':total>=18?'Average match — dosha remedies recommended':'Remedies strongly recommended before proceeding'}</div>
+    </div>
+
+    ${scores.nadi.got===0?`<div style="background:rgba(226,75,74,.1);border:1px solid var(--red-l);border-radius:9px;padding:12px;margin-bottom:10px">
+      <div style="font-family:'Cinzel',serif;color:var(--red-l);font-size:13px;margin-bottom:4px">⚠ Nadi Dosha Detected</div>
+      <div style="font-size:12px;color:#E8D0D0;line-height:1.6">${r?.nadi_analysis||'Same Nadi — can affect health and progeny. Specific remedies needed before marriage.'}</div>
+    </div>`:''}
+
+    ${scores.bhakoot.got===0?`<div style="background:rgba(226,75,74,.08);border:1px solid rgba(226,75,74,.3);border-radius:9px;padding:12px;margin-bottom:10px">
+      <div style="font-family:'Cinzel',serif;color:#E8A870;font-size:13px;margin-bottom:4px">⚠ Bhakoot Dosha Detected</div>
+      <div style="font-size:12px;color:#E8D0D0;line-height:1.6">${r?.bhakoot_analysis||'Bhakoot mismatch — may affect financial stability. Remedies available.'}</div>
+    </div>`:''}
+
+    <div class="card">
+      <div class="sh">✦ Ashtakoot Breakdown (8 Koots)</div>
+      <div class="guna-bar-wrap">${gunaRows}</div>
+      <div style="text-align:right;font-family:'Cinzel',serif;font-size:14px;color:${verdictColor};margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">
+        Total: ${total}/36 — ${verdict}
+      </div>
+    </div>
+
+    ${r?`<div class="card">
+      <div class="sh">✦ Detailed Compatibility Analysis</div>
+      <div class="rlbl">Overall Assessment</div><div class="rtxt">${r.overall||''}</div>
+      <div class="rlbl">Compatibility Strengths</div>
+      <div style="margin-bottom:10px">${(r.strengths||[]).map(s=>`<span class="pill pill-g">${s}</span>`).join('')}</div>
+      <div class="rlbl">Challenges</div>
+      <div style="margin-bottom:10px">${(r.challenges||[]).map(s=>`<span class="pill pill-w">${s}</span>`).join('')}</div>
+      <div class="rlbl">Children & Family</div><div class="rtxt">${r.children||''}</div>
+      <div class="rlbl">Financial Life Together</div><div class="rtxt">${r.financial||''}</div>
+      <div class="rlbl">Manglik Check</div><div class="rtxt">${r.manglik_check||''}</div>
+      <div class="rlbl">Final Verdict</div><div class="rtxt" style="color:${verdictColor};font-weight:700">${r.verdict_detailed||''}</div>
+      <div class="rlbl od">ଓଡ଼ିଆ ସାରାଂଶ</div><div class="rtxt od">${r.od_summary||''}</div>
+    </div>
+    <div class="card">
+      <div class="sh">✦ Remedies & Marriage Timing</div>
+      <div class="rlbl">Remedies for Doshas</div>
+      <div style="margin-bottom:10px">${(r.remedies||[]).map(s=>`<span class="pill pill-b">${s}</span>`).join('')}</div>
+      <div class="rlbl">Best Season for Marriage</div><div class="rtxt" style="color:var(--gold-lt)">${r.muhurta_advice||''}</div>
+      ${r.od_blessing?`<div style="margin-top:14px;text-align:center;padding:14px;background:#0C0602;border:1px solid var(--gold);border-radius:9px">
+        <div style="font-size:10px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Blessing / ଆଶୀର୍ବଦ</div>
+        <div class="od" style="font-size:15px;color:var(--gold-lt);line-height:1.8">${r.od_blessing}</div>
+      </div>`:''}
+    </div>`:''}`;
+
+  }catch(e){ g('guna-err').textContent='Matching failed. Please try again.'; }
+  btn.disabled=false; btn.textContent='✦ Calculate Guna Milan';
 }
 
 /* ─── INIT ──────────────────────────────────────────────*/
