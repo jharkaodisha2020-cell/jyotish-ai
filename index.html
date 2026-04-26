@@ -1525,7 +1525,7 @@ Based on these ACTUAL calculated positions, provide a precise, person-specific r
 Respond ONLY with this exact JSON (no markdown, no extra text):
 {"overview_en":"3 detailed sentences referencing actual Lagna ${ascN} and key planet positions","overview_od":"3 sentences in Odia script","strengths_en":"2 sentences mentioning specific planet dignities like ${p.filter(x=>x.dignity==='Exalted').map(x=>x.name).join(',') || 'strong planets'}","strengths_od":"2 sentences Odia","career_en":"2 sentences referencing 10th house lord ${PLANS[S.plan]?p.find(x=>x.house===10)?.name||'':''}  and career indicators","career_od":"2 sentences Odia","love_en":"2 sentences about 7th house and Venus","love_od":"2 Odia sentences","health_en":"2 sentences about 6th house, ascendant lord health indicators","health_od":"2 Odia sentences","dasha_en":"2 sentences specifically about ${currD.planet} Mahadasha and ${currA.planet} Antardasha combined effect","dasha_od":"2 Odia sentences","remedies":["specific remedy for ${p.find(x=>x.dignity==='Debilitated')?.name||'Sun'} weakness","remedy 2","remedy 3","remedy 4"],"remedies_od":["ଉପଚାର ୧","ଉପଚାର ୨","ଉପଚାର ୩","ଉପଚାର ୪"],"gemstones":["primary gemstone based on Lagna lord ${RASHI_LRD[result.ascendant.rashi]||'Moon'} — benefit","secondary gem — benefit"],"gemstones_od":["ପ୍ରଧାନ ରତ୍ନ — ଲାଭ","ଦ୍ୱିତୀୟ ରତ୍ନ — ଲାଭ"],"luckyColor_en":"color","luckyColor_od":"ରଙ୍ଗ ନାମ ଓଡ଼ିଆ","luckyNumber":7,"luckyDay_en":"day","luckyDay_od":"ଦିନ","mantra":"exact Sanskrit mantra for Lagna lord ${RASHI_LRD[result.ascendant.rashi]||'Moon'}","yogaInsight_en":"2 sentences explaining how the detected yogas affect this specific person's life","yogaInsight_od":"2 Odia sentences"}`;
 
-    fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1400,messages:[{role:'user',content:prompt}]})})
+    fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1400,messages:[{role:'user',content:prompt}]})})
     .then(r=>r.json())
     .then(data=>{
       const raw=data.content.map(c=>c.text||'').join('');
@@ -2319,6 +2319,88 @@ async function downloadPDF(){
   });
   y+=chipH*2+8;
 
+  // ── SECTION: BIRTH CHART (North Indian style using jsPDF shapes) ──
+  checkPage(90);
+  doc.setFillColor(...maroon);doc.rect(margin,y,W-margin*2,7,'F');
+  addText(isOd?'✦ ଜନ୍ମ ଚକ୍ର (ଲଗ୍ନ)':'✦ Birth Chart — North Indian Style (Lagna: '+ascendant.rashiName+')',margin+3,y+5,{size:10,bold:true,color:cream});
+  y+=10;
+
+  // Draw North Indian Kundli chart using PDF shapes
+  const chartX=margin, chartY=y, chartW=80, chartH=80;
+  const cX=chartX+chartW/2, cY=chartY+chartH/2;
+  const cW4=chartW/4, cH4=chartH/4;
+
+  // Background
+  doc.setFillColor(20,10,4);
+  doc.rect(chartX,chartY,chartW,chartH,'F');
+  doc.setDrawColor(...gold);doc.setLineWidth(0.4);
+  doc.rect(chartX,chartY,chartW,chartH,'S');
+
+  // Grid lines
+  doc.setDrawColor(60,40,18);doc.setLineWidth(0.3);
+  doc.line(chartX+cW4,chartY,chartX+cW4,chartY+chartH);
+  doc.line(chartX+cW4*3,chartY,chartX+cW4*3,chartY+chartH);
+  doc.line(chartX,chartY+cH4,chartX+chartW,chartY+cH4);
+  doc.line(chartX,chartY+cH4*3,chartX+chartW,chartY+cH4*3);
+  // Diagonal lines
+  doc.line(chartX+cW4,chartY+cH4,chartX+cW4*2,chartY+cH4*2);
+  doc.line(chartX+cW4*3,chartY+cH4,chartX+cW4*2,chartY+cH4*2);
+  doc.line(chartX+cW4,chartY+cH4*3,chartX+cW4*2,chartY+cH4*2);
+  doc.line(chartX+cW4*3,chartY+cH4*3,chartX+cW4*2,chartY+cH4*2);
+
+  // OM in center
+  doc.setFontSize(8);doc.setTextColor(...gold);
+  doc.text('OM',cX,cY+1.5,{align:'center'});
+
+  // House positions in North Indian layout
+  // [row,col] for 12 houses in 4x4 grid
+  const hPos=[
+    [0,1],[0,0],[1,0],[2,0],   // H1,H2,H3,H4
+    [3,0],[3,1],[3,2],[3,3],   // H5,H6,H7,H8
+    [2,3],[1,3],[0,3],[0,2]    // H9,H10,H11,H12
+  ];
+
+  // Build house contents
+  const houseContents=Array(12).fill('').map(()=>[]);
+  planets.forEach(p=>{
+    const h=p.house-1;
+    if(h>=0&&h<12) houseContents[h].push(p.name.substring(0,3));
+  });
+  // Mark ascendant house
+  houseContents[0].unshift('Asc');
+
+  // Draw house numbers and planet names
+  hPos.forEach(([r,c],i)=>{
+    const hx=chartX+c*cW4, hy=chartY+r*cH4;
+    const hcx=hx+cW4/2, hcy=hy+cH4/2;
+    // House number (small, top-right of cell)
+    doc.setFontSize(5);doc.setTextColor(80,55,25);
+    doc.text(String(i+1),hx+cW4-2,hy+3,{align:'right'});
+    // Planet names
+    const items=houseContents[i];
+    doc.setFontSize(6);
+    items.forEach((item,idx)=>{
+      const col2=item==='Asc'?[212,160,20]:item==='Rahu'||item==='Ket'?[200,80,80]:[220,200,170];
+      doc.setTextColor(...col2);
+      doc.text(item,hcx,hcy-3+(idx*5),{align:'center'});
+    });
+  });
+
+  // Chart legend on the right side
+  const legendX=chartX+chartW+6;
+  let legendY=chartY;
+  doc.setFontSize(7);doc.setTextColor(...gold);
+  doc.text('Planets',legendX,legendY+4);
+  legendY+=7;
+  planets.forEach(p=>{
+    const col2=p.dignity==='Exalted'?[99,192,91]:p.dignity==='Debilitated'?[226,75,74]:[200,180,150];
+    doc.setFontSize(6.5);doc.setTextColor(...col2);
+    doc.text(p.name.substring(0,3)+' '+p.rashiName.substring(0,3)+' H'+p.house,legendX,legendY);
+    legendY+=5;
+  });
+
+  y+=chartH+10;
+
   // ── SECTION: PLANETS ──
   checkPage(60);
   doc.setFillColor(...maroon);doc.rect(margin,y,W-margin*2,7,'F');
@@ -2550,7 +2632,10 @@ INSTRUCTIONS:
     const messages=[...chatHistory.slice(-8)]; // last 8 messages for context
     const resp=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
-      headers:{'Content-Type':'application/json'},
+      headers:{
+        'Content-Type':'application/json',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
       body:JSON.stringify({
         model:'claude-sonnet-4-20250514',
         max_tokens:600,
@@ -2558,6 +2643,10 @@ INSTRUCTIONS:
         messages
       })
     });
+    if(!resp.ok){
+      const errData=await resp.json().catch(()=>({}));
+      throw new Error(errData.error?.message||'API error '+resp.status);
+    }
     const data=await resp.json();
     const reply=data.content?.[0]?.text||'I could not generate a response. Please try again.';
 
@@ -2569,7 +2658,8 @@ INSTRUCTIONS:
     chatHistory.push({role:'assistant',content:reply});
   }catch(e){
     const thinkEl=document.getElementById(thinkId);
-    if(thinkEl)thinkEl.textContent='Connection error. Please try again.';
+    if(thinkEl){thinkEl.classList.remove('thinking');thinkEl.textContent='Sorry, I could not connect right now. Please check your internet and try again.';}
+    console.error('Chat error:',e);
   }
   sendBtn.disabled=false;
   document.getElementById('chat-input').focus();
@@ -2643,7 +2733,7 @@ Provide analysis in this EXACT JSON (no markdown):
 {"overall":"2 sentences about the overall vibration of this specific number","career":"2 sentences about career and business effects","relationships":"2 sentences about relationships and social effects","luck":"2 sentences about luck periods and timing","warning":"1 sentence about any caution for this number","bestUseFor":"4 professions or purposes this number is best suited for","avoid":"2 things to avoid with this number","remedy":"1 specific mantra or remedy to balance the number energy","alternatives":"3 alternative last-3-digit endings that would be more favorable","od_overall":"2 sentences in Odia script about overall vibration"}`;
 
   try{
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,messages:[{role:'user',content:prompt}]})});
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,messages:[{role:'user',content:prompt}]})});
     const data=await resp.json();
     const raw=data.content?.[0]?.text||'';
     let r;try{r=JSON.parse(raw.replace(/```json|```/g,'').trim());}catch(e){r=null;}
@@ -2734,7 +2824,7 @@ Provide a complete name correction report in EXACT JSON (no markdown):
 {"compatibility_score":75,"compatibility_analysis":"2 sentences about how current name aligns with birth numbers","vibration_analysis":"2 sentences about what the current name number ${namank} brings to this person","strengths_of_current":"2 strengths the current name provides","weaknesses":"2 weaknesses or blocks the current name causes","correction_needed":${compatible?'false':'true'},"suggested_names":["Alternate spelling 1 with brief reason","Alternate spelling 2 with brief reason","Alternate spelling 3 with brief reason"],"letters_to_add":"Specific letters or sounds to add to strengthen the name","letters_to_avoid":"Letters or sounds to avoid","ideal_namank":${mulank},"remedy_if_no_change":"Mantra or remedy if person cannot change name","career_impact":"1 sentence on career impact of current name","marriage_impact":"1 sentence on relationship impact","od_summary":"2 sentences in Odia script about the name analysis"}`;
 
   try{
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:900,messages:[{role:'user',content:prompt}]})});
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:900,messages:[{role:'user',content:prompt}]})});
     const data=await resp.json();
     const raw=data.content?.[0]?.text||'';
     let r;try{r=JSON.parse(raw.replace(/```json|```/g,'').trim());}catch(e){r=null;}
@@ -2856,7 +2946,7 @@ Generate a complete chakra report in EXACT JSON (no markdown):
 {"chakras":[{"name":"Muladhara","status":"Open/Partially Open/Blocked","score":75,"effect":"1 sentence about how this chakra is manifesting in life","healing":"1 specific healing practice","od_effect":"1 sentence in Odia"},...for all 7 chakras in order],"most_blocked":"name of most blocked chakra","most_open":"name of most open chakra","overall_energy":"2 sentences about overall chakra energy and kundalini state","meditation":"specific meditation technique for this person","pranayama":"specific breathing exercise","daily_practice":"3 daily practices to balance all chakras","urgent_focus":"which chakra needs most attention and why","od_overall":"2 sentences in Odia about overall chakra state"}`;
 
   try{
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
     const data=await resp.json();
     const raw=data.content?.[0]?.text||'';
     let r;try{r=JSON.parse(raw.replace(/```json|```/g,'').trim());}catch(e){r=null;}
@@ -2968,7 +3058,7 @@ Generate complete health report in EXACT JSON (no markdown):
 {"constitution":"Vata/Pitta/Kapha constitution in 2 sentences","strong_areas":["body system 1","body system 2","body system 3"],"vulnerable_areas":["vulnerable area 1 with planet causing it","vulnerable area 2","vulnerable area 3"],"current_risks":"2 sentences about current health risks based on planetary positions","digestive_health":"1 sentence about digestive constitution","mental_health":"1 sentence about mental/emotional health tendencies","longevity":"1 sentence about general vitality and longevity indicators","diet_advice":"3 specific dietary recommendations for this chart","yoga_asanas":["asana 1 — benefit","asana 2 — benefit","asana 3 — benefit"],"herbs":["Ayurvedic herb 1 — use","herb 2 — use"],"avoid":["food or habit to avoid 1","avoid 2"],"favourable_periods":"1 sentence about health-favourable time periods","cautious_periods":"1 sentence about periods requiring health caution","mantra":"health mantra suitable for this chart","od_summary":"2 sentences in Odia about overall health picture"}`;
 
   try{
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
     const data=await resp.json();
     const raw=data.content?.[0]?.text||'';
     let r;try{r=JSON.parse(raw.replace(/```json|```/g,'').trim());}catch(e){r=null;}
@@ -3129,7 +3219,7 @@ Generate 12 auspicious names. Respond ONLY with valid JSON (no markdown):
 ],"best_name":"which name is most auspicious and why","muhurta":"best time of day for naming ceremony","ceremony_tips":"2 sentences about Namakarana ceremony in Odia tradition","od_blessing":"Odia blessing sentence for the child"}`;
 
   try{
-    const resp = await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1500,messages:[{role:'user',content:prompt}]})});
+    const resp = await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1500,messages:[{role:'user',content:prompt}]})});
     const data = await resp.json();
     const raw = data.content?.[0]?.text||'';
     let r; try{r=JSON.parse(raw.replace(/```json|```/g,'').trim());}catch(e){r=null;}
@@ -3308,7 +3398,7 @@ Provide complete matching analysis in EXACT JSON (no markdown):
 {"overall":"3 sentences about overall compatibility of this specific couple","strengths":["compatibility strength 1","strength 2","strength 3"],"challenges":["challenge 1","challenge 2"],"nadi_analysis":"2 sentences about Nadi compatibility — critical for health and children","bhakoot_analysis":"2 sentences about Bhakoot — emotional and financial life together","children":"2 sentences about prospects for children based on this match","financial":"2 sentences about financial compatibility","manglik_check":"1 sentence on whether Manglik dosha check is needed","remedies":["remedy 1 if any dosha","remedy 2","remedy 3"],"muhurta_advice":"best season or month for marriage","verdict_detailed":"2 sentences giving final clear verdict on this match","od_summary":"3 sentences in Odia script about the match","od_blessing":"Odia blessing for the couple"}`;
 
   try{
-    const resp = await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
+    const resp = await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
     const data = await resp.json();
     const raw = data.content?.[0]?.text||'';
     let r; try{r=JSON.parse(raw.replace(/```json|```/g,'').trim());}catch(e){r=null;}
