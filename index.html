@@ -1624,7 +1624,27 @@ async function doKundli(){
   const pob=g('k-pob').value.trim(),gotra=g('k-gotra').value.trim();
   const err=g('k-err');err.textContent='';
   if(!nm||!dob||!tob||!pob){err.textContent='Please fill all required fields.';return;}
-  if(!S.user.plan){err.textContent='Please get a plan first.';setTimeout(()=>nav('plans'),1500);return;}
+  if(!S.user.plan){
+    err.textContent=APP_LANG==='od'?'ଦୟାକରି ପ୍ରଥମ ଏକ ଯୋଜନା କିଣନ୍ତୁ।':'Please get a plan first.';
+    setTimeout(()=>nav('plans'),1500);return;
+  }
+  // ── Plan-based Kundli limits ──
+  const kundliCount=(S.user.kundlis||[]).length;
+  const planLimits={basic:1,monthly:10,yearly:9999};
+  const myLimit=planLimits[S.user.plan]||1;
+  // Check plan expiry
+  if(S.user.plan_expiry&&new Date(S.user.plan_expiry)<new Date()){
+    err.textContent=APP_LANG==='od'?'ଆପଣଙ୍କ ଯୋଜନା ଶେଷ ହୋଇଗଲା। ଦୟାକରି ନବୀକରଣ କରନ୍ତୁ।':'Your plan has expired. Please renew.';
+    setTimeout(()=>nav('plans'),2000);return;
+  }
+  if(kundliCount>=myLimit){
+    const msgs={
+      basic:APP_LANG==='od'?`ଆପଣଙ୍କ ₹100 ଯୋଜନାରେ ୧ ଟି କୁଣ୍ଡଳୀ ଅନ୍ତର୍ଭୁକ୍ତ। ଅଧିକ ପାଇଁ ମାସିକ ₹99 ଯୋଜନାକୁ ଅପଗ୍ରେଡ଼ କରନ୍ତୁ।`:`Your ₹100 Basic plan includes 1 Kundli. Upgrade to Monthly ₹50 for 10 Kundlis/month.`,
+      monthly:APP_LANG==='od'?`ଏହି ମାସ ୧୦ ଟି କୁଣ୍ଡଳୀ ସୀମା ଶେଷ। ଅସୀମ ପାଇଁ ₹500 ବାର୍ଷିକ ଯୋଜନା ନିଅନ୍ତୁ।`:`You have used all 10 Kundlis this month. Upgrade to Annual ₹500 for unlimited.`,
+    };
+    err.textContent=msgs[S.user.plan]||'Kundli limit reached. Please upgrade your plan.';
+    setTimeout(()=>nav('plans'),2500);return;
+  }
 
   g('k-gen-btn').disabled=true;
   g('load-msg').textContent=APP_LANG==='od'?'ଗ୍ରହ ସ୍ଥିତି ଗଣନା ହେଉଛି...':'Calculating planetary positions...';
@@ -1682,13 +1702,15 @@ Respond ONLY with this exact JSON (no markdown, no extra text):
       catch(e){reading=buildFallbackReading(result);}
       result.reading=reading;
       S.calcResult=result;
+      // Save calcResult to localStorage so it survives refresh
+      try{localStorage.setItem('jyotish_last_result',JSON.stringify({result,nm,dob,tob,pob,gotra,kG}));}catch(e){}
       // Save to Supabase
       const kundliRow={user_id:S.user.id,name:nm,dob,tob,place:pob,gotra,gender:kG,
-        rashi:result.planets[0].rashiName,lagna:result.ascendant.rashiName,result};
+        rashi:result.planets[1].rashiName,lagna:result.ascendant.rashiName,result};
       supaFetch('/rest/v1/kundlis',{method:'POST',body:JSON.stringify(kundliRow)});
       // Also keep local cache for dashboard history
       if(!S.user.kundlis)S.user.kundlis=[];
-      S.user.kundlis.push({nm,date:new Date().toLocaleDateString('en-IN'),ascName:result.ascendant.rashiName,rashiName:result.planets[0].rashiName,result});
+      S.user.kundlis.push({nm,date:new Date().toLocaleDateString('en-IN'),ascName:result.ascendant.rashiName,rashiName:result.planets[1].rashiName,result});
       saveU();
       renderResult(result);nav('result');
       g('k-gen-btn').disabled=false;
@@ -1696,8 +1718,9 @@ Respond ONLY with this exact JSON (no markdown, no extra text):
     .catch(()=>{
       result.reading=buildFallbackReading(result);
       S.calcResult=result;
+      try{localStorage.setItem('jyotish_last_result',JSON.stringify({result,nm,dob,tob,pob,gotra,kG}));}catch(e){}
       if(!S.user.kundlis)S.user.kundlis=[];
-      S.user.kundlis.push({nm,date:new Date().toLocaleDateString('en-IN'),ascName:result.ascendant.rashiName,rashiName:result.planets[0].rashiName,result});
+      S.user.kundlis.push({nm,date:new Date().toLocaleDateString('en-IN'),ascName:result.ascendant.rashiName,rashiName:result.planets[1].rashiName,result});
       saveU();renderResult(result);nav('result');
       g('k-gen-btn').disabled=false;
     });
@@ -1731,8 +1754,8 @@ function buildFallbackReading(r){
     luckyColor_en:['Golden Yellow','White','Red','Green','Yellow','Orange','Blue','Silver'][r.ascendant.rashi%8],
     luckyColor_od:['ସୁନେଲୀ','ଧଳା','ଲାଲ','ସବୁଜ','ହଳଦୀ','କମଳା','ନୀଳ','ରୁପା'][r.ascendant.rashi%8],
     luckyNumber:[1,2,3,4,5,6,7,8,9][r.ascendant.rashi%9],
-    luckyDay_en:['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][r.planets[0].house%7],
-    luckyDay_od:['ରବିବାର','ସୋମବାର','ମଙ୍ଗଳବାର','ବୁଧବାର','ଗୁରୁବାର','ଶୁକ୍ରବାର','ଶନିବାର'][r.planets[0].house%7],
+    luckyDay_en:['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][r.planets[1].house%7],
+    luckyDay_od:['ରବିବାର','ସୋମବାର','ମଙ୍ଗଳବାର','ବୁଧବାର','ଗୁରୁବାର','ଶୁକ୍ରବାର','ଶନିବାର'][r.planets[1].house%7],
     mantra:{Sun:'ॐ ह्रां ह्रीं ह्रौं सः सूर्याय नमः',Moon:'ॐ श्रां श्रीं श्रौं सः चंद्रमसे नमः',Mars:'ॐ क्रां क्रीं क्रौं सः भौमाय नमः',Mercury:'ॐ ब्रां ब्रीं ब्रौं सः बुधाय नमः',Jupiter:'ॐ ग्रां ग्रीं ग्रौं सः गुरवे नमः',Venus:'ॐ द्रां द्रीं द्रौं सः शुक्राय नमः',Saturn:'ॐ प्रां प्रीं प्रौं सः शनैश्चराय नमः',Rahu:'ॐ भ्रां भ्रीं भ्रौं सः राहवे नमः',Ketu:'ॐ स्त्रां स्त्रीं स्त्रौं सः केतवे नमः'}[RASHI_LRD[r.ascendant.rashi]]||'ॐ ग्रां ग्रीं ग्रौं सः गुरवे नमः',
     yogaInsight_en:`The yogas present in this chart create a distinctive life pattern. ${r.yogas[0]?r.yogas[0].name+' is particularly significant for this individual.':'Focus on strengthening the Lagna lord for best results.'}`,
     yogaInsight_od:`ଏହି ଜ୍ୟୋତିଷ ଚଟ୍ଟରେ ବିଶେଷ ଯୋଗ ଅଛି। ${r.yogas[0]?r.yogas[0].name:'ଲଗ୍ନ ଶ୍ରେଷ୍ଠ ଶକ୍ତି ଆଣେ'}।`
@@ -1835,7 +1858,8 @@ function renderResult(res){
     <div class="divg">✦ ॐ ✦</div>
     <div class="chips">
       <div class="chip"><div class="chip-l">Lagna</div><div class="chip-v">${isOd?ascendant.rashiOd||ascendant.rashiName:ascendant.rashiName} ${ascendant.deg}°</div></div>
-      <div class="chip"><div class="chip-l">${isOd?'ରାଶି':'Rashi'}</div><div class="chip-v">${isOd?planets[0].rashiOd:planets[0].rashiName}</div></div>
+      <div class="chip"><div class="chip-l">${isOd?'ଜନ୍ମ ରାଶି':'Moon Rashi'}</div><div class="chip-v">${isOd?planets[1].rashiOd:planets[1].rashiName}</div></div>
+      <div class="chip"><div class="chip-l">${isOd?'ସୂର୍ଯ୍ୟ ରାଶି':'Sun Sign'}</div><div class="chip-v">${isOd?planets[0].rashiOd:planets[0].rashiName}</div></div>
       <div class="chip"><div class="chip-l">${isOd?'ନକ୍ଷତ୍ର':'Nakshatra'}</div><div class="chip-v">${isOd?moonNak.nameOd:moonNak.name}</div></div>
       <div class="chip"><div class="chip-l">Pada</div><div class="chip-v">${moonNak.pada}</div></div>
       <div class="chip"><div class="chip-l">Ayanamsa</div><div class="chip-v">${ayanamsa}°</div></div>
@@ -2006,21 +2030,55 @@ function buildPredict(){
 function buildProfile(){
   const u=S.user;if(!u)return;
   const pl=u.plan?PLANS[u.plan]:null;
+  const isOd=APP_LANG==='od';
+  const kundliCount=(u.kundlis||[]).length;
+  const planLimits={basic:1,monthly:10,yearly:9999};
+  const myLimit=planLimits[u.plan]||0;
+  const isActive=u.plan&&u.plan_expiry&&new Date(u.plan_expiry)>new Date();
+  const daysLeft=u.plan_expiry?Math.max(0,Math.ceil((new Date(u.plan_expiry)-new Date())/86400000)):0;
+  const expiryColor=daysLeft>30?'var(--green-l)':daysLeft>7?'var(--gold-lt)':'var(--red-l)';
+  const planColor=isActive?'var(--green-l)':'var(--red-l)';
+
   g('profile-body').innerHTML=`
-  <div class="card">
-    <div class="sh">✦ Account</div>
-    <div class="irow"><span class="il">Name</span><span class="iv">${u.name}</span></div>
-    <div class="irow"><span class="il">Email</span><span class="iv">${u.email||'—'}</span></div>
-    <div class="irow"><span class="il">Mobile</span><span class="iv">${u.mobile||'—'}</span></div>
-    <div class="irow"><span class="il">Member Since</span><span class="iv">${u.joined||'—'}</span></div>
+  <div class="card gold-border">
+    <div class="sh">✦ ${isOd?'ମୋ ଖାତା':'My Account'}</div>
+    <div class="irow"><span class="il">${isOd?'ନାମ':'Name'}</span><span class="iv">${u.name||'—'}</span></div>
+    <div class="irow"><span class="il">${isOd?'ଇମେଲ':'Email'}</span><span class="iv" style="font-size:12px">${u.email||'—'}</span></div>
+    <div class="irow"><span class="il">${isOd?'ମୋବାଇଲ':'Mobile'}</span><span class="iv">${u.mobile||'—'}</span></div>
+    <div class="irow"><span class="il">${isOd?'ଯୋଗ ଦେଲେ':'Joined'}</span><span class="iv">${u.joined||new Date(u.created_at||Date.now()).toLocaleDateString('en-IN')||'—'}</span></div>
   </div>
+
   <div class="card">
-    <div class="sh">✦ Subscription</div>
-    <div class="irow"><span class="il">Current Plan</span><span class="iv" style="color:var(--gold-lt)">${pl?pl.n:'No Plan'}</span></div>
-    <div class="irow"><span class="il">Started</span><span class="iv">${u.planStart||'—'}</span></div>
-    <div class="irow"><span class="il">Valid Till</span><span class="iv">${u.planExpiry||'—'}</span></div>
-    <div class="irow"><span class="il">Kundlis Generated</span><span class="iv">${(u.kundlis||[]).length}</span></div>
-    <button class="btn" style="margin-top:12px" onclick="nav('plans')">${pl?'Upgrade / Renew ✦':'Get a Plan ✦'}</button>
+    <div class="sh">✦ ${isOd?'ସଦସ୍ୟ ଯୋଜନା':'Subscription Plan'}</div>
+
+    <div style="background:#0C0602;border:1px solid ${isActive?'var(--green-l)':'var(--red-l)'};border-radius:9px;padding:14px;margin-bottom:12px;text-align:center">
+      <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">${isOd?'ସକ୍ରିୟ ଯୋଜନା':'Active Plan'}</div>
+      <div style="font-family:'Cinzel',serif;font-size:18px;color:${planColor};font-weight:700;margin-bottom:4px">${pl?pl.n:(isOd?'କୌଣସି ଯୋଜନା ନାହିଁ':'No Active Plan')}</div>
+      <div style="font-size:11px;color:${planColor}">${isActive?'✓ Active':'✗ Inactive / Expired'}</div>
+    </div>
+
+    <div class="irow">
+      <span class="il">${isOd?'ମୂଲ୍ୟ':'Plan Price'}</span>
+      <span class="iv" style="color:var(--gold-lt)">${pl?'₹'+pl.price+' ('+pl.tag+')':'—'}</span>
+    </div>
+    <div class="irow">
+      <span class="il">${isOd?'ଆରମ୍ଭ ତାରିଖ':'Started On'}</span>
+      <span class="iv">${u.plan_start?new Date(u.plan_start).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}):'—'}</span>
+    </div>
+    <div class="irow">
+      <span class="il">${isOd?'ଶେଷ ତାରିଖ':'Valid Until'}</span>
+      <span class="iv" style="color:${expiryColor}">${u.plan_expiry?new Date(u.plan_expiry).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}):'—'}${isActive?' ('+daysLeft+' days left)':''}</span>
+    </div>
+    <div class="irow">
+      <span class="il">${isOd?'କୁଣ୍ଡଳୀ ଉପଯୋଗ':'Kundli Usage'}</span>
+      <span class="iv" style="color:${kundliCount>=myLimit?'var(--red-l)':'var(--green-l)'}">${kundliCount} / ${myLimit===9999?'∞':myLimit} ${isOd?'ଟି ବ୍ୟବହାର':'used'}</span>
+    </div>
+
+    ${u.plan==='basic'?`<div style="background:rgba(184,135,10,.08);border:1px solid rgba(184,135,10,.2);border-radius:7px;padding:10px;margin-top:10px;font-size:11px;color:var(--muted)">
+      ${isOd?'₹100 ଯୋଜନା — ୧ ଟି ଜୀବନ କାଳ କୁଣ୍ଡଳୀ। ₹50/ମାସ ଯୋଜନାରେ ୧୦ ଟି/ମାସ।':'₹100 Basic — 1 lifetime Kundli. Upgrade to ₹50/month for 10 Kundlis/month.'}
+    </div>`:''}
+
+    <button class="btn" style="margin-top:12px" onclick="nav('plans')">${isActive?(isOd?'ଅପଗ୍ରେଡ଼ / ନবীকରଣ ✦':'Upgrade / Renew ✦'):(isOd?'ଯୋଜନା ନିଅନ୍ତୁ ✦':'Get a Plan ✦')}</button>
   </div>
   <div class="card">
     <div class="sh">✦ ${APP_LANG==='od'?'ଭାଷା ସେଟିଂ':'Language Setting'}</div>
@@ -2475,7 +2533,7 @@ async function downloadPDF(){
   // ── KEY NUMBERS ──
   const chips=[
     {l:isOd?'ଲଗ୍ନ':'Lagna',v:ascendant.rashiName+' '+ascendant.deg+'°'},
-    {l:isOd?'ରାଶି':'Rashi',v:planets[0].rashiName},
+    {l:isOd?'ରାଶି (ଚନ୍ଦ୍ର)':'Rashi (Moon)',v:planets[1].rashiName},
     {l:isOd?'ନକ୍ଷତ୍ର':'Nakshatra',v:moonNak.name},
     {l:'Pada',v:String(moonNak.pada)},
     {l:'Ayanamsa',v:res.ayanamsa+'°'},
@@ -2796,7 +2854,7 @@ async function sendChat(){
 USER KUNDLI DATA (use this for personalized answers):
 Name: ${res.input?.nm}, DOB: ${res.input?.dStr}, TOB: ${res.input?.tStr}, Place: ${res.input?.place}
 Lagna: ${res.ascendant?.rashiName} ${res.ascendant?.deg}°
-Moon Rashi: ${p[1]?.rashiName}, Sun Rashi: ${p[0]?.rashiName}
+Moon Rashi (Janma Rashi): ${p[1]?.rashiName}, Sun Rashi: ${p[0]?.rashiName}
 Nakshatra: ${res.moonNak?.name} Pada ${res.moonNak?.pada} (Lord: ${res.moonNak?.lord})
 Ayanamsa: ${res.ayanamsa}°
 Planets: ${p.map(pl=>pl.name+' in '+pl.rashiName+' H'+pl.house+' ('+pl.dignity+')').join(', ')}
@@ -3724,6 +3782,26 @@ Provide complete matching analysis in EXACT JSON (no markdown):
       }
     }catch(e){console.log('Session restore error',e);}
   }
+  // ── Restore last Kundli result if available ──
+  try{
+    const lastResult=localStorage.getItem('jyotish_last_result');
+    if(lastResult&&S.user){
+      const parsed=JSON.parse(lastResult);
+      if(parsed&&parsed.result){
+        S.calcResult=parsed.result;
+        // Restore dashas date objects (JSON loses Date type)
+        if(S.calcResult.dashas){
+          S.calcResult.dashas=S.calcResult.dashas.map(d=>({...d,start:new Date(d.start||d.startDate),end:new Date(d.end||d.endDate)}));
+          const now=new Date();
+          S.calcResult.currDasha=S.calcResult.dashas.find(d=>d.start<=now&&d.end>now)||S.calcResult.dashas[0];
+          if(S.calcResult.antars){
+            S.calcResult.antars=S.calcResult.antars.map(d=>({...d,start:new Date(d.start||d.startDate),end:new Date(d.end||d.endDate)}));
+            S.calcResult.currAntar=S.calcResult.antars.find(d=>d.start<=now&&d.end>now)||S.calcResult.antars[0];
+          }
+        }
+      }
+    }
+  }catch(e){console.log('Result restore error',e);}
 })();
 </script>
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
