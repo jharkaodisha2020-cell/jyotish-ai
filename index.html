@@ -236,6 +236,21 @@ select option{background:#0C0602}
 .score-ring{width:80px;height:80px;border-radius:50%;border:3px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 10px;position:relative}
 .score-n{font-family:'Cinzel',serif;font-size:22px;font-weight:700;color:var(--gold-lt)}
 .score-l{font-size:8px;color:var(--muted);text-transform:uppercase}
+/* language selection */
+.lang-select-page{position:fixed;inset:0;background:var(--bg);z-index:999;display:flex;align-items:center;justify-content:center;padding:20px}
+.lang-select-box{text-align:center;max-width:320px;width:100%}
+.lang-select-logo{width:70px;height:70px;margin:0 auto 20px;display:flex;align-items:center;justify-content:center}
+.lang-select-title{font-family:'Cinzel',serif;font-size:22px;color:var(--cream);margin-bottom:6px}
+.lang-select-sub{font-size:13px;color:var(--muted);margin-bottom:32px;line-height:1.6}
+.lang-btn-big{display:flex;align-items:center;gap:14px;background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:18px 22px;width:100%;margin-bottom:12px;cursor:pointer;transition:all .2s;text-align:left}
+.lang-btn-big:hover{border-color:var(--gold);transform:translateY(-2px)}
+.lang-btn-big-icon{font-size:28px;flex-shrink:0}
+.lang-btn-big-title{font-family:'Cinzel',serif;font-size:16px;color:var(--cream);font-weight:600}
+.lang-btn-big-sub{font-size:11px;color:var(--muted);margin-top:2px}
+/* global lang toggle in topbar */
+.lang-pill{display:flex;gap:0;border:1px solid var(--border);border-radius:20px;overflow:hidden}
+.lang-pill-btn{padding:4px 10px;font-size:10px;font-weight:700;cursor:pointer;border:none;background:transparent;color:var(--muted);font-family:'Lato',sans-serif;transition:all .15s}
+.lang-pill-btn.on{background:var(--maroon);color:var(--cream)}
 /* namakarana & guna milan */
 .name-card{background:linear-gradient(135deg,#1A0800,var(--surface));border:1px solid var(--gold);border-radius:12px;padding:16px;margin-bottom:10px;text-align:center}
 .name-card-title{font-family:'Cinzel',serif;font-size:15px;color:var(--gold-lt);margin-bottom:4px}
@@ -341,9 +356,15 @@ select option{background:#0C0602}
 <div class="tb">
   <div class="tb-in">
     <div class="logo" onclick="goHome()">✦ Jyotish AI</div>
-    <div class="tb-acts" id="tb-acts">
+    <div style="display:flex;align-items:center;gap:8px">
+      <div class="lang-pill" id="topbar-lang-pill">
+        <button class="lang-pill-btn on" id="tl-en-global" onclick="selectAppLang('en')">EN</button>
+        <button class="lang-pill-btn" id="tl-od-global" onclick="selectAppLang('od')">ଓଡ଼ିଆ</button>
+      </div>
+      <div class="tb-acts" id="tb-acts">
       <button class="nbtn" onclick="nav('login')">Login</button>
       <button class="nbtn hi" onclick="nav('plans')">Get Started</button>
+      </div>
     </div>
   </div>
 </div>
@@ -372,7 +393,7 @@ select option{background:#0C0602}
     <button class="chat-close" onclick="closeChat()">✕</button>
   </div>
   <div class="chat-messages" id="chat-messages">
-    <div class="chat-bubble ai">Namaste 🙏 I am your Jyotish AI guide. Ask me anything about your Kundli, planetary positions, Dasha periods, Yogas, Anka Shastra, or life predictions. I can answer in English or Odia — ଓଡ଼ିଆରେ ମଧ୍ୟ ଉତ୍ତର ଦେଇ ପାରିବି।</div>
+    <div class="chat-bubble ai" id="chat-greeting-bubble">Namaste 🙏 I am your Jyotish AI guide. Ask me anything about your Kundli, planetary positions, Dasha periods, Yogas, or Anka Shastra.</div>
   </div>
   <div class="chat-suggestions" id="chat-suggestions">
     <button class="chat-sug" onclick="chatSuggest(this)">What does my Lagna mean?</button>
@@ -389,6 +410,41 @@ select option{background:#0C0602}
 </div>
 
 <!-- ═══ LANDING ═══ -->
+<!-- ═══ LANGUAGE SELECTION ═══ -->
+<div class="lang-select-page" id="lang-select-page">
+  <div class="lang-select-box">
+    <div class="lang-select-logo">
+      <svg width="70" height="70" viewBox="0 0 70 70">
+        <circle cx="35" cy="35" r="33" fill="#1E110A" stroke="#B8870A" stroke-width="1"/>
+        <circle cx="35" cy="35" r="28" stroke="#B8870A" stroke-width="0.5" stroke-dasharray="4 5" fill="none"/>
+        <polygon points="35,8 38,24 52,24 41,34 45,50 35,41 25,50 29,34 18,24 32,24" fill="#C8520A" opacity="0.2"/>
+        <polygon points="35,8 38,24 52,24 41,34 45,50 35,41 25,50 29,34 18,24 32,24" fill="none" stroke="#B8870A" stroke-width="1"/>
+        <text x="35" y="40" text-anchor="middle" font-size="14" fill="#B8870A" font-family="serif">ॐ</text>
+      </svg>
+    </div>
+    <div class="lang-select-title">Jyotish AI</div>
+    <div class="lang-select-sub">
+      ଆପଣଙ୍କ ଭାଷା ବାଛନ୍ତୁ<br/>
+      Choose your language<br/>
+      <span style="font-size:11px;color:var(--border)">You can change this anytime in Profile</span>
+    </div>
+    <button class="lang-btn-big" onclick="selectAppLang('en')">
+      <div class="lang-btn-big-icon">🇬🇧</div>
+      <div>
+        <div class="lang-btn-big-title">English</div>
+        <div class="lang-btn-big-sub">All predictions & chat in English</div>
+      </div>
+    </button>
+    <button class="lang-btn-big" onclick="selectAppLang('od')">
+      <div class="lang-btn-big-icon">🏛️</div>
+      <div>
+        <div class="lang-btn-big-title">ଓଡ଼ିଆ</div>
+        <div class="lang-btn-big-sub">ସମସ୍ତ ଭବିଷ୍ୟ ଓ ଚାଟ ଓଡ଼ିଆରେ</div>
+      </div>
+    </button>
+  </div>
+</div>
+
 <div class="pg on" id="pg-landing">
   <div class="wrap">
     <div class="hero">
@@ -1225,6 +1281,86 @@ async function supaAuth(path, body, method='POST'){
   return await res.json().catch(()=>({}));
 }
 
+/* ── APP LANGUAGE ── */
+let APP_LANG = localStorage.getItem('jyotish_lang') || null; // null = not chosen yet
+
+function selectAppLang(lang){
+  APP_LANG = lang;
+  localStorage.setItem('jyotish_lang', lang);
+  S.lang = lang;
+  // Hide lang selection screen
+  const lsp = document.getElementById('lang-select-page');
+  if(lsp) lsp.style.display='none';
+  // Update topbar pills
+  const enPill = document.getElementById('tl-en-global');
+  const odPill = document.getElementById('tl-od-global');
+  if(enPill) enPill.classList.toggle('on', lang==='en');
+  if(odPill) odPill.classList.toggle('on', lang==='od');
+  // Update result lang toggle if visible
+  const ltEn = document.getElementById('lt-en');
+  const ltOd = document.getElementById('lt-od');
+  if(ltEn) ltEn.classList.toggle('on', lang==='en');
+  if(ltOd) ltOd.classList.toggle('on', lang==='od');
+  // Update PDF lang
+  pdfLang = lang;
+  const pdflEn = document.getElementById('pdfl-en');
+  const pdflOd = document.getElementById('pdfl-od');
+  if(pdflEn) pdflEn.classList.toggle('on', lang==='en');
+  if(pdflOd) pdflOd.classList.toggle('on', lang==='od');
+  // Update chat suggestions
+  updateChatSuggestions(lang);
+  // Rebuild dashboard if logged in
+  if(S.user){ buildDash(); }
+}
+
+function updateChatSuggestions(lang){
+  const sugsEl = document.getElementById('chat-suggestions');
+  if(!sugsEl) return;
+  const sugs = lang==='od' ? [
+    'ମୋ ଲଗ୍ନ ବିଷୟରେ ଜଣାନ୍ତୁ',
+    "ମୋ ଦଶା ଫଳ କ'ଣ?",
+    'ଶୁଭ ରତ୍ନ କେଉଁଟି?',
+    'ମୋ ବିବାହ କେବେ ହେବ?',
+    "ଅଂଶ ଭାଗ୍ୟ କ'ଣ?",
+    'ମୋ ସ୍ୱାସ୍ଥ୍ୟ ଫଳ ଦିଅ',
+  ] : [
+    'What does my Lagna mean?',
+    'Explain my current Dasha',
+    'Which is my lucky gemstone?',
+    'When will I get married?',
+    'What are my career prospects?',
+    'Tell me my health prediction',
+  ];
+  sugsEl.innerHTML = sugs.map(s=>`<button class="chat-sug" onclick="chatSuggest(this)">${s}</button>`).join('');
+}
+
+// Translation strings
+const T = {
+  en: {
+    namaste: 'Namaste', get_started: 'Get Started', login: 'Login',
+    new_kundli: 'New Kundli', anka: 'Anka Shastra', services: 'Services',
+    predict: 'Predictions', profile: 'Profile', home: 'Home',
+    generate_btn: '✦ Calculate Kundli Accurately',
+    download_pdf: '⬇ Download Kundli Report',
+    chat_greeting: 'Namaste 🙏 I am your Jyotish AI guide. Ask me anything about your Kundli, planetary positions, Dasha periods, Yogas, Anka Shastra, or life predictions.',
+    plan_basic: 'Jataka Reading', plan_monthly: 'Monthly Predictions', plan_yearly: 'Varshik Annual',
+    no_plan: 'No Active Plan', upgrade: 'View Plans', days_left: 'Valid Till',
+    kundlis_generated: 'Kundlis', active_plans: 'Active Plan',
+  },
+  od: {
+    namaste: 'ନମସ୍କାର', get_started: 'ଆରମ୍ଭ କରନ୍ତୁ', login: 'ଲଗ୍ ଇନ',
+    new_kundli: 'ନୂଆ କୁଣ୍ଡଳୀ', anka: 'ଅଙ୍କ ଶାସ୍ତ୍ର', services: 'ସେବା',
+    predict: 'ଭବିଷ୍ୟ', profile: 'ପ୍ରୋଫାଇଲ', home: 'ଘର',
+    generate_btn: '✦ ଜ୍ୟୋତିଷ ଚକ୍ର ତିଆରି କରନ୍ତୁ',
+    download_pdf: '⬇ କୁଣ୍ଡଳୀ ରିପୋର୍ଟ ଡାଉନଲୋଡ',
+    chat_greeting: 'ନମସ୍କାର 🙏 ମୁଁ ଆପଣଙ୍କ ଜ୍ୟୋତିଷ AI ସହାୟକ। ଆପଣଙ୍କ କୁଣ୍ଡଳୀ, ଗ୍ରହ, ଦଶା, ଯୋଗ ବା ଅଙ୍କ ଶାସ୍ତ୍ର ବିଷୟରେ ଯେକୌଣସି ପ୍ରଶ୍ନ କରନ୍ତୁ।',
+    plan_basic: 'ଜାତକ ପଠନ', plan_monthly: 'ମାସିକ ଭବିଷ୍ୟ', plan_yearly: 'ବାର୍ଷିକ ଯୋଜନା',
+    no_plan: 'କୌଣସି ଯୋଜନା ନାହିଁ', upgrade: 'ଯୋଜନା ଦେଖନ୍ତୁ', days_left: 'ଶେଷ ତାରିଖ',
+    kundlis_generated: 'କୁଣ୍ଡଳୀ', active_plans: 'ସକ୍ରିୟ ଯୋଜନା',
+  }
+};
+function t(key){ return (T[APP_LANG||'en']||T.en)[key] || (T.en)[key] || key; }
+
 const S={user:null,token:null,plan:null,kGender:'Male',lang:'en',calcResult:null};
 const PLANS={basic:{n:'Jataka Reading',od:'ଜାତକ ପଠନ',price:100,days:365,tag:'One-Time'},monthly:{n:'Monthly Predictions',od:'ମାସିକ ଭବିଷ୍ୟ',price:50,days:30,tag:'Monthly'},yearly:{n:'Varshik Annual',od:'ବାର୍ଷିକ',price:500,days:365,tag:'Annual'}};
 
@@ -1239,12 +1375,23 @@ function nav(id){
 }
 function goHome(){S.user?dashGo('dash'):nav('landing');}
 function setNav(li){
+  const isOd = APP_LANG==='od';
   document.getElementById('tb-acts').innerHTML=li
     ?`<span style="font-size:11px;color:var(--gold-lt)">✦ ${S.user.name.split(' ')[0]}</span>`
-    :`<button class="nbtn" onclick="nav('login')">Login</button><button class="nbtn hi" onclick="nav('plans')">Get Started</button>`;
+    :`<button class="nbtn" onclick="nav('login')">${isOd?'ଲଗ୍ ଇନ':'Login'}</button><button class="nbtn hi" onclick="nav('plans')">${isOd?'ଆରମ୍ଭ କରନ୍ତୁ':'Get Started'}</button>`;
   document.getElementById('bnav').classList.toggle('on',li);
   const fab=document.getElementById('chat-fab');
   if(fab)fab.classList.toggle('show',li);
+  // Update bottom nav labels
+  const navLabels={
+    dash:{en:'Home',od:'ଘର'}, kundli:{en:'Kundli',od:'କୁଣ୍ଡଳୀ'},
+    anka:{en:'Anka',od:'ଅଙ୍କ'}, services:{en:'Services',od:'ସେବା'},
+    predict:{en:'Predict',od:'ଭବିଷ୍ୟ'}, profile:{en:'Profile',od:'ପ୍ରୋଫାଇଲ'}
+  };
+  Object.entries(navLabels).forEach(([key,lbl])=>{
+    const el=document.getElementById('bn-'+key);
+    if(el){const lb=el.querySelector('.bni-lb');if(lb)lb.textContent=isOd?lbl.od:lbl.en;}
+  });
 }
 let pdfLang='en';
 function setPdfLang(l){
@@ -1480,8 +1627,8 @@ async function doKundli(){
   if(!S.user.plan){err.textContent='Please get a plan first.';setTimeout(()=>nav('plans'),1500);return;}
 
   g('k-gen-btn').disabled=true;
-  g('load-msg').textContent='Calculating planetary positions...';
-  g('load-sub').textContent='Using VSOP87 engine + Lahiri Ayanamsa';
+  g('load-msg').textContent=APP_LANG==='od'?'ଗ୍ରହ ସ୍ଥିତି ଗଣନା ହେଉଛି...':'Calculating planetary positions...';
+  g('load-sub').textContent=APP_LANG==='od'?'VSOP87 ଇଞ୍ଜିନ + ଲାହିରି ଆୟନାଂଶ':'Using VSOP87 engine + Lahiri Ayanamsa';
   nav('loading');
 
   // Run calculation synchronously (fast)
@@ -1504,6 +1651,7 @@ async function doKundli(){
     const ascN=result.ascendant.rashiName;
 
     const prompt=`You are a Jyotish grandmaster with 50 years of Vedic astrology experience. Generate a highly accurate, deeply personal kundli reading.
+LANGUAGE: ${APP_LANG==='od'?'Write ALL text fields in Odia script (ଓଡ଼ିଆ). Use simple conversational Odia that common people understand.':'Write ALL text fields in clear simple English.'}
 
 CALCULATED BIRTH DATA (use these exact values):
 Name: ${nm}, DOB: ${dob}, TOB: ${tob}, POB: ${pob}, Gender: ${kG}
@@ -1559,6 +1707,7 @@ Respond ONLY with this exact JSON (no markdown, no extra text):
 const RASHI_LRD=['Mars','Venus','Mercury','Moon','Sun','Mercury','Venus','Mars','Jupiter','Saturn','Saturn','Jupiter'];
 
 function buildFallbackReading(r){
+  const isOd=APP_LANG==='od';
   const asc=r.ascendant.rashiName,moon=r.moonNak.name,dasha=r.currDasha.planet,antar=r.currAntar.planet;
   const exalted=r.planets.filter(p=>p.dignity==='Exalted').map(p=>p.name);
   const debil=r.planets.filter(p=>p.dignity==='Debilitated').map(p=>p.name);
@@ -1592,6 +1741,7 @@ function buildFallbackReading(r){
 
 /* ─── RENDER RESULT ─────────────────────────────────────*/
 function setLang(l){
+  selectAppLang(l);
   S.lang=l;
   g('lt-en').classList.toggle('on',l==='en');
   g('lt-od').classList.toggle('on',l==='od');
@@ -1599,7 +1749,8 @@ function setLang(l){
 }
 
 function renderResult(res){
-  const isOd=S.lang==='od';
+  const isOd=APP_LANG==='od';
+  S.lang=APP_LANG; // keep in sync
   const r=res.reading;
   if(!r)return;
   const {planets,moonNak,ascendant,dashas,currDasha,antars,currAntar,yogas,ashtak,ayanamsa,input}=res;
@@ -1870,6 +2021,14 @@ function buildProfile(){
     <div class="irow"><span class="il">Valid Till</span><span class="iv">${u.planExpiry||'—'}</span></div>
     <div class="irow"><span class="il">Kundlis Generated</span><span class="iv">${(u.kundlis||[]).length}</span></div>
     <button class="btn" style="margin-top:12px" onclick="nav('plans')">${pl?'Upgrade / Renew ✦':'Get a Plan ✦'}</button>
+  </div>
+  <div class="card">
+    <div class="sh">✦ ${APP_LANG==='od'?'ଭାଷା ସେଟିଂ':'Language Setting'}</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:10px">${APP_LANG==='od'?'ଆପଣଙ୍କ ପସନ୍ଦର ଭାଷା ବଦଳାନ୍ତୁ':'Change your preferred language'}</div>
+    <div style="display:flex;gap:8px">
+      <button class="btn ${APP_LANG==='en'?'':'btn-outline'}" style="padding:9px;font-size:12px;margin:0" onclick="selectAppLang('en')">English ${APP_LANG==='en'?'✓':''}</button>
+      <button class="btn ${APP_LANG==='od'?'':'btn-outline'}" style="padding:9px;font-size:12px;margin:0" onclick="selectAppLang('od')">ଓଡ଼ିଆ ${APP_LANG==='od'?'✓':''}</button>
+    </div>
   </div>
   <div class="card">
     <div class="sh">✦ Calculation Engine Info</div>
@@ -2578,6 +2737,17 @@ const chatHistory=[];
 
 function openChat(){
   document.getElementById('chat-page').classList.add('open');
+  // Update greeting in current language
+  const greet = document.getElementById('chat-greeting-bubble');
+  if(greet) greet.textContent = t('chat_greeting');
+  // Update suggestions
+  updateChatSuggestions(APP_LANG||'en');
+  // Update chat header
+  const chatLbl = document.querySelector('.chat-header-title');
+  if(chatLbl) chatLbl.textContent = APP_LANG==='od' ? 'ଜ୍ୟୋତିଷ AI — ଜ୍ୟୋତିଷ ଚାଟ' : 'Jyotish AI — Astro Chat';
+  // Update placeholder
+  const chatInput = document.getElementById('chat-input');
+  if(chatInput) chatInput.placeholder = APP_LANG==='od' ? 'ଆପଣଙ୍କ ଜ୍ୟୋତିଷ ପ୍ରଶ୍ନ ଲିଖନ୍ତୁ...' : 'Ask your astrology question...';
   document.getElementById('chat-input').focus();
 }
 function closeChat(){
@@ -2635,18 +2805,19 @@ Current Antardasha: ${res.currAntar?.planet}
 Yogas: ${(res.yogas||[]).map(y=>y.name).join(', ')}`;
   }
 
-  const systemPrompt=`You are Jyotish AI — a highly knowledgeable Vedic astrologer and numerologist with deep expertise in Parashari Jyotish, Nakshatra analysis, Dasha interpretation, Yogas, and Anka Shastra. You give warm, accurate, personalized answers.
+  const isOdia = APP_LANG === 'od';
+  const systemPrompt=`You are Jyotish AI — a highly knowledgeable Vedic astrologer and numerologist. You give warm, accurate, personalized answers.
 
 ${kundliContext}
 
+LANGUAGE INSTRUCTION: ${isOdia ? 'ALWAYS respond in simple conversational Odia script (ଓଡ଼ିଆ). Use everyday Odia words that common people in Odisha understand. Mention actual planet names and house numbers in your answer like: ଆପଣଙ୍କ ଦଶମ ଭାବରେ ଗୁରୁ ଅଛନ୍ତି — କ୍ୟାରିୟର ଭଲ।' : 'ALWAYS respond in clear simple English. Mention actual planet names and house numbers like: Your Jupiter is in the 10th house — career is strong.'}
+
 INSTRUCTIONS:
-- Answer in the same language the user writes in (English or Odia)
-- If the user writes in Odia, respond fully in Odia script
-- Reference the user's actual planetary positions when relevant
-- Be specific, not generic — mention actual planets, signs, houses
-- Keep answers concise but complete (3-6 sentences ideal)
-- End with one practical remedy or insight when appropriate
-- Never say you cannot predict — give your best Jyotish analysis`;
+- Always mention the specific planet, house, or nakshatra from the user chart
+- Be specific not generic — use their actual chart data
+- Keep answers concise (3-5 sentences)
+- End with one practical remedy
+- Never say you cannot predict`;
 
   try{
     const messages=[...chatHistory.slice(-8)]; // last 8 messages for context
@@ -3222,7 +3393,7 @@ async function doNamakarana(){
   const nakLord = NAK_LORDS_NM[nakIdx];
   const suggestedSyllable = prefLetter || NAK_SYLLABLES[nakIdx][pada-1];
 
-  const prompt = `You are a Vedic Jyotish naming expert specializing in Odia Hindu tradition and Namakarana (naming ceremony).
+  const prompt = `You are a Vedic Jyotish naming expert specializing in Odia Hindu tradition and Namakarana. LANGUAGE: ${APP_LANG==='od'?'Write ALL explanations and descriptions in simple Odia script. Name meanings in Odia.':'Write explanations in clear English.'}
 
 Child details:
 DOB: ${dob}, TOB: ${tob}, Place: ${pob||'Odisha'}, Gender: ${nmGender}
@@ -3404,7 +3575,7 @@ async function doGunaMilan(){
   const verdictColor = total>=30?'var(--green-l)':total>=24?'var(--gold-lt)':total>=18?'#E8A870':'var(--red-l)';
 
   // AI reading
-  const prompt = `You are a Vedic Kundli Matching expert. Provide an in-depth analysis.
+  const prompt = `You are a Vedic Kundli Matching expert. LANGUAGE: ${APP_LANG==='od'?'Write ALL text responses in simple conversational Odia script.':'Write in clear English.'} Provide an in-depth analysis.
 
 Groom: ${gmName}, DOB: ${gmDob}, Nakshatra: ${mNakName}, Moon Rashi: ${['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'][mRashi]}
 Bride: ${gfName}, DOB: ${gfDob}, Nakshatra: ${fNakName}, Moon Rashi: ${['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'][fRashi]}
@@ -3517,20 +3688,39 @@ Provide complete matching analysis in EXACT JSON (no markdown):
 
 /* ─── INIT ──────────────────────────────────────────────*/
 (async function init(){
-  // Restore session from localStorage
+  // ── Check language preference ──
+  const savedLang = localStorage.getItem('jyotish_lang');
+  if(savedLang){
+    APP_LANG = savedLang;
+    S.lang = savedLang;
+    const lsp = document.getElementById('lang-select-page');
+    if(lsp) lsp.style.display='none';
+    // Update topbar pills
+    const enPill = document.getElementById('tl-en-global');
+    const odPill = document.getElementById('tl-od-global');
+    if(enPill) enPill.classList.toggle('on', savedLang==='en');
+    if(odPill) odPill.classList.toggle('on', savedLang==='od');
+    pdfLang = savedLang;
+  } else {
+    // Show language selection — hide main app
+    const lsp = document.getElementById('lang-select-page');
+    if(lsp) lsp.style.display='flex';
+  }
+
+  // ── Restore session from localStorage ──
   const saved=localStorage.getItem('jyotish_session');
   if(saved){
     try{
       const sess=JSON.parse(saved);
       if(sess.token&&sess.user){
         S.token=sess.token;S.user=sess.user;
-        // Refresh user data from Supabase
         const {data,ok}=await supaFetch('/rest/v1/users?id=eq.'+sess.user.id+'&select=*');
         if(ok&&Array.isArray(data)&&data.length){
           S.user={...data[0],email:sess.user.email};
           saveU();
         }
         setNav(true);
+        if(savedLang){ buildDash(); }
       }
     }catch(e){console.log('Session restore error',e);}
   }
