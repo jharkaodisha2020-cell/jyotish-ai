@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Jyotish AI — Admin Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --gold:#B8870A;--gold-lt:#D4A017;--maroon:#5C1515;--saffron:#C8520A;
+  --bg:#0E0804;--surface:#1A0E06;--card:#22130A;--border:#3A2510;
+  --cream:#F0E4CC;--muted:#8A7055;--ink:#F0E4CC;
+  --green:#63C05B;--red:#E24B4A;--blue:#4A9FD4;--orange:#D4802A;
+}
+html,body{min-height:100%;font-family:'Lato',sans-serif;background:var(--bg);color:var(--ink)}
+/* LOGIN */
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.login-box{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:32px;width:100%;max-width:380px}
+.login-title{font-family:'Cinzel',serif;font-size:20px;color:var(--cream);text-align:center;margin-bottom:4px}
+.login-sub{font-size:12px;color:var(--muted);text-align:center;margin-bottom:24px}
+.fg{margin-bottom:14px}
+label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px}
+input,select{background:#0C0602;border:1px solid var(--border);border-radius:7px;padding:10px 13px;font-size:14px;color:var(--cream);font-family:'Lato',sans-serif;width:100%;outline:none}
+input:focus,select:focus{border-color:var(--gold)}
+.btn{width:100%;background:var(--maroon);color:var(--cream);border:none;border-radius:9px;padding:12px;font-family:'Cinzel',serif;font-size:14px;letter-spacing:1px;cursor:pointer;transition:background .2s}
+.btn:hover{background:var(--saffron)}
+.err{color:var(--red);font-size:12px;text-align:center;margin-top:8px}
+/* DASHBOARD LAYOUT */
+.dash-wrap{display:none;min-height:100vh}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:220px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:100}
+.sidebar-logo{padding:20px 18px 16px;border-bottom:1px solid var(--border)}
+.sidebar-logo h1{font-family:'Cinzel',serif;font-size:15px;color:var(--gold-lt)}
+.sidebar-logo p{font-size:10px;color:var(--muted);margin-top:2px}
+.nav-items{flex:1;padding:12px 0;overflow-y:auto}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 18px;cursor:pointer;transition:all .15s;border:none;background:transparent;width:100%;text-align:left;color:var(--muted);font-family:'Lato',sans-serif;font-size:13px}
+.nav-item:hover{background:rgba(184,135,10,.08);color:var(--cream)}
+.nav-item.active{background:rgba(184,135,10,.12);color:var(--gold-lt);border-right:2px solid var(--gold)}
+.nav-icon{font-size:16px;width:20px;text-align:center}
+.sidebar-bottom{padding:16px 18px;border-top:1px solid var(--border)}
+.admin-badge{background:rgba(92,21,21,.4);border:1px solid var(--maroon);border-radius:6px;padding:8px 12px;font-size:11px;color:var(--cream)}
+.main-content{margin-left:220px;padding:24px;min-height:100vh}
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.page-title{font-family:'Cinzel',serif;font-size:20px;color:var(--cream)}
+.page-sub{font-size:12px;color:var(--muted);margin-top:2px}
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:24px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:18px;position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent,var(--gold))}
+.stat-num{font-family:'Cinzel',serif;font-size:28px;font-weight:700;color:var(--cream);margin-bottom:2px}
+.stat-lbl{font-size:11px;color:var(--muted)}
+.stat-change{font-size:10px;margin-top:6px;font-weight:700}
+.stat-change.up{color:var(--green)}
+.stat-change.dn{color:var(--red)}
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:18px;margin-bottom:16px}
+.card-title{font-family:'Cinzel',serif;font-size:14px;color:var(--gold-lt);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+/* TABLE */
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{color:var(--muted);font-weight:700;text-transform:uppercase;font-size:9px;letter-spacing:.5px;padding:8px 10px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:10px 10px;border-bottom:.5px solid rgba(58,37,16,.5);vertical-align:middle}
+tr:last-child td{border:none}
+tr:hover td{background:rgba(184,135,10,.04)}
+/* BADGES */
+.badge{display:inline-block;border-radius:4px;padding:2px 8px;font-size:10px;font-weight:700}
+.badge-basic{background:rgba(184,135,10,.15);color:var(--gold-lt);border:1px solid rgba(184,135,10,.3)}
+.badge-monthly{background:rgba(200,82,10,.15);color:#E8884A;border:1px solid rgba(200,82,10,.3)}
+.badge-yearly{background:rgba(99,192,91,.15);color:var(--green);border:1px solid rgba(99,192,91,.3)}
+.badge-none{background:rgba(138,112,85,.15);color:var(--muted);border:1px solid rgba(138,112,85,.3)}
+.badge-success{background:rgba(99,192,91,.15);color:var(--green);border:1px solid rgba(99,192,91,.3)}
+.badge-pending{background:rgba(212,128,42,.15);color:var(--orange);border:1px solid rgba(212,128,42,.3)}
+.badge-failed{background:rgba(226,75,74,.15);color:var(--red);border:1px solid rgba(226,75,74,.3)}
+/* SEARCH/FILTER */
+.filter-row{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.search-input{background:#0C0602;border:1px solid var(--border);border-radius:7px;padding:8px 13px;font-size:13px;color:var(--cream);font-family:'Lato',sans-serif;outline:none;flex:1;min-width:200px}
+.search-input:focus{border-color:var(--gold)}
+.filter-select{background:#0C0602;border:1px solid var(--border);border-radius:7px;padding:8px 12px;font-size:12px;color:var(--cream);font-family:'Lato',sans-serif;outline:none;cursor:pointer}
+.filter-select:focus{border-color:var(--gold)}
+/* ACTION BUTTONS */
+.act-btn{background:transparent;border:1px solid var(--border);border-radius:5px;padding:3px 8px;font-size:10px;color:var(--muted);cursor:pointer;font-family:'Lato',sans-serif;transition:all .15s;margin-right:4px}
+.act-btn:hover{border-color:var(--gold);color:var(--gold-lt)}
+.act-btn.danger:hover{border-color:var(--red);color:var(--red)}
+/* REVENUE CHART */
+.chart-area{height:160px;display:flex;align-items:flex-end;gap:6px;padding:10px 0 0}
+.chart-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.chart-bar{width:100%;background:var(--gold);border-radius:3px 3px 0 0;transition:height .4s;min-height:2px;cursor:pointer;position:relative}
+.chart-bar:hover{background:var(--gold-lt)}
+.chart-bar-val{font-size:8px;color:var(--muted);text-align:center}
+.chart-bar-lbl{font-size:8px;color:var(--muted);text-align:center;margin-top:4px}
+/* PLAN SPLIT */
+.plan-split{display:flex;gap:12px;flex-wrap:wrap}
+.plan-item{flex:1;min-width:100px;background:#0C0602;border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center}
+.plan-item-n{font-family:'Cinzel',serif;font-size:22px;font-weight:700;color:var(--cream)}
+.plan-item-l{font-size:10px;color:var(--muted);margin-top:2px}
+.plan-item-rev{font-size:11px;color:var(--gold);margin-top:4px;font-weight:700}
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:500;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px;width:100%;max-width:480px;max-height:80vh;overflow-y:auto}
+.modal-title{font-family:'Cinzel',serif;font-size:16px;color:var(--gold-lt);margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
+.modal-close{background:transparent;border:none;color:var(--muted);font-size:18px;cursor:pointer}
+.modal-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:.5px solid var(--border);font-size:13px}
+.modal-row:last-child{border:none}
+.modal-lbl{color:var(--muted)}
+.modal-val{color:var(--cream);font-weight:700;text-align:right;max-width:60%}
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--card);border:1px solid var(--gold);border-radius:9px;padding:10px 20px;font-size:13px;color:var(--cream);z-index:999;animation:tin .25s ease}
+@keyframes tin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+/* LOADING */
+.loader{display:flex;align-items:center;justify-content:center;padding:40px;color:var(--muted);font-size:13px;gap:10px}
+.spin{width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:sp .8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+/* SECTION PAGES */
+.section{display:none}.section.active{display:block}
+/* REFRESH BTN */
+.refresh-btn{background:transparent;border:1px solid var(--border);border-radius:7px;padding:6px 14px;font-size:11px;color:var(--muted);cursor:pointer;font-family:'Lato',sans-serif;transition:all .15s}
+.refresh-btn:hover{border-color:var(--gold);color:var(--gold-lt)}
+/* responsive */
+@media(max-width:768px){
+  .sidebar{width:60px}
+  .sidebar-logo p,.nav-item span,.admin-badge{display:none}
+  .sidebar-logo h1{font-size:10px}
+  .main-content{margin-left:60px;padding:16px}
+  .nav-item{justify-content:center;padding:10px}
+  .nav-icon{width:auto}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ ADMIN LOGIN ═══ -->
+<div class="login-wrap" id="admin-login">
+  <div class="login-box">
+    <div style="text-align:center;margin-bottom:20px">
+      <svg width="50" height="50" viewBox="0 0 50 50" style="margin:0 auto 10px;display:block">
+        <circle cx="25" cy="25" r="23" fill="#1A0E06" stroke="#B8870A" stroke-width="1"/>
+        <text x="25" y="30" text-anchor="middle" font-size="16" fill="#B8870A" font-family="serif">ॐ</text>
+      </svg>
+      <div class="login-title">Admin Dashboard</div>
+      <div class="login-sub">Jyotish AI · Secure Access</div>
+    </div>
+    <div class="fg"><label>Admin Email</label><input id="adm-email" type="email" placeholder="admin@jyotishai.com"/></div>
+    <div class="fg"><label>Admin Password</label><input id="adm-pass" type="password" placeholder="Enter password"/></div>
+    <button class="btn" onclick="adminLogin()">Access Dashboard ✦</button>
+    <div id="adm-err" class="err"></div>
+    <div style="font-size:10px;color:var(--muted);text-align:center;margin-top:14px">🔒 Secured · Admin access only</div>
+  </div>
+</div>
+
+<!-- ═══ DASHBOARD ═══ -->
+<div class="dash-wrap" id="dash-wrap">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <h1>✦ Jyotish AI</h1>
+      <p>Admin Panel</p>
+    </div>
+    <div class="nav-items">
+      <button class="nav-item active" onclick="showSection('overview')"><span class="nav-icon">📊</span><span>Overview</span></button>
+      <button class="nav-item" onclick="showSection('users')"><span class="nav-icon">👥</span><span>Users</span></button>
+      <button class="nav-item" onclick="showSection('payments')"><span class="nav-icon">💳</span><span>Payments</span></button>
+      <button class="nav-item" onclick="showSection('kundlis')"><span class="nav-icon">☀</span><span>Kundlis</span></button>
+      <button class="nav-item" onclick="showSection('revenue')"><span class="nav-icon">📈</span><span>Revenue</span></button>
+    </div>
+    <div class="sidebar-bottom">
+      <div class="admin-badge">
+        <div style="font-size:10px;color:var(--gold);font-weight:700">ADMIN</div>
+        <div id="adm-name" style="font-size:11px;color:var(--muted);margin-top:2px"></div>
+      </div>
+      <button onclick="adminLogout()" style="background:transparent;border:none;color:var(--muted);font-size:11px;cursor:pointer;margin-top:10px;width:100%;text-align:left;font-family:'Lato',sans-serif;">⇠ Logout</button>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main-content">
+
+    <!-- ── OVERVIEW ── -->
+    <div class="section active" id="sec-overview">
+      <div class="page-header">
+        <div><div class="page-title">Overview</div><div class="page-sub" id="overview-date"></div></div>
+        <button class="refresh-btn" onclick="loadAll()">↻ Refresh</button>
+      </div>
+      <div class="stats-grid" id="stats-grid">
+        <div class="loader"><div class="spin"></div>Loading...</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="card">
+          <div class="card-title">Plan Distribution</div>
+          <div class="plan-split" id="plan-split"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Recent Activity</div>
+          <div id="recent-activity"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Revenue — Last 7 Days</div>
+        <div class="chart-area" id="revenue-chart"></div>
+        <div style="display:flex;gap:0;margin-top:4px" id="chart-labels"></div>
+      </div>
+    </div>
+
+    <!-- ── USERS ── -->
+    <div class="section" id="sec-users">
+      <div class="page-header">
+        <div><div class="page-title">Users</div><div class="page-sub" id="users-count-lbl">All registered users</div></div>
+        <button class="refresh-btn" onclick="loadUsers()">↻ Refresh</button>
+      </div>
+      <div class="card">
+        <div class="filter-row">
+          <input class="search-input" id="user-search" placeholder="Search by name or email..." oninput="filterUsers()"/>
+          <select class="filter-select" id="user-plan-filter" onchange="filterUsers()">
+            <option value="">All Plans</option>
+            <option value="basic">Basic ₹100</option>
+            <option value="monthly">Monthly ₹50</option>
+            <option value="yearly">Yearly ₹500</option>
+            <option value="none">No Plan</option>
+          </select>
+          <select class="filter-select" id="user-sort" onchange="filterUsers()">
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+            <option value="plan">By Plan</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th>#</th><th>Name</th><th>Email</th><th>Plan</th>
+              <th>Joined</th><th>Expiry</th><th>Kundlis</th><th>Actions</th>
+            </tr></thead>
+            <tbody id="users-tbody"><tr><td colspan="8"><div class="loader"><div class="spin"></div>Loading users...</div></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PAYMENTS ── -->
+    <div class="section" id="sec-payments">
+      <div class="page-header">
+        <div><div class="page-title">Payments</div><div class="page-sub" id="pay-count-lbl">All transactions</div></div>
+        <button class="refresh-btn" onclick="loadPayments()">↻ Refresh</button>
+      </div>
+      <div class="card">
+        <div class="filter-row">
+          <input class="search-input" id="pay-search" placeholder="Search by Razorpay ID or email..." oninput="filterPayments()"/>
+          <select class="filter-select" id="pay-status-filter" onchange="filterPayments()">
+            <option value="">All Status</option>
+            <option value="success">Success</option>
+            <option value="pending">Pending</option>
+            <option value="failed">Failed</option>
+          </select>
+          <select class="filter-select" id="pay-plan-filter" onchange="filterPayments()">
+            <option value="">All Plans</option>
+            <option value="basic">Basic ₹100</option>
+            <option value="monthly">Monthly ₹50</option>
+            <option value="yearly">Yearly ₹500</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th>#</th><th>User</th><th>Plan</th><th>Amount</th>
+              <th>Razorpay ID</th><th>Status</th><th>Date</th><th>Actions</th>
+            </tr></thead>
+            <tbody id="pay-tbody"><tr><td colspan="8"><div class="loader"><div class="spin"></div>Loading payments...</div></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── KUNDLIS ── -->
+    <div class="section" id="sec-kundlis">
+      <div class="page-header">
+        <div><div class="page-title">Kundlis</div><div class="page-sub" id="kundli-count-lbl">All generated charts</div></div>
+        <button class="refresh-btn" onclick="loadKundlis()">↻ Refresh</button>
+      </div>
+      <div class="card">
+        <div class="filter-row">
+          <input class="search-input" id="kundli-search" placeholder="Search by name or place..." oninput="filterKundlis()"/>
+          <select class="filter-select" id="kundli-sort" onchange="filterKundlis()">
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th>#</th><th>Name</th><th>DOB</th><th>Place</th>
+              <th>Lagna</th><th>Rashi</th><th>Generated</th><th>Actions</th>
+            </tr></thead>
+            <tbody id="kundli-tbody"><tr><td colspan="8"><div class="loader"><div class="spin"></div>Loading kundlis...</div></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── REVENUE ── -->
+    <div class="section" id="sec-revenue">
+      <div class="page-header">
+        <div><div class="page-title">Revenue Analytics</div><div class="page-sub">Financial overview</div></div>
+        <button class="refresh-btn" onclick="loadRevenue()">↻ Refresh</button>
+      </div>
+      <div class="stats-grid" id="rev-stats"></div>
+      <div class="card">
+        <div class="card-title">Revenue by Plan</div>
+        <div class="plan-split" id="rev-plan-split"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">All-time Revenue Breakdown</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Plan</th><th>Subscribers</th><th>Revenue</th><th>Avg per User</th><th>% Share</th></tr></thead>
+            <tbody id="rev-table"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── USER DETAIL MODAL ── -->
+<div class="modal-overlay" id="user-modal">
+  <div class="modal">
+    <div class="modal-title">
+      <span id="modal-user-name">User Details</span>
+      <button class="modal-close" onclick="closeModal('user-modal')">✕</button>
+    </div>
+    <div id="modal-user-content"></div>
+    <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap">
+      <button class="act-btn" style="border-color:var(--gold);color:var(--gold-lt)" onclick="extendPlan()">+ Extend Plan 30 days</button>
+      <button class="act-btn danger" onclick="revokePlan()">Revoke Plan</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── PAYMENT DETAIL MODAL ── -->
+<div class="modal-overlay" id="pay-modal">
+  <div class="modal">
+    <div class="modal-title">
+      <span>Payment Details</span>
+      <button class="modal-close" onclick="closeModal('pay-modal')">✕</button>
+    </div>
+    <div id="modal-pay-content"></div>
+  </div>
+</div>
+
+<script>
+/* ── CONFIG ── */
+const SUPA_URL='https://dnpbuwldcxmrptildfpq.supabase.co';
+const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRucGJ1d2xkY3htcnB0aWxkZnBxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUyMDE3MDcsImV4cCI6MjA5MDc3NzcwN30.VGAGQTn-aXjAMtJCMcsI4svJRz89wkcAZuzE2gtgMM8';
+
+// ── ADMIN CREDENTIALS (change these!) ──
+const ADMIN_EMAIL='admin@jyotishai.com';
+const ADMIN_PASS='JyotishAdmin@2025';
+
+/* ── STATE ── */
+let adminToken=null;
+let allUsers=[],allPayments=[],allKundlis=[];
+let selectedUser=null;
+
+/* ── HELPERS ── */
+function g(id){return document.getElementById(id);}
+function toast(msg){
+  document.querySelectorAll('.toast').forEach(t=>t.remove());
+  const t=document.createElement('div');t.className='toast';t.textContent=msg;
+  document.body.appendChild(t);setTimeout(()=>t.remove(),3000);
+}
+function fmt(date){return date?new Date(date).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}):'—';}
+function fmtAmt(n){return'₹'+(n||0).toLocaleString('en-IN');}
+
+async function supaFetch(path,opts={}){
+  const res=await fetch(SUPA_URL+path,{
+    headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+(adminToken||SUPA_KEY),
+      'Content-Type':'application/json','Prefer':'return=representation',...(opts.headers||{})},
+    ...opts
+  });
+  if(res.status===204)return{data:[],ok:true};
+  const data=await res.json().catch(()=>[]);
+  return{data,ok:res.ok,status:res.status};
+}
+
+async function supaAuth(path,body){
+  const res=await fetch(SUPA_URL+'/auth/v1'+path,{
+    method:'POST',
+    headers:{'apikey':SUPA_KEY,'Content-Type':'application/json'},
+    body:JSON.stringify(body)
+  });
+  return await res.json();
+}
+
+/* ── ADMIN LOGIN ── */
+async function adminLogin(){
+  const email=g('adm-email').value.trim();
+  const pass=g('adm-pass').value;
+  const err=g('adm-err');err.textContent='';
+  if(!email||!pass){err.textContent='Please enter email and password.';return;}
+  // Simple admin credential check
+  if(email!==ADMIN_EMAIL||pass!==ADMIN_PASS){
+    err.textContent='Invalid admin credentials.';return;
+  }
+  // Login via Supabase to get token for DB access
+  const res=await supaAuth('/token?grant_type=password',{email,password:pass});
+  if(res.access_token){
+    adminToken=res.access_token;
+  }
+  // Proceed regardless (we use anon key as fallback)
+  g('adm-name').textContent=email.split('@')[0];
+  g('admin-login').style.display='none';
+  g('dash-wrap').style.display='block';
+  g('overview-date').textContent=new Date().toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  loadAll();
+}
+
+function adminLogout(){
+  adminToken=null;
+  g('admin-login').style.display='flex';
+  g('dash-wrap').style.display='none';
+}
+
+/* ── SECTION NAV ── */
+function showSection(id){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  g('sec-'+id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  if(id==='users')loadUsers();
+  else if(id==='payments')loadPayments();
+  else if(id==='kundlis')loadKundlis();
+  else if(id==='revenue')loadRevenue();
+}
+
+/* ── LOAD ALL ── */
+async function loadAll(){
+  await Promise.all([loadStats(),loadUsers(),loadPayments(),loadKundlis()]);
+}
+
+/* ── STATS ── */
+async function loadStats(){
+  const [{data:users},{data:payments},{data:kundlis}]=await Promise.all([
+    supaFetch('/rest/v1/users?select=*'),
+    supaFetch('/rest/v1/payments?select=*'),
+    supaFetch('/rest/v1/kundlis?select=id,created_at'),
+  ]);
+
+  const U=Array.isArray(users)?users:[];
+  const P=Array.isArray(payments)?payments:[];
+  const K=Array.isArray(kundlis)?kundlis:[];
+
+  const totalRev=P.filter(p=>p.status==='success').reduce((a,b)=>a+(b.amount||0),0);
+  const today=new Date().toDateString();
+  const todayRev=P.filter(p=>p.status==='success'&&new Date(p.created_at).toDateString()===today).reduce((a,b)=>a+(b.amount||0),0);
+  const thisMonth=new Date().getMonth();
+  const monthRev=P.filter(p=>p.status==='success'&&new Date(p.created_at).getMonth()===thisMonth).reduce((a,b)=>a+(b.amount||0),0);
+  const activeUsers=U.filter(u=>u.plan&&u.plan_expiry&&new Date(u.plan_expiry)>new Date()).length;
+
+  g('stats-grid').innerHTML=`
+    <div class="stat-card" style="--accent:var(--gold)">
+      <div class="stat-num">${U.length}</div>
+      <div class="stat-lbl">Total Users</div>
+      <div class="stat-change up">↑ ${U.filter(u=>new Date(u.created_at).toDateString()===today).length} today</div>
+    </div>
+    <div class="stat-card" style="--accent:var(--green)">
+      <div class="stat-num">${activeUsers}</div>
+      <div class="stat-lbl">Active Plans</div>
+      <div class="stat-change up">of ${U.length} total users</div>
+    </div>
+    <div class="stat-card" style="--accent:var(--saffron)">
+      <div class="stat-num">${fmtAmt(totalRev)}</div>
+      <div class="stat-lbl">Total Revenue</div>
+      <div class="stat-change up">↑ ${fmtAmt(todayRev)} today</div>
+    </div>
+    <div class="stat-card" style="--accent:var(--blue)">
+      <div class="stat-num">${fmtAmt(monthRev)}</div>
+      <div class="stat-lbl">This Month</div>
+      <div class="stat-change up">${P.filter(p=>p.status==='success'&&new Date(p.created_at).getMonth()===thisMonth).length} transactions</div>
+    </div>
+    <div class="stat-card" style="--accent:var(--maroon)">
+      <div class="stat-num">${K.length}</div>
+      <div class="stat-lbl">Kundlis Generated</div>
+      <div class="stat-change up">↑ ${K.filter(k=>new Date(k.created_at).toDateString()===today).length} today</div>
+    </div>
+    <div class="stat-card" style="--accent:var(--orange)">
+      <div class="stat-num">${P.filter(p=>p.status==='success').length}</div>
+      <div class="stat-lbl">Successful Payments</div>
+      <div class="stat-change ${P.filter(p=>p.status==='failed').length>0?'dn':'up'}">${P.filter(p=>p.status==='failed').length} failed</div>
+    </div>`;
+
+  // Plan split
+  const plans={basic:0,monthly:0,yearly:0,none:0};
+  U.forEach(u=>plans[u.plan||'none']++);
+  const planAmounts={basic:100,monthly:50,yearly:500};
+  g('plan-split').innerHTML=`
+    <div class="plan-item"><div class="plan-item-n">${plans.basic}</div><div class="plan-item-l">Basic ₹100</div><div class="plan-item-rev">${fmtAmt(plans.basic*100)}</div></div>
+    <div class="plan-item"><div class="plan-item-n">${plans.monthly}</div><div class="plan-item-l">Monthly ₹50</div><div class="plan-item-rev">${fmtAmt(plans.monthly*50)}</div></div>
+    <div class="plan-item"><div class="plan-item-n">${plans.yearly}</div><div class="plan-item-l">Annual ₹500</div><div class="plan-item-rev">${fmtAmt(plans.yearly*500)}</div></div>
+    <div class="plan-item"><div class="plan-item-n">${plans.none}</div><div class="plan-item-l">No Plan</div><div class="plan-item-rev">—</div></div>`;
+
+  // Recent activity
+  const recent=[...P].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).slice(0,5);
+  g('recent-activity').innerHTML=recent.length?recent.map(p=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:.5px solid var(--border);font-size:12px">
+      <div>
+        <div style="color:var(--cream);font-weight:700">${(p.plan||'').toUpperCase()} — ${fmtAmt(p.amount)}</div>
+        <div style="color:var(--muted);font-size:10px">${fmt(p.created_at)}</div>
+      </div>
+      <span class="badge badge-${p.status||'pending'}">${p.status||'pending'}</span>
+    </div>`).join(''):'<div style="color:var(--muted);font-size:12px;text-align:center;padding:20px">No recent payments</div>';
+
+  // Revenue chart (last 7 days)
+  const days=[];
+  for(let i=6;i>=0;i--){
+    const d=new Date();d.setDate(d.getDate()-i);
+    const ds=d.toDateString();
+    const rev=P.filter(p=>p.status==='success'&&new Date(p.created_at).toDateString()===ds).reduce((a,b)=>a+(b.amount||0),0);
+    days.push({label:d.toLocaleDateString('en-IN',{weekday:'short'}),rev});
+  }
+  const maxRev=Math.max(...days.map(d=>d.rev),1);
+  const chartHTML=days.map(d=>{
+    const pct=Math.max((d.rev/maxRev)*100,2);
+    return`<div class="chart-bar-wrap">
+      <div class="chart-bar-val">${d.rev>0?fmtAmt(d.rev):''}</div>
+      <div class="chart-bar" style="height:${pct}%" title="${fmtAmt(d.rev)}"></div>
+      <div class="chart-bar-lbl">${d.label}</div>
+    </div>`;
+  }).join('');
+  g('revenue-chart').innerHTML=chartHTML;
+}
+
+/* ── USERS ── */
+async function loadUsers(){
+  const {data}=await supaFetch('/rest/v1/users?select=*&order=created_at.desc');
+  allUsers=Array.isArray(data)?data:[];
+  g('users-count-lbl').textContent=allUsers.length+' total users';
+  renderUsers(allUsers);
+}
+
+function renderUsers(users){
+  if(!users.length){
+    g('users-tbody').innerHTML='<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:30px">No users found</td></tr>';
+    return;
+  }
+  g('users-tbody').innerHTML=users.map((u,i)=>`
+    <tr>
+      <td style="color:var(--muted)">${i+1}</td>
+      <td style="color:var(--cream);font-weight:700">${u.name||'—'}</td>
+      <td style="color:var(--muted)">${u.email||'—'}</td>
+      <td><span class="badge badge-${u.plan||'none'}">${u.plan?u.plan.toUpperCase():'NO PLAN'}</span></td>
+      <td style="color:var(--muted)">${fmt(u.created_at)}</td>
+      <td style="color:${u.plan_expiry&&new Date(u.plan_expiry)>new Date()?'var(--green)':'var(--red)'}">${fmt(u.plan_expiry)}</td>
+      <td style="color:var(--muted);text-align:center">—</td>
+      <td>
+        <button class="act-btn" onclick="viewUser('${u.id}')">View</button>
+        <button class="act-btn" onclick="extendUserPlan('${u.id}','${u.name||''}')">+30d</button>
+        <button class="act-btn danger" onclick="revokeUserPlan('${u.id}','${u.name||''}')">Revoke</button>
+      </td>
+    </tr>`).join('');
+}
+
+function filterUsers(){
+  const q=(g('user-search').value||'').toLowerCase();
+  const plan=g('user-plan-filter').value;
+  const sort=g('user-sort').value;
+  let filtered=allUsers.filter(u=>{
+    const matchQ=!q||(u.name||'').toLowerCase().includes(q)||(u.email||'').toLowerCase().includes(q);
+    const matchPlan=!plan||(plan==='none'?!u.plan:u.plan===plan);
+    return matchQ&&matchPlan;
+  });
+  if(sort==='oldest')filtered.sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));
+  else if(sort==='plan')filtered.sort((a,b)=>(a.plan||'').localeCompare(b.plan||''));
+  renderUsers(filtered);
+}
+
+function viewUser(id){
+  const u=allUsers.find(x=>x.id===id);
+  if(!u)return;
+  selectedUser=u;
+  g('modal-user-name').textContent=u.name||'User';
+  const isActive=u.plan&&u.plan_expiry&&new Date(u.plan_expiry)>new Date();
+  g('modal-user-content').innerHTML=`
+    <div class="modal-row"><span class="modal-lbl">Name</span><span class="modal-val">${u.name||'—'}</span></div>
+    <div class="modal-row"><span class="modal-lbl">Email</span><span class="modal-val">${u.email||'—'}</span></div>
+    <div class="modal-row"><span class="modal-lbl">Mobile</span><span class="modal-val">${u.mobile||'—'}</span></div>
+    <div class="modal-row"><span class="modal-lbl">Plan</span><span class="modal-val"><span class="badge badge-${u.plan||'none'}">${u.plan?u.plan.toUpperCase():'NO PLAN'}</span></span></div>
+    <div class="modal-row"><span class="modal-lbl">Plan Start</span><span class="modal-val">${fmt(u.plan_start)}</span></div>
+    <div class="modal-row"><span class="modal-lbl">Plan Expiry</span><span class="modal-val" style="color:${isActive?'var(--green)':'var(--red)'}">${fmt(u.plan_expiry)} ${isActive?'(Active)':'(Expired)'}</span></div>
+    <div class="modal-row"><span class="modal-lbl">Joined</span><span class="modal-val">${fmt(u.created_at)}</span></div>
+    <div class="modal-row"><span class="modal-lbl">User ID</span><span class="modal-val" style="font-size:10px">${u.id}</span></div>`;
+  g('user-modal').classList.add('open');
+}
+
+async function extendUserPlan(id,name){
+  if(!confirm(`Extend plan by 30 days for ${name}?`))return;
+  const u=allUsers.find(x=>x.id===id);
+  if(!u)return;
+  const base=u.plan_expiry&&new Date(u.plan_expiry)>new Date()?new Date(u.plan_expiry):new Date();
+  base.setDate(base.getDate()+30);
+  await supaFetch('/rest/v1/users?id=eq.'+id,{method:'PATCH',body:JSON.stringify({plan_expiry:base.toISOString()})});
+  toast('Plan extended 30 days for '+name+' ✦');
+  loadUsers();closeModal('user-modal');
+}
+async function extendPlan(){if(selectedUser)extendUserPlan(selectedUser.id,selectedUser.name);}
+
+async function revokeUserPlan(id,name){
+  if(!confirm(`Revoke plan for ${name}? This will remove their access.`))return;
+  await supaFetch('/rest/v1/users?id=eq.'+id,{method:'PATCH',body:JSON.stringify({plan:null,plan_expiry:null,plan_start:null})});
+  toast('Plan revoked for '+name);
+  loadUsers();closeModal('user-modal');
+}
+async function revokePlan(){if(selectedUser)revokeUserPlan(selectedUser.id,selectedUser.name);}
+
+/* ── PAYMENTS ── */
+async function loadPayments(){
+  const {data}=await supaFetch('/rest/v1/payments?select=*,users(name,email)&order=created_at.desc');
+  allPayments=Array.isArray(data)?data:[];
+  g('pay-count-lbl').textContent=allPayments.length+' total transactions';
+  renderPayments(allPayments);
+}
+
+function renderPayments(payments){
+  if(!payments.length){
+    g('pay-tbody').innerHTML='<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:30px">No payments found</td></tr>';
+    return;
+  }
+  g('pay-tbody').innerHTML=payments.map((p,i)=>`
+    <tr>
+      <td style="color:var(--muted)">${i+1}</td>
+      <td><div style="color:var(--cream);font-weight:700">${p.users?.name||'—'}</div><div style="color:var(--muted);font-size:10px">${p.users?.email||'—'}</div></td>
+      <td><span class="badge badge-${p.plan||'none'}">${(p.plan||'—').toUpperCase()}</span></td>
+      <td style="color:var(--gold-lt);font-weight:700">${fmtAmt(p.amount)}</td>
+      <td style="color:var(--muted);font-size:10px">${p.razorpay_payment_id||'—'}</td>
+      <td><span class="badge badge-${p.status||'pending'}">${(p.status||'pending').toUpperCase()}</span></td>
+      <td style="color:var(--muted)">${fmt(p.created_at)}</td>
+      <td><button class="act-btn" onclick="viewPayment(${i})">Details</button></td>
+    </tr>`).join('');
+}
+
+function filterPayments(){
+  const q=(g('pay-search').value||'').toLowerCase();
+  const status=g('pay-status-filter').value;
+  const plan=g('pay-plan-filter').value;
+  const filtered=allPayments.filter(p=>{
+    const matchQ=!q||(p.razorpay_payment_id||'').toLowerCase().includes(q)||(p.users?.email||'').toLowerCase().includes(q)||(p.users?.name||'').toLowerCase().includes(q);
+    const matchS=!status||p.status===status;
+    const matchP=!plan||p.plan===plan;
+    return matchQ&&matchS&&matchP;
+  });
+  renderPayments(filtered);
+}
+
+function viewPayment(i){
+  const p=allPayments[i];
+  if(!p)return;
+  g('modal-pay-content').innerHTML=`
+    <div class="modal-row"><span class="modal-lbl">User</span><span class="modal-val">${p.users?.name||'—'}</span></div>
+    <div class="modal-row"><span class="modal-lbl">Email</span><span class="modal-val">${p.users?.email||'—'}</span></div>
+    <div class="modal-row"><span class="modal-lbl">Plan</span><span class="modal-val"><span class="badge badge-${p.plan}">${(p.plan||'').toUpperCase()}</span></span></div>
+    <div class="modal-row"><span class="modal-lbl">Amount</span><span class="modal-val" style="color:var(--gold-lt);font-size:18px;font-family:'Cinzel',serif">${fmtAmt(p.amount)}</span></div>
+    <div class="modal-row"><span class="modal-lbl">Status</span><span class="modal-val"><span class="badge badge-${p.status}">${(p.status||'').toUpperCase()}</span></span></div>
+    <div class="modal-row"><span class="modal-lbl">Razorpay ID</span><span class="modal-val" style="font-size:10px">${p.razorpay_payment_id||'—'}</span></div>
+    <div class="modal-row"><span class="modal-lbl">Date & Time</span><span class="modal-val">${p.created_at?new Date(p.created_at).toLocaleString('en-IN'):'—'}</span></div>
+    <div class="modal-row"><span class="modal-lbl">Payment ID</span><span class="modal-val" style="font-size:10px">${p.id}</span></div>`;
+  g('pay-modal').classList.add('open');
+}
+
+/* ── KUNDLIS ── */
+async function loadKundlis(){
+  const {data}=await supaFetch('/rest/v1/kundlis?select=id,name,dob,tob,place,rashi,lagna,created_at,users(name,email)&order=created_at.desc');
+  allKundlis=Array.isArray(data)?data:[];
+  g('kundli-count-lbl').textContent=allKundlis.length+' kundlis generated';
+  renderKundlis(allKundlis);
+}
+
+function renderKundlis(kundlis){
+  if(!kundlis.length){
+    g('kundli-tbody').innerHTML='<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:30px">No kundlis found</td></tr>';
+    return;
+  }
+  g('kundli-tbody').innerHTML=kundlis.map((k,i)=>`
+    <tr>
+      <td style="color:var(--muted)">${i+1}</td>
+      <td><div style="color:var(--cream);font-weight:700">${k.name||'—'}</div><div style="color:var(--muted);font-size:10px">${k.users?.name||'—'}</div></td>
+      <td style="color:var(--muted)">${k.dob||'—'}</td>
+      <td style="color:var(--muted)">${k.place||'—'}</td>
+      <td><span class="badge badge-basic">${k.lagna||'—'}</span></td>
+      <td style="color:var(--muted)">${k.rashi||'—'}</td>
+      <td style="color:var(--muted)">${fmt(k.created_at)}</td>
+      <td><button class="act-btn" onclick="toast('Full Kundli view coming soon')">View</button></td>
+    </tr>`).join('');
+}
+
+function filterKundlis(){
+  const q=(g('kundli-search').value||'').toLowerCase();
+  const sort=g('kundli-sort').value;
+  let filtered=allKundlis.filter(k=>!q||(k.name||'').toLowerCase().includes(q)||(k.place||'').toLowerCase().includes(q));
+  if(sort==='oldest')filtered.sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));
+  renderKundlis(filtered);
+}
+
+/* ── REVENUE ── */
+async function loadRevenue(){
+  const {data:payments}=await supaFetch('/rest/v1/payments?select=*&status=eq.success');
+  const {data:users}=await supaFetch('/rest/v1/users?select=plan,created_at');
+  const P=Array.isArray(payments)?payments.filter(p=>p.status==='success'):[];
+  const U=Array.isArray(users)?users:[];
+
+  const totalRev=P.reduce((a,b)=>a+(b.amount||0),0);
+  const thisMonth=new Date().getMonth();
+  const lastMonth=thisMonth===0?11:thisMonth-1;
+  const monthRev=P.filter(p=>new Date(p.created_at).getMonth()===thisMonth).reduce((a,b)=>a+(b.amount||0),0);
+  const lastMonthRev=P.filter(p=>new Date(p.created_at).getMonth()===lastMonth).reduce((a,b)=>a+(b.amount||0),0);
+  const avgOrder=P.length?Math.round(totalRev/P.length):0;
+
+  g('rev-stats').innerHTML=`
+    <div class="stat-card" style="--accent:var(--gold)">
+      <div class="stat-num">${fmtAmt(totalRev)}</div>
+      <div class="stat-lbl">Total Revenue</div>
+      <div class="stat-change up">${P.length} successful payments</div>
+    </div>
+    <div class="stat-card" style="--accent:var(--green)">
+      <div class="stat-num">${fmtAmt(monthRev)}</div>
+      <div class="stat-lbl">This Month</div>
+      <div class="stat-change ${monthRev>=lastMonthRev?'up':'dn'}">${monthRev>=lastMonthRev?'↑':'↓'} vs last month ${fmtAmt(lastMonthRev)}</div>
+    </div>
+    <div class="stat-card" style="--accent:var(--blue)">
+      <div class="stat-num">${fmtAmt(avgOrder)}</div>
+      <div class="stat-lbl">Avg Order Value</div>
+      <div class="stat-change up">per transaction</div>
+    </div>
+    <div class="stat-card" style="--accent:var(--orange)">
+      <div class="stat-num">${U.filter(u=>u.plan).length}</div>
+      <div class="stat-lbl">Paying Users</div>
+      <div class="stat-change up">${U.length?Math.round(U.filter(u=>u.plan).length/U.length*100):0}% conversion</div>
+    </div>`;
+
+  // Plan breakdown
+  const planData=[
+    {plan:'basic',label:'Basic ₹100',price:100},
+    {plan:'monthly',label:'Monthly ₹50',price:50},
+    {plan:'yearly',label:'Annual ₹500',price:500},
+  ];
+  const breakdown=planData.map(pl=>{
+    const subs=P.filter(p=>p.plan===pl.plan);
+    const rev=subs.reduce((a,b)=>a+(b.amount||0),0);
+    return{...pl,subs:subs.length,rev};
+  });
+  const totalR=breakdown.reduce((a,b)=>a+b.rev,0)||1;
+
+  g('rev-plan-split').innerHTML=breakdown.map(b=>`
+    <div class="plan-item">
+      <div class="plan-item-n">${b.subs}</div>
+      <div class="plan-item-l">${b.label}</div>
+      <div class="plan-item-rev">${fmtAmt(b.rev)}</div>
+    </div>`).join('');
+
+  g('rev-table').innerHTML=breakdown.map(b=>`
+    <tr>
+      <td><span class="badge badge-${b.plan}">${b.label}</span></td>
+      <td style="color:var(--cream)">${b.subs}</td>
+      <td style="color:var(--gold-lt);font-weight:700">${fmtAmt(b.rev)}</td>
+      <td style="color:var(--muted)">${fmtAmt(b.subs?Math.round(b.rev/b.subs):0)}</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="flex:1;background:#0C0602;border-radius:3px;height:6px;border:1px solid var(--border)">
+            <div style="width:${Math.round(b.rev/totalR*100)}%;height:100%;background:var(--gold);border-radius:3px"></div>
+          </div>
+          <span style="color:var(--muted);font-size:10px;width:28px">${Math.round(b.rev/totalR*100)}%</span>
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+/* ── MODAL ── */
+function closeModal(id){g(id).classList.remove('open');}
+window.onclick=e=>{
+  if(e.target.classList.contains('modal-overlay'))e.target.classList.remove('open');
+};
+</script>
+</body>
+</html>
