@@ -2268,7 +2268,17 @@ async function downloadPDF(){
   let y=margin;
 
   // ── Fonts & helpers ──
-  const gold=[184,135,10],maroon=[92,21,21],cream=[245,237,216],dark=[26,14,6];
+  // Premium Off-White & Navy palette
+  const gold=[170,130,10],       // deep gold accent
+        maroon=[26,40,100],      // deep navy (replaces maroon)
+        cream=[248,244,238],     // off-white background
+        dark=[26,36,70],         // dark navy header
+        ink=[26,18,8],           // dark ink for body text
+        navy=[26,40,100],        // navy for section headers
+        navyLight=[60,80,140],   // lighter navy for sub-elements
+        borderCol=[200,208,220], // blue-grey border
+        bgCard=[240,238,232],    // slightly warm card background
+        accent=[184,135,10];     // gold accent
   const addText=(text,x,yPos,opts={})=>{
     doc.setFontSize(opts.size||11);
     doc.setTextColor(...(opts.color||[40,25,10]));
@@ -2284,21 +2294,24 @@ async function downloadPDF(){
     if(y+needed>285){doc.addPage();y=margin;}
   };
 
-  // ── PAGE 1: HEADER ──
-  doc.setFillColor(...dark);doc.rect(0,0,W,40,'F');
-  doc.setFillColor(...gold);doc.rect(0,38,W,1,'F');
-  addText(isOd?'ଜ୍ୟୋତିଷ AI — ଜନ୍ମ କୁଣ୍ଡଳୀ':'Jyotish AI — Birth Kundli Report',W/2,16,{size:18,bold:true,color:[245,237,216],align:'center'});
-  addText('ॐ तत् सत्',W/2,26,{size:11,color:gold,align:'center'});
-  addText(isOd?'ଲାହିରି ଆୟନାଂଶ · VSOP87 ଗ୍ରହ ଇଞ୍ଜିନ':'Lahiri Ayanamsa · VSOP87 Planetary Engine · '+new Date().toLocaleDateString('en-IN'),W/2,33,{size:8,color:[160,130,80],align:'center'});
-  y=52;
+  // ── PAGE 1: HEADER (navy + off-white) ──
+  doc.setFillColor(...dark);doc.rect(0,0,W,42,'F');
+  doc.setFillColor(...gold);doc.rect(0,40,W,1.5,'F');
+  doc.setFillColor(...navyLight);doc.rect(0,41.5,W,0.5,'F');
+  addText(isOd?'ଜ୍ୟୋତିଷ AI — ଜନ୍ମ କୁଣ୍ଡଳୀ':'Jyotish AI — Birth Kundli Report',W/2,16,{size:18,bold:true,color:[248,244,238],align:'center'});
+  addText('ॐ तत् सत्',W/2,27,{size:11,color:gold,align:'center'});
+  addText(isOd?'ଲାହିରି ଆୟନାଂଶ · VSOP87 ଗ୍ରହ ଇଞ୍ଜିନ':'Lahiri Ayanamsa · VSOP87 Planetary Engine · '+new Date().toLocaleDateString('en-IN'),W/2,35,{size:8,color:[180,195,220],align:'center'});
+  y=54;
 
   // ── PERSONAL INFO BOX ──
-  doc.setFillColor(30,17,10);doc.roundedRect(margin,y,W-margin*2,32,3,3,'F');
-  doc.setDrawColor(...gold);doc.setLineWidth(0.5);doc.roundedRect(margin,y,W-margin*2,32,3,3,'S');
-  addText(input.nm,W/2,y+9,{size:15,bold:true,color:cream,align:'center'});
-  addText(`${new Date(input.dStr).toDateString()} · ${input.tStr} IST · ${input.place}`,W/2,y+17,{size:9,color:[160,130,80],align:'center'});
-  if(input.gotra)addText((isOd?'ଗୋତ୍ର: ':'Gotra: ')+input.gotra,W/2,y+24,{size:9,color:[160,130,80],align:'center'});
-  y+=38;
+  doc.setFillColor(...bgCard);doc.roundedRect(margin,y,W-margin*2,34,3,3,'F');
+  doc.setDrawColor(...borderCol);doc.setLineWidth(0.5);doc.roundedRect(margin,y,W-margin*2,34,3,3,'S');
+  doc.setFillColor(...navy);doc.roundedRect(margin,y,W-margin*2,10,3,3,'F');
+  doc.rect(margin,y+7,W-margin*2,3,'F');
+  addText(input.nm,W/2,y+8,{size:14,bold:true,color:[248,244,238],align:'center'});
+  addText(new Date(input.dStr).toDateString()+' · '+input.tStr+' IST · '+input.place,W/2,y+18,{size:9,color:[80,60,30],align:'center'});
+  if(input.gotra)addText((isOd?'ଗୋତ୍ର: ':'Gotra: ')+input.gotra,W/2,y+25,{size:9,color:[100,80,40],align:'center'});
+  y+=40;
 
   // ── KEY NUMBERS ──
   const chips=[
@@ -2312,16 +2325,18 @@ async function downloadPDF(){
   const chipW=(W-margin*2)/3,chipH=14;
   chips.forEach((c,i)=>{
     const cx=margin+(i%3)*chipW,cy=y+Math.floor(i/3)*chipH;
-    doc.setFillColor(40,22,8);doc.rect(cx,cy,chipW,chipH,'F');
-    doc.setDrawColor(60,40,18);doc.rect(cx,cy,chipW,chipH,'S');
-    addText(c.l,cx+chipW/2,cy+4.5,{size:7,color:[138,112,85],align:'center'});
-    addText(c.v,cx+chipW/2,cy+10,{size:9,bold:true,color:cream,align:'center'});
+    doc.setFillColor(...bgCard);doc.rect(cx,cy,chipW,chipH,'F');
+    doc.setDrawColor(...borderCol);doc.rect(cx,cy,chipW,chipH,'S');
+    // navy top bar per chip
+    doc.setFillColor(...navyLight);doc.rect(cx,cy,chipW,3,'F');
+    addText(c.l,cx+chipW/2,cy+7,{size:6.5,color:navyLight,align:'center'});
+    addText(c.v,cx+chipW/2,cy+13,{size:9,bold:true,color:ink,align:'center'});
   });
   y+=chipH*2+8;
 
   // ── SECTION: BIRTH CHART (North Indian style using jsPDF shapes) ──
   checkPage(90);
-  doc.setFillColor(...maroon);doc.rect(margin,y,W-margin*2,7,'F');
+  doc.setFillColor(...navy);doc.rect(margin,y,W-margin*2,7,'F');
   addText(isOd?'✦ ଜନ୍ମ ଚକ୍ର (ଲଗ୍ନ)':'✦ Birth Chart — North Indian Style (Lagna: '+ascendant.rashiName+')',margin+3,y+5,{size:10,bold:true,color:cream});
   y+=10;
 
@@ -2330,14 +2345,14 @@ async function downloadPDF(){
   const cX=chartX+chartW/2, cY=chartY+chartH/2;
   const cW4=chartW/4, cH4=chartH/4;
 
-  // Background
-  doc.setFillColor(20,10,4);
+  // Background — off-white
+  doc.setFillColor(...bgCard);
   doc.rect(chartX,chartY,chartW,chartH,'F');
-  doc.setDrawColor(...gold);doc.setLineWidth(0.4);
+  doc.setDrawColor(...navy);doc.setLineWidth(0.6);
   doc.rect(chartX,chartY,chartW,chartH,'S');
 
   // Grid lines
-  doc.setDrawColor(60,40,18);doc.setLineWidth(0.3);
+  doc.setDrawColor(...borderCol);doc.setLineWidth(0.4);
   doc.line(chartX+cW4,chartY,chartX+cW4,chartY+chartH);
   doc.line(chartX+cW4*3,chartY,chartX+cW4*3,chartY+chartH);
   doc.line(chartX,chartY+cH4,chartX+chartW,chartY+cH4);
@@ -2348,8 +2363,9 @@ async function downloadPDF(){
   doc.line(chartX+cW4,chartY+cH4*3,chartX+cW4*2,chartY+cH4*2);
   doc.line(chartX+cW4*3,chartY+cH4*3,chartX+cW4*2,chartY+cH4*2);
 
-  // OM in center
-  doc.setFontSize(8);doc.setTextColor(...gold);
+  // OM in center — navy circle
+  doc.setFillColor(...navy);doc.circle(cX,cY,4,'F');
+  doc.setFontSize(7);doc.setTextColor(...cream);
   doc.text('OM',cX,cY+1.5,{align:'center'});
 
   // House positions in North Indian layout
@@ -2374,13 +2390,13 @@ async function downloadPDF(){
     const hx=chartX+c*cW4, hy=chartY+r*cH4;
     const hcx=hx+cW4/2, hcy=hy+cH4/2;
     // House number (small, top-right of cell)
-    doc.setFontSize(5);doc.setTextColor(80,55,25);
+    doc.setFontSize(5);doc.setTextColor(...borderCol);
     doc.text(String(i+1),hx+cW4-2,hy+3,{align:'right'});
     // Planet names
     const items=houseContents[i];
-    doc.setFontSize(6);
+    doc.setFontSize(6.5);
     items.forEach((item,idx)=>{
-      const col2=item==='Asc'?[212,160,20]:item==='Rahu'||item==='Ket'?[200,80,80]:[220,200,170];
+      const col2=item==='Asc'?[170,130,10]:item==='Rahu'||item==='Ket'?[140,60,60]:[26,40,100];
       doc.setTextColor(...col2);
       doc.text(item,hcx,hcy-3+(idx*5),{align:'center'});
     });
@@ -2389,11 +2405,11 @@ async function downloadPDF(){
   // Chart legend on the right side
   const legendX=chartX+chartW+6;
   let legendY=chartY;
-  doc.setFontSize(7);doc.setTextColor(...gold);
-  doc.text('Planets',legendX,legendY+4);
+  doc.setFontSize(7);doc.setTextColor(...navy);doc.setFont('helvetica','bold');
+  doc.text('Planets',legendX,legendY+4);doc.setFont('helvetica','normal');
   legendY+=7;
   planets.forEach(p=>{
-    const col2=p.dignity==='Exalted'?[99,192,91]:p.dignity==='Debilitated'?[226,75,74]:[200,180,150];
+    const col2=p.dignity==='Exalted'?[30,100,50]:p.dignity==='Debilitated'?[160,40,40]:[40,60,110];
     doc.setFontSize(6.5);doc.setTextColor(...col2);
     doc.text(p.name.substring(0,3)+' '+p.rashiName.substring(0,3)+' H'+p.house,legendX,legendY);
     legendY+=5;
@@ -2403,7 +2419,7 @@ async function downloadPDF(){
 
   // ── SECTION: PLANETS ──
   checkPage(60);
-  doc.setFillColor(...maroon);doc.rect(margin,y,W-margin*2,7,'F');
+  doc.setFillColor(...navy);doc.rect(margin,y,W-margin*2,7,'F');
   addText(isOd?'✦ ଗ୍ରହ ସ୍ଥିତି (ସାଇଡ଼େରିଆଲ)':'✦ Planetary Positions (Sidereal · Lahiri)',margin+3,y+5,{size:10,bold:true,color:cream});
   y+=10;
   const pHeaders=isOd?['ଗ୍ରହ','ରାଶି','ଡିଗ୍ରୀ','ଭାବ','ନକ୍ଷତ୍ର','ପାଦ','ସ୍ଥିତି']:['Planet','Rashi','Degree','House','Nakshatra','Pada','Dignity'];
@@ -2418,16 +2434,16 @@ async function downloadPDF(){
   ]);
   doc.autoTable({
     head:[pHeaders],body:pRows,startY:y,margin:{left:margin,right:margin},
-    styles:{fontSize:8,cellPadding:2.5,textColor:[245,237,216],fillColor:[30,17,10],lineColor:[60,40,18],lineWidth:0.3},
-    headStyles:{fillColor:maroon,textColor:cream,fontStyle:'bold',fontSize:8},
-    alternateRowStyles:{fillColor:[40,22,8]},
+    styles:{fontSize:8,cellPadding:2.5,textColor:ink,fillColor:cream,lineColor:borderCol,lineWidth:0.3},
+    headStyles:{fillColor:navy,textColor:cream,fontStyle:'bold',fontSize:8},
+    alternateRowStyles:{fillColor:bgCard},
     columnStyles:{6:{cellWidth:24}},
     didParseCell:(data)=>{
       if(data.section==='body'&&data.column.index===6){
         const v=data.cell.raw;
-        if(v==='Exalted')data.cell.styles.textColor=[125,200,125];
-        else if(v==='Debilitated')data.cell.styles.textColor=[226,75,74];
-        else if(v==='Own Sign')data.cell.styles.textColor=[125,184,240];
+        if(v==='Exalted')data.cell.styles.textColor=[30,100,50];
+        else if(v==='Debilitated')data.cell.styles.textColor=[160,40,40];
+        else if(v==='Own Sign')data.cell.styles.textColor=[26,60,140];
       }
     }
   });
@@ -2435,7 +2451,7 @@ async function downloadPDF(){
 
   // ── SECTION: YOGAS ──
   checkPage(40);
-  doc.setFillColor(...maroon);doc.rect(margin,y,W-margin*2,7,'F');
+  doc.setFillColor(...navy);doc.rect(margin,y,W-margin*2,7,'F');
   addText(isOd?'✦ ଯୋଗ ଓ ବିଶେଷ ସଂଯୋଗ':'✦ Yogas & Special Combinations',margin+3,y+5,{size:10,bold:true,color:cream});
   y+=10;
   yogas.slice(0,5).forEach(yg=>{
@@ -2451,7 +2467,7 @@ async function downloadPDF(){
 
   // ── SECTION: DASHA ──
   checkPage(50);
-  doc.setFillColor(...maroon);doc.rect(margin,y,W-margin*2,7,'F');
+  doc.setFillColor(...navy);doc.rect(margin,y,W-margin*2,7,'F');
   addText(isOd?'✦ ବିଂଶୋତ୍ତରୀ ଦଶା':'✦ Vimshottari Dasha Timeline',margin+3,y+5,{size:10,bold:true,color:cream});
   y+=10;
   const dRows=dashas.map(d=>{
@@ -2460,12 +2476,13 @@ async function downloadPDF(){
   });
   doc.autoTable({
     head:[['Mahadasha','Start','End','Duration']],body:dRows,startY:y,margin:{left:margin,right:margin},
-    styles:{fontSize:8,cellPadding:2.5,textColor:[245,237,216],fillColor:[30,17,10],lineColor:[60,40,18],lineWidth:0.3},
-    headStyles:{fillColor:maroon,textColor:cream,fontStyle:'bold'},
-    alternateRowStyles:{fillColor:[40,22,8]},
+    styles:{fontSize:8,cellPadding:2.5,textColor:ink,fillColor:cream,lineColor:borderCol,lineWidth:0.3},
+    headStyles:{fillColor:navy,textColor:cream,fontStyle:'bold'},
+    alternateRowStyles:{fillColor:bgCard},
     didParseCell:(data)=>{
       if(data.section==='body'&&data.cell.raw&&data.cell.raw.includes('NOW')){
-        data.cell.styles.textColor=gold;data.cell.styles.fontStyle='bold';
+        data.cell.styles.textColor=[26,40,100];data.cell.styles.fontStyle='bold';
+        data.cell.styles.fillColor=[220,225,240];
       }
     }
   });
@@ -2473,7 +2490,8 @@ async function downloadPDF(){
 
   // ── PAGE 2: AI PREDICTIONS ──
   doc.addPage();y=margin;
-  doc.setFillColor(...dark);doc.rect(0,0,W,14,'F');
+  doc.setFillColor(...navy);doc.rect(0,0,W,14,'F');
+  doc.setFillColor(...gold);doc.rect(0,13,W,1,'F');
   addText(isOd?'AI ଭବିଷ୍ୟ ଓ ଜୀବନ ଫଳ':'AI Predictions & Life Reading',W/2,9,{size:13,bold:true,color:cream,align:'center'});
   y=20;
 
@@ -2492,33 +2510,34 @@ async function downloadPDF(){
     const lines=doc.splitTextToSize(txt,W-margin*2-4);
     const h=lines.length*5+14;
     checkPage(h);
-    doc.setFillColor(30,17,10);doc.roundedRect(margin,y,W-margin*2,h,2,2,'F');
-    doc.setDrawColor(60,40,18);doc.roundedRect(margin,y,W-margin*2,h,2,2,'S');
-    doc.setFillColor(...maroon);doc.roundedRect(margin,y,W-margin*2,7,2,2,'F');
+    doc.setFillColor(...cream);doc.roundedRect(margin,y,W-margin*2,h,2,2,'F');
+    doc.setDrawColor(...borderCol);doc.roundedRect(margin,y,W-margin*2,h,2,2,'S');
+    doc.setFillColor(...navy);doc.roundedRect(margin,y,W-margin*2,7,2,2,'F');
     addText(lbl,margin+3,y+5,{size:8,bold:true,color:cream});
-    doc.setFontSize(8.5);doc.setTextColor(225,210,180);doc.setFont('helvetica','normal');
+    doc.setFontSize(8.5);doc.setTextColor(...ink);doc.setFont('helvetica','normal');
     doc.text(lines,margin+3,y+12);
     y+=h+5;
   });
 
   // ── REMEDIES ──
   checkPage(40);
-  doc.setFillColor(...maroon);doc.rect(margin,y,W-margin*2,7,'F');
+  doc.setFillColor(...navy);doc.rect(margin,y,W-margin*2,7,'F');
   addText(isOd?'✦ ଉପଚାର ଓ ରତ୍ନ':'✦ Remedies & Gemstones',margin+3,y+5,{size:10,bold:true,color:cream});
   y+=10;
   const rems=isOd?r.remedies_od:r.remedies||[];
   const gems=isOd?r.gemstones_od:r.gemstones||[];
   [...(rems||[]),...(gems||[])].forEach((rem,i)=>{
     checkPage(10);
-    doc.setFillColor(40,22,8);doc.rect(margin,y,W-margin*2,8,'F');
-    addText((i<(rems||[]).length?'🔸 ':'💎 ')+rem,margin+3,y+5.5,{size:8,color:[200,178,140],maxWidth:W-margin*2-6});
+    doc.setFillColor(...bgCard);doc.rect(margin,y,W-margin*2,8,'F');
+    doc.setDrawColor(...borderCol);doc.rect(margin,y,W-margin*2,8,'S');
+    addText((i<(rems||[]).length?'* ':'>> ')+rem,margin+3,y+5.5,{size:8,color:ink,maxWidth:W-margin*2-6});
     y+=9;
   });
   y+=4;
 
   // ── LUCKY FACTORS ──
   checkPage(30);
-  doc.setFillColor(...maroon);doc.rect(margin,y,W-margin*2,7,'F');
+  doc.setFillColor(...navy);doc.rect(margin,y,W-margin*2,7,'F');
   addText(isOd?'✦ ଭାଗ୍ୟ ତଥ୍ୟ':'✦ Lucky Factors',margin+3,y+5,{size:10,bold:true,color:cream});
   y+=10;
   const luckys=[
@@ -2529,9 +2548,9 @@ async function downloadPDF(){
   ];
   doc.autoTable({
     body:luckys,startY:y,margin:{left:margin,right:margin},
-    styles:{fontSize:9,cellPadding:3,textColor:cream,fillColor:[30,17,10],lineColor:[60,40,18],lineWidth:0.3},
-    alternateRowStyles:{fillColor:[40,22,8]},
-    columnStyles:{0:{fontStyle:'bold',textColor:gold,cellWidth:45}}
+    styles:{fontSize:9,cellPadding:3,textColor:ink,fillColor:cream,lineColor:borderCol,lineWidth:0.3},
+    alternateRowStyles:{fillColor:bgCard},
+    columnStyles:{0:{fontStyle:'bold',textColor:navy,cellWidth:45}}
   });
   y=doc.lastAutoTable.finalY+6;
 
@@ -2539,8 +2558,9 @@ async function downloadPDF(){
   const pageCount=doc.internal.getNumberOfPages();
   for(let i=1;i<=pageCount;i++){
     doc.setPage(i);
-    doc.setFillColor(...dark);doc.rect(0,287,W,10,'F');
-    doc.setFontSize(7);doc.setTextColor(138,112,85);
+    doc.setFillColor(...navy);doc.rect(0,286,W,11,'F');
+    doc.setFillColor(...gold);doc.rect(0,286,W,0.8,'F');
+    doc.setFontSize(7);doc.setTextColor(180,195,220);
     doc.text('Jyotish AI · jyotishaiodisha.netlify.app · Generated '+new Date().toLocaleDateString('en-IN'),W/2,293,{align:'center'});
     doc.text('Page '+i+' of '+pageCount,W-margin,293,{align:'right'});
   }
