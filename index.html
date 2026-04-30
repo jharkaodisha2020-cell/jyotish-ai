@@ -236,6 +236,47 @@ select option{background:#0C0602}
 .score-ring{width:80px;height:80px;border-radius:50%;border:3px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 10px;position:relative}
 .score-n{font-family:'Cinzel',serif;font-size:22px;font-weight:700;color:var(--gold-lt)}
 .score-l{font-size:8px;color:var(--muted);text-transform:uppercase}
+/* new features */
+.feature-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.feature-card{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:16px;text-align:center;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.feature-card:hover{border-color:var(--gold);transform:translateY(-2px)}
+.feature-card-ic{font-size:26px;margin-bottom:7px}
+.feature-card-nm{font-family:'Cinzel',serif;font-size:12px;color:var(--cream);font-weight:600}
+.feature-card-sub{font-size:10px;color:var(--muted);margin-top:3px}
+.feature-card-badge{position:absolute;top:8px;right:8px;background:var(--saffron);color:var(--cream);border-radius:4px;padding:1px 6px;font-size:8px;font-weight:700}
+.panch-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.panch-item{background:#0C0602;border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center}
+.panch-lbl{font-size:9px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px}
+.panch-val{font-size:13px;font-weight:700;color:var(--cream);line-height:1.3}
+.panch-sub{font-size:9px;color:var(--gold);margin-top:2px}
+.rashi-horoscope-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.rashi-btn{background:#0C0602;border:1px solid var(--border);border-radius:8px;padding:8px 4px;text-align:center;cursor:pointer;transition:all .15s;font-family:'Lato',sans-serif}
+.rashi-btn:hover,.rashi-btn.on{border-color:var(--gold);background:rgba(184,135,10,.1)}
+.rashi-sym{font-size:18px}
+.rashi-nm{font-size:10px;color:var(--cream);font-weight:700;margin-top:2px}
+.rashi-nm-od{font-size:9px;color:var(--muted)}
+.muhurta-cal{display:flex;flex-direction:column;gap:7px}
+.muhurta-item{background:#0C0602;border:1px solid var(--border);border-radius:8px;padding:10px 13px;display:flex;align-items:center;gap:10px}
+.muhurta-date{font-family:'Cinzel',serif;font-size:15px;color:var(--gold-lt);font-weight:700;min-width:44px}
+.muhurta-info{flex:1}
+.muhurta-title{font-size:12px;color:var(--cream);font-weight:700}
+.muhurta-detail{font-size:10px;color:var(--muted);margin-top:2px}
+.muhurta-quality{font-size:9px;font-weight:700;border-radius:3px;padding:1px 6px}
+.mq-best{background:rgba(99,192,91,.15);color:var(--green-l);border:1px solid rgba(99,192,91,.3)}
+.mq-good{background:rgba(184,135,10,.15);color:var(--gold-lt);border:1px solid rgba(184,135,10,.3)}
+.past-life-card{background:linear-gradient(135deg,#0A0414,#1A0E06);border:1px solid rgba(140,80,200,.4);border-radius:12px;padding:16px;margin-bottom:10px}
+.past-life-title{font-family:'Cinzel',serif;font-size:13px;color:#C8A0FF;margin-bottom:6px}
+.past-life-txt{font-size:13px;color:#E0D0F0;line-height:1.8}
+.career-phase{background:#0C0602;border:1px solid var(--border);border-radius:8px;padding:10px 13px;margin-bottom:7px}
+.career-phase-yr{font-family:'Cinzel',serif;font-size:13px;color:var(--gold-lt);font-weight:700}
+.career-phase-desc{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.6}
+.career-phase.best{border-color:var(--green-l)}
+.career-phase.caution{border-color:var(--red-l)}
+.wa-btn{display:flex;align-items:center;gap:10px;background:#25D366;border:none;border-radius:10px;padding:13px 16px;width:100%;cursor:pointer;font-family:'Lato',sans-serif;margin-top:8px;transition:opacity .15s}
+.wa-btn:hover{opacity:.9}
+.wa-btn-ic{font-size:22px}
+.wa-btn-txt{font-size:14px;font-weight:700;color:#fff}
+.wa-btn-sub{font-size:10px;color:rgba(255,255,255,.8);margin-top:1px}
 /* language selection */
 .lang-select-page{position:fixed;inset:0;background:var(--bg);z-index:999;display:flex;align-items:center;justify-content:center;padding:20px}
 .lang-select-box{text-align:center;max-width:320px;width:100%}
@@ -345,8 +386,6 @@ select option{background:#0C0602}
 .cross-insight{background:linear-gradient(135deg,#1E0A00,var(--surface));border:1px solid var(--gold);border-radius:10px;padding:14px;margin-bottom:10px}
 .cross-title{font-family:'Cinzel',serif;font-size:12px;color:var(--gold-lt);margin-bottom:6px}
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body>
 
@@ -622,6 +661,11 @@ select option{background:#0C0602}
       <button class="pdf-lang-btn" id="pdfl-od" onclick="setPdfLang('od')">ଓଡ଼ିଆ PDF</button>
     </div>
     <button class="pdf-btn" onclick="downloadPDF()">⬇ Download Kundli Report</button>
+    <button class="wa-btn" onclick="shareKundliWA()" style="margin-bottom:12px">
+      <div class="wa-btn-ic">📱</div>
+      <div><div class="wa-btn-txt" id="wa-share-txt">Share on WhatsApp</div>
+      <div class="wa-btn-sub" id="wa-share-sub">Invite friends to get their Kundli</div></div>
+    </button>
     <div class="lang-toggle">
       <button class="lt-btn on" id="lt-en" onclick="setLang('en')">English</button>
       <button class="lt-btn" id="lt-od" onclick="setLang('od')">ଓଡ଼ିଆ</button>
@@ -877,6 +921,112 @@ select option{background:#0C0602}
       <div id="guna-result" style="display:none"></div>
     </div>
 
+  </div>
+</div>
+
+
+<!-- ═══ PANCHANG & HOROSCOPE ═══ -->
+<div class="pg" id="pg-panchang">
+  <div class="wrap">
+    <div style="font-family:'Cinzel',serif;font-size:17px;color:var(--cream);margin:14px 0 2px" id="panch-title">Daily Panchang</div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:14px" class="od">ଆଜର ପଞ୍ଚାଙ୍ଗ</div>
+    <div id="panchang-body"></div>
+  </div>
+</div>
+
+<!-- ═══ DAILY HOROSCOPE ═══ -->
+<div class="pg" id="pg-horoscope">
+  <div class="wrap">
+    <div style="font-family:'Cinzel',serif;font-size:17px;color:var(--cream);margin:14px 0 2px">Daily Horoscope</div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:14px" class="od">ଆଜର ରାଶି ଫଳ</div>
+    <div id="horoscope-body"></div>
+  </div>
+</div>
+
+<!-- ═══ MUHURTA ═══ -->
+<div class="pg" id="pg-muhurta">
+  <div class="wrap">
+    <div style="font-family:'Cinzel',serif;font-size:17px;color:var(--cream);margin:14px 0 2px">Muhurta Finder</div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:14px" class="od">ଶୁଭ ମୁହୂର୍ତ</div>
+    <div class="num-tabs" id="muhurta-tabs">
+      <button class="num-tab on" id="mt-vivah" onclick="muhurtaTab('vivah')">💑 Vivah</button>
+      <button class="num-tab" id="mt-griha" onclick="muhurtaTab('griha')">🏠 Griha Pravesh</button>
+      <button class="num-tab" id="mt-business" onclick="muhurtaTab('business')">💼 Business</button>
+      <button class="num-tab" id="mt-farming" onclick="muhurtaTab('farming')">🌾 Farming</button>
+    </div>
+    <div id="muhurta-body"></div>
+  </div>
+</div>
+
+<!-- ═══ PAST LIFE ═══ -->
+<div class="pg" id="pg-pastlife">
+  <div class="wrap">
+    <div style="font-family:'Cinzel',serif;font-size:17px;color:var(--cream);margin:14px 0 2px">Akashic Records</div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:14px" class="od">ପୂର୍ବ ଜନ୍ମ ବିଶ୍ଲେଷଣ</div>
+    <div class="card">
+      <div class="sh">🔮 Past Life & Soul Purpose Analysis</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.7">Based on Ketu (past life), Rahu (soul mission), Saturn (karmic debt), retrograde planets, and Atmakaraka — your soul story across lifetimes.</div>
+      <div class="fg"><label>Date of Birth</label><input id="pl-dob" type="date"/></div>
+      <div class="fg"><label>Time of Birth</label><input id="pl-tob" type="time"/></div>
+      <div class="fg"><label>Place of Birth</label><input id="pl-pob" placeholder="e.g. Bhubaneswar, Odisha"/></div>
+      <div id="pl-err" class="err"></div>
+      <button class="btn" onclick="doPastLife()">🔮 Reveal My Past Life</button>
+    </div>
+    <div id="pastlife-body"></div>
+  </div>
+</div>
+
+<!-- ═══ CAREER TIMING ═══ -->
+<div class="pg" id="pg-career">
+  <div class="wrap">
+    <div style="font-family:'Cinzel',serif;font-size:17px;color:var(--cream);margin:14px 0 2px">Career Timing Report</div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:14px" class="od">କ୍ୟାରିୟର ସମୟ ବିଶ୍ଲେଷଣ</div>
+    <div class="card">
+      <div class="sh">💼 Career & Finance Timing</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:12px">Based on 10th house, Jupiter transits, Dasha periods — find your best years for job change, promotion, business launch.</div>
+      <div class="fg"><label>Date of Birth</label><input id="ct-dob" type="date"/></div>
+      <div class="fg"><label>Time of Birth</label><input id="ct-tob" type="time"/></div>
+      <div class="fg"><label>Place of Birth</label><input id="ct-pob" placeholder="e.g. Bhubaneswar"/></div>
+      <div class="fg"><label>Current Profession</label>
+        <select id="ct-prof">
+          <option value="job">Job / Service</option>
+          <option value="business">Business / Self-employed</option>
+          <option value="student">Student</option>
+          <option value="government">Government Job</option>
+          <option value="any">Not decided yet</option>
+        </select>
+      </div>
+      <div id="ct-err" class="err"></div>
+      <button class="btn" onclick="doCareerTiming()">💼 Generate Career Report</button>
+    </div>
+    <div id="career-body"></div>
+  </div>
+</div>
+
+<!-- ═══ SANTAAN YOGA ═══ -->
+<div class="pg" id="pg-santaan">
+  <div class="wrap">
+    <div style="font-family:'Cinzel',serif;font-size:17px;color:var(--cream);margin:14px 0 2px">Santaan Yoga</div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:14px" class="od">ସନ୍ତାନ ଯୋଗ ବିଶ୍ଲେଷଣ</div>
+    <div class="card">
+      <div class="sh">👶 Child & Progeny Prediction</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:12px">5th house analysis, Jupiter position, and Dasha timing to predict prospects for children and family.</div>
+      <div style="font-family:'Cinzel',serif;font-size:13px;color:var(--gold-lt);margin-bottom:10px">Person 1 (Husband/Wife)</div>
+      <div class="g2">
+        <div class="fg"><label>Date of Birth</label><input id="st-dob1" type="date"/></div>
+        <div class="fg"><label>Time of Birth</label><input id="st-tob1" type="time"/></div>
+      </div>
+      <div class="fg"><label>Place of Birth</label><input id="st-pob1" placeholder="City"/></div>
+      <div style="font-family:'Cinzel',serif;font-size:13px;color:var(--gold-lt);margin:10px 0">Person 2 (Optional — for couple analysis)</div>
+      <div class="g2">
+        <div class="fg"><label>Date of Birth</label><input id="st-dob2" type="date"/></div>
+        <div class="fg"><label>Time of Birth</label><input id="st-tob2" type="time"/></div>
+      </div>
+      <div class="fg"><label>Place of Birth</label><input id="st-pob2" placeholder="City (optional)"/></div>
+      <div id="st-err" class="err"></div>
+      <button class="btn" onclick="doSantaan()">👶 Generate Santaan Yoga Report</button>
+    </div>
+    <div id="santaan-body"></div>
   </div>
 </div>
 
@@ -1260,7 +1410,6 @@ return{calc,RASHI_N,RASHI_OD,P_OD,NAK_NAMES,NAK_OD};
 /* ── SUPABASE CONFIG ── */
 const SUPA_URL = 'https://dnpbuwldcxmrptildfpq.supabase.co';
 const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRucGJ1d2xkY3htcnB0aWxkZnBxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUyMDE3MDcsImV4cCI6MjA5MDc3NzcwN30.VGAGQTn-aXjAMtJCMcsI4svJRz89wkcAZuzE2gtgMM8';
-const RAZORPAY_KEY = 'rzp_live_Si2BqvEETTMMcP';
 
 /* ── SUPABASE HELPERS ── */
 async function supaFetch(path, opts={}){
@@ -1411,6 +1560,12 @@ function dashGo(tab){
   else if(tab==='services'){nav('services');}
   else if(tab==='predict'){buildPredict();nav('predict');}
   else if(tab==='profile'){buildProfile();nav('profile');}
+  else if(tab==='panchang'){buildPanchang();nav('panchang');}
+  else if(tab==='horoscope'){buildHoroscope();nav('horoscope');}
+  else if(tab==='muhurta'){buildMuhurta('vivah');nav('muhurta');}
+  else if(tab==='pastlife'){nav('pastlife');}
+  else if(tab==='career'){nav('career');}
+  else if(tab==='santaan'){nav('santaan');}
 }
 
 /* ─── PLAN ──────────────────────────────────────────────*/
@@ -1491,7 +1646,7 @@ async function verifyOTP(){
   localStorage.setItem('jyotish_session',JSON.stringify({token:res.access_token,user:S.user}));
   setNav(true);
   btn.disabled=false;btn.textContent='Verify & Sign In ✦';
-  if(S.plan){showRazorpay();}
+  if(S.plan){activatePlan();}
   else{buildDash();nav('dash');}
 }
 
@@ -1526,48 +1681,13 @@ function saveU(){
 function pickPlan(p){
   S.plan=p;
   if(!S.user){nav('login');}
-  else{showRazorpay();}
+  else{activatePlan();}
 }
 
-function showRazorpay(){
-  const pl=PLANS[S.plan];
-  const options={
-    key: RAZORPAY_KEY,
-    amount: pl.price*100, // paise
-    currency: 'INR',
-    name: 'Jyotish AI',
-    description: pl.n+' — '+pl.od,
-    image: 'https://jyotishaiodisha.netlify.app/favicon.ico',
-    prefill:{email:S.user.email||'',name:S.user.name||''},
-    theme:{color:'#B8870A'},
-    modal:{ondismiss:()=>toast('Payment cancelled. Try again anytime.')},
-    handler: async function(response){
-      await onPaymentSuccess(response);
-    }
-  };
-  const rzp=new Razorpay(options);
-  rzp.on('payment.failed',function(resp){
-    toast('Payment failed: '+resp.error.description);
-  });
-  rzp.open();
-}
-
-async function onPaymentSuccess(response){
-  g('load-msg').textContent='Activating your plan...';
-  g('load-sub').textContent='Payment received ✦';
-  nav('loading');
+async function activatePlan(){
   const pl=PLANS[S.plan];
   const expiry=new Date(Date.now()+pl.days*86400000).toISOString();
   const start=new Date().toISOString();
-  // Save payment record
-  await supaFetch('/rest/v1/payments',{
-    method:'POST',
-    body:JSON.stringify({
-      user_id:S.user.id,plan:S.plan,amount:pl.price,
-      razorpay_payment_id:response.razorpay_payment_id,status:'success'
-    })
-  });
-  // Update user plan
   S.user.plan=S.plan;
   S.user.plan_start=start;
   S.user.plan_expiry=expiry;
@@ -1577,10 +1697,8 @@ async function onPaymentSuccess(response){
   });
   saveU();
   buildDash();nav('dash');
-  toast('Payment successful! '+pl.n+' activated ✦');
+  toast('Plan activated: '+pl.n+' ✦');
 }
-
-async function activatePlan(){showRazorpay();}
 
 /* ─── DASHBOARD ─────────────────────────────────────────*/
 function buildDash(){
@@ -1593,9 +1711,15 @@ function buildDash(){
   const isM=u.plan==='monthly'||u.plan==='yearly';
   const isY=u.plan==='yearly';
   g('act-grid').innerHTML=`
-    <div class="ac" onclick="dashGo('kundli')"><div class="ac-ic">☀</div><div class="ac-nm">New Kundli</div><div class="ac-sub">Birth chart</div></div>
-    <div class="ac" onclick="dashGo('anka')"><div class="ac-ic">🔢</div><div class="ac-nm">Anka Shastra</div><div class="ac-sub">Numerology</div></div>
-    <div class="ac" onclick="dashGo('services')"><div class="ac-ic">🌟</div><div class="ac-nm">Services</div><div class="ac-sub">Chakra · Health · Name</div></div>
+    <div class="ac" onclick="dashGo('kundli')"><div class="ac-ic">☀</div><div class="ac-nm">${APP_LANG==='od'?'ନୂଆ କୁଣ୍ଡଳୀ':'New Kundli'}</div><div class="ac-sub">${APP_LANG==='od'?'ଜନ୍ମ ଚକ୍ର':'Birth chart'}</div></div>
+    <div class="ac" onclick="nav('panchang');buildPanchang()"><div class="ac-ic">📅</div><div class="ac-nm">${APP_LANG==='od'?'ପଞ୍ଚାଙ୍ଗ':'Panchang'}</div><div class="ac-sub">${APP_LANG==='od'?'ଆଜର ତିଥି':'Today'}</div></div>
+    <div class="ac" onclick="nav('horoscope');buildHoroscope()"><div class="ac-ic">🌙</div><div class="ac-nm">${APP_LANG==='od'?'ରାଶି ଫଳ':'Horoscope'}</div><div class="ac-sub">${APP_LANG==='od'?'ଦୈନିକ':'Daily'}</div></div>
+    <div class="ac" onclick="nav('muhurta');buildMuhurta('vivah')"><div class="ac-ic">🕐</div><div class="ac-nm">${APP_LANG==='od'?'ମୁହୂର୍ତ':'Muhurta'}</div><div class="ac-sub">${APP_LANG==='od'?'ଶୁଭ ସମୟ':'Auspicious time'}</div></div>
+    <div class="ac" onclick="nav('pastlife')"><div class="ac-ic">🔮</div><div class="ac-nm">${APP_LANG==='od'?'ପୂର୍ବ ଜନ୍ମ':'Past Life'}</div><div class="ac-sub">${APP_LANG==='od'?'ଆକାଶିକ':'Akashic'}</div></div>
+    <div class="ac" onclick="nav('career')"><div class="ac-ic">💼</div><div class="ac-nm">${APP_LANG==='od'?'କ୍ୟାରିୟର':'Career'}</div><div class="ac-sub">${APP_LANG==='od'?'ସମୟ ଫଳ':'Timing'}</div></div>
+    <div class="ac" onclick="nav('santaan')"><div class="ac-ic">👶</div><div class="ac-nm">${APP_LANG==='od'?'ସନ୍ତାନ ଯୋଗ':'Santaan Yoga'}</div><div class="ac-sub">${APP_LANG==='od'?'ସନ୍ତାନ':'Child prediction'}</div></div>
+    <div class="ac" onclick="dashGo('anka')"><div class="ac-ic">🔢</div><div class="ac-nm">${APP_LANG==='od'?'ଅଙ୍କ ଶାସ୍ତ୍ର':'Anka Shastra'}</div><div class="ac-sub">${APP_LANG==='od'?'ସଂଖ୍ୟା':'Numerology'}</div></div>
+    <div class="ac" onclick="dashGo('services')"><div class="ac-ic">🌟</div><div class="ac-nm">${APP_LANG==='od'?'ସେବା':'Services'}</div><div class="ac-sub">${APP_LANG==='od'?'ଚକ୍ର · ସ୍ୱାସ୍ଥ୍ୟ':'Chakra · Health'}</div></div>
     <div class="ac ${isM?'':'locked'}" onclick="${isM?"dashGo('predict')":"toast('Upgrade to Monthly plan')"}"><div class="ac-ic">🔮</div><div class="ac-nm">Monthly</div><div class="ac-sub">Predictions</div>${!isM?'<div class="lock-tag">Upgrade</div>':''}</div>
     <div class="ac ${isY?'':'locked'}" onclick="${isY?"toast('Guna Milan coming soon!')":"toast('Upgrade to Annual plan')"}"><div class="ac-ic">💑</div><div class="ac-nm">Guna Milan</div><div class="ac-sub">Kundli match</div>${!isY?'<div class="lock-tag">Annual Only</div>':''}</div>
     <div class="ac" onclick="dashGo('profile')"><div class="ac-ic">👤</div><div class="ac-nm">Profile</div><div class="ac-sub">Account</div></div>`;
@@ -1637,14 +1761,8 @@ async function doKundli(){
     err.textContent=APP_LANG==='od'?'ଆପଣଙ୍କ ଯୋଜନା ଶେଷ ହୋଇଗଲା। ଦୟାକରି ନବୀକରଣ କରନ୍ତୁ।':'Your plan has expired. Please renew.';
     setTimeout(()=>nav('plans'),2000);return;
   }
-  if(kundliCount>=myLimit){
-    const msgs={
-      basic:APP_LANG==='od'?`ଆପଣଙ୍କ ₹100 ଯୋଜନାରେ ୧ ଟି କୁଣ୍ଡଳୀ ଅନ୍ତର୍ଭୁକ୍ତ। ଅଧିକ ପାଇଁ ମାସିକ ₹99 ଯୋଜନାକୁ ଅପଗ୍ରେଡ଼ କରନ୍ତୁ।`:`Your ₹100 Basic plan includes 1 Kundli. Upgrade to Monthly ₹50 for 10 Kundlis/month.`,
-      monthly:APP_LANG==='od'?`ଏହି ମାସ ୧୦ ଟି କୁଣ୍ଡଳୀ ସୀମା ଶେଷ। ଅସୀମ ପାଇଁ ₹500 ବାର୍ଷିକ ଯୋଜନା ନିଅନ୍ତୁ।`:`You have used all 10 Kundlis this month. Upgrade to Annual ₹500 for unlimited.`,
-    };
-    err.textContent=msgs[S.user.plan]||'Kundli limit reached. Please upgrade your plan.';
-    setTimeout(()=>nav('plans'),2500);return;
-  }
+  // Testing mode — no kundli limits
+  // if(kundliCount>=myLimit){ ... }
 
   g('k-gen-btn').disabled=true;
   g('load-msg').textContent=APP_LANG==='od'?'ଗ୍ରହ ସ୍ଥିତି ଗଣନା ହେଉଛି...':'Calculating planetary positions...';
@@ -2474,318 +2592,65 @@ async function downloadPDF(){
   if(!S.calcResult){toast('Please generate a Kundli first.');return;}
   const btn=document.querySelector('.pdf-btn');
   btn.textContent='⏳ Generating PDF...';btn.disabled=true;
-  const isOd=pdfLang==='od';
+
+  const isOd=APP_LANG==='od';
   const res=S.calcResult;
-  const r=res.reading||{};
-  const {planets,moonNak,ascendant,dashas,currDasha,yogas,input}=res;
 
-  const {jsPDF}=window.jspdf;
-  const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
-  const W=210,margin=15;
-  let y=margin;
-
-  // ── Fonts & helpers ──
-  // Premium Off-White & Navy palette
-  const gold=[170,130,10],       // deep gold accent
-        maroon=[26,40,100],      // deep navy (replaces maroon)
-        cream=[248,244,238],     // off-white background
-        dark=[26,36,70],         // dark navy header
-        ink=[26,18,8],           // dark ink for body text
-        navy=[26,40,100],        // navy for section headers
-        navyLight=[60,80,140],   // lighter navy for sub-elements
-        borderCol=[200,208,220], // blue-grey border
-        bgCard=[240,238,232],    // slightly warm card background
-        accent=[184,135,10];     // gold accent
-  const addText=(text,x,yPos,opts={})=>{
-    doc.setFontSize(opts.size||11);
-    doc.setTextColor(...(opts.color||[40,25,10]));
-    if(opts.bold)doc.setFont('helvetica','bold');
-    else doc.setFont('helvetica','normal');
-    doc.text(String(text),x,yPos,{align:opts.align||'left',maxWidth:opts.maxWidth||180});
-  };
-  const addLine=(yPos,col=cream)=>{
-    doc.setDrawColor(...col);doc.setLineWidth(0.3);
-    doc.line(margin,yPos,W-margin,yPos);
-  };
-  const checkPage=(needed=20)=>{
-    if(y+needed>285){doc.addPage();y=margin;}
+  // Fix date objects before sending
+  const safeRes={
+    ...res,
+    lang:APP_LANG||'en',
+    dashas:(res.dashas||[]).map(d=>({
+      ...d,
+      start:d.start?new Date(d.start).toISOString():null,
+      end:d.end?new Date(d.end).toISOString():null,
+      startDate:d.startDate?new Date(d.startDate).toISOString():null,
+      endDate:d.endDate?new Date(d.endDate).toISOString():null,
+    })),
+    currDasha:res.currDasha?{
+      ...res.currDasha,
+      start:res.currDasha.start?new Date(res.currDasha.start).toISOString():null,
+      end:res.currDasha.end?new Date(res.currDasha.end).toISOString():null,
+    }:null,
+    antars:(res.antars||[]).map(d=>({
+      ...d,
+      start:d.start?new Date(d.start).toISOString():null,
+      end:d.end?new Date(d.end).toISOString():null,
+    })),
   };
 
-  // ── PAGE 1: HEADER (navy + off-white) ──
-  doc.setFillColor(...dark);doc.rect(0,0,W,42,'F');
-  doc.setFillColor(...gold);doc.rect(0,40,W,1.5,'F');
-  doc.setFillColor(...navyLight);doc.rect(0,41.5,W,0.5,'F');
-  addText(isOd?'ଜ୍ୟୋତିଷ AI — ଜନ୍ମ କୁଣ୍ଡଳୀ':'Jyotish AI — Birth Kundli Report',W/2,16,{size:18,bold:true,color:[248,244,238],align:'center'});
-  addText('ॐ तत् सत्',W/2,27,{size:11,color:gold,align:'center'});
-  addText(isOd?'ଲାହିରି ଆୟନାଂଶ · VSOP87 ଗ୍ରହ ଇଞ୍ଜିନ':'Lahiri Ayanamsa · VSOP87 Planetary Engine · '+new Date().toLocaleDateString('en-IN'),W/2,35,{size:8,color:[180,195,220],align:'center'});
-  y=54;
-
-  // ── PERSONAL INFO BOX ──
-  doc.setFillColor(...bgCard);doc.roundedRect(margin,y,W-margin*2,34,3,3,'F');
-  doc.setDrawColor(...borderCol);doc.setLineWidth(0.5);doc.roundedRect(margin,y,W-margin*2,34,3,3,'S');
-  doc.setFillColor(...navy);doc.roundedRect(margin,y,W-margin*2,10,3,3,'F');
-  doc.rect(margin,y+7,W-margin*2,3,'F');
-  addText(input.nm,W/2,y+8,{size:14,bold:true,color:[248,244,238],align:'center'});
-  addText(new Date(input.dStr).toDateString()+' · '+input.tStr+' IST · '+input.place,W/2,y+18,{size:9,color:[80,60,30],align:'center'});
-  if(input.gotra)addText((isOd?'ଗୋତ୍ର: ':'Gotra: ')+input.gotra,W/2,y+25,{size:9,color:[100,80,40],align:'center'});
-  y+=40;
-
-  // ── KEY NUMBERS ──
-  const chips=[
-    {l:isOd?'ଲଗ୍ନ':'Lagna',v:ascendant.rashiName+' '+ascendant.deg+'°'},
-    {l:isOd?'ରାଶି (ଚନ୍ଦ୍ର)':'Rashi (Moon)',v:planets[1].rashiName},
-    {l:isOd?'ନକ୍ଷତ୍ର':'Nakshatra',v:moonNak.name},
-    {l:'Pada',v:String(moonNak.pada)},
-    {l:'Ayanamsa',v:res.ayanamsa+'°'},
-    {l:'Mahadasha',v:currDasha.planet},
-  ];
-  const chipW=(W-margin*2)/3,chipH=14;
-  chips.forEach((c,i)=>{
-    const cx=margin+(i%3)*chipW,cy=y+Math.floor(i/3)*chipH;
-    doc.setFillColor(...bgCard);doc.rect(cx,cy,chipW,chipH,'F');
-    doc.setDrawColor(...borderCol);doc.rect(cx,cy,chipW,chipH,'S');
-    // navy top bar per chip
-    doc.setFillColor(...navyLight);doc.rect(cx,cy,chipW,3,'F');
-    addText(c.l,cx+chipW/2,cy+7,{size:6.5,color:navyLight,align:'center'});
-    addText(c.v,cx+chipW/2,cy+13,{size:9,bold:true,color:ink,align:'center'});
-  });
-  y+=chipH*2+8;
-
-  // ── SECTION: BIRTH CHART (North Indian style using jsPDF shapes) ──
-  checkPage(90);
-  doc.setFillColor(...navy);doc.rect(margin,y,W-margin*2,7,'F');
-  addText(isOd?'✦ ଜନ୍ମ ଚକ୍ର (ଲଗ୍ନ)':'✦ Birth Chart — North Indian Style (Lagna: '+ascendant.rashiName+')',margin+3,y+5,{size:10,bold:true,color:cream});
-  y+=10;
-
-  // Draw North Indian Kundli chart using PDF shapes
-  const chartX=margin, chartY=y, chartW=80, chartH=80;
-  const cX=chartX+chartW/2, cY=chartY+chartH/2;
-  const cW4=chartW/4, cH4=chartH/4;
-
-  // Background — off-white
-  doc.setFillColor(...bgCard);
-  doc.rect(chartX,chartY,chartW,chartH,'F');
-  doc.setDrawColor(...navy);doc.setLineWidth(0.6);
-  doc.rect(chartX,chartY,chartW,chartH,'S');
-
-  // Grid lines
-  doc.setDrawColor(...borderCol);doc.setLineWidth(0.4);
-  doc.line(chartX+cW4,chartY,chartX+cW4,chartY+chartH);
-  doc.line(chartX+cW4*3,chartY,chartX+cW4*3,chartY+chartH);
-  doc.line(chartX,chartY+cH4,chartX+chartW,chartY+cH4);
-  doc.line(chartX,chartY+cH4*3,chartX+chartW,chartY+cH4*3);
-  // Diagonal lines
-  doc.line(chartX+cW4,chartY+cH4,chartX+cW4*2,chartY+cH4*2);
-  doc.line(chartX+cW4*3,chartY+cH4,chartX+cW4*2,chartY+cH4*2);
-  doc.line(chartX+cW4,chartY+cH4*3,chartX+cW4*2,chartY+cH4*2);
-  doc.line(chartX+cW4*3,chartY+cH4*3,chartX+cW4*2,chartY+cH4*2);
-
-  // OM in center — navy circle
-  doc.setFillColor(...navy);doc.circle(cX,cY,4,'F');
-  doc.setFontSize(7);doc.setTextColor(...cream);
-  doc.text('OM',cX,cY+1.5,{align:'center'});
-
-  // House positions in North Indian layout
-  // [row,col] for 12 houses in 4x4 grid
-  const hPos=[
-    [0,1],[0,0],[1,0],[2,0],   // H1,H2,H3,H4
-    [3,0],[3,1],[3,2],[3,3],   // H5,H6,H7,H8
-    [2,3],[1,3],[0,3],[0,2]    // H9,H10,H11,H12
-  ];
-
-  // Build house contents
-  const houseContents=Array(12).fill('').map(()=>[]);
-  planets.forEach(p=>{
-    const h=p.house-1;
-    if(h>=0&&h<12) houseContents[h].push(p.name.substring(0,3));
-  });
-  // Mark ascendant house
-  houseContents[0].unshift('Asc');
-
-  // Draw house numbers and planet names
-  hPos.forEach(([r,c],i)=>{
-    const hx=chartX+c*cW4, hy=chartY+r*cH4;
-    const hcx=hx+cW4/2, hcy=hy+cH4/2;
-    // House number (small, top-right of cell)
-    doc.setFontSize(5);doc.setTextColor(...borderCol);
-    doc.text(String(i+1),hx+cW4-2,hy+3,{align:'right'});
-    // Planet names
-    const items=houseContents[i];
-    doc.setFontSize(6.5);
-    items.forEach((item,idx)=>{
-      const col2=item==='Asc'?[170,130,10]:item==='Rahu'||item==='Ket'?[140,60,60]:[26,40,100];
-      doc.setTextColor(...col2);
-      doc.text(item,hcx,hcy-3+(idx*5),{align:'center'});
+  try{
+    const resp=await fetch('/.netlify/functions/generate-pdf',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(safeRes)
     });
-  });
-
-  // Chart legend on the right side
-  const legendX=chartX+chartW+6;
-  let legendY=chartY;
-  doc.setFontSize(7);doc.setTextColor(...navy);doc.setFont('helvetica','bold');
-  doc.text('Planets',legendX,legendY+4);doc.setFont('helvetica','normal');
-  legendY+=7;
-  planets.forEach(p=>{
-    const col2=p.dignity==='Exalted'?[30,100,50]:p.dignity==='Debilitated'?[160,40,40]:[40,60,110];
-    doc.setFontSize(6.5);doc.setTextColor(...col2);
-    doc.text(p.name.substring(0,3)+' '+p.rashiName.substring(0,3)+' H'+p.house,legendX,legendY);
-    legendY+=5;
-  });
-
-  y+=chartH+10;
-
-  // ── SECTION: PLANETS ──
-  checkPage(60);
-  doc.setFillColor(...navy);doc.rect(margin,y,W-margin*2,7,'F');
-  addText(isOd?'✦ ଗ୍ରହ ସ୍ଥିତି (ସାଇଡ଼େରିଆଲ)':'✦ Planetary Positions (Sidereal · Lahiri)',margin+3,y+5,{size:10,bold:true,color:cream});
-  y+=10;
-  const pHeaders=isOd?['ଗ୍ରହ','ରାଶି','ଡିଗ୍ରୀ','ଭାବ','ନକ୍ଷତ୍ର','ପାଦ','ସ୍ଥିତି']:['Planet','Rashi','Degree','House','Nakshatra','Pada','Dignity'];
-  const pRows=planets.map(p=>[
-    isOd?p.od:p.name,
-    isOd?p.rashiOd:p.rashiName,
-    p.degInRashi+'°',
-    'H'+p.house,
-    isOd?p.nakOd.substring(0,10):p.nakName.substring(0,12),
-    p.pada,
-    p.dignity
-  ]);
-  doc.autoTable({
-    head:[pHeaders],body:pRows,startY:y,margin:{left:margin,right:margin},
-    styles:{fontSize:8,cellPadding:2.5,textColor:ink,fillColor:cream,lineColor:borderCol,lineWidth:0.3},
-    headStyles:{fillColor:navy,textColor:cream,fontStyle:'bold',fontSize:8},
-    alternateRowStyles:{fillColor:bgCard},
-    columnStyles:{6:{cellWidth:24}},
-    didParseCell:(data)=>{
-      if(data.section==='body'&&data.column.index===6){
-        const v=data.cell.raw;
-        if(v==='Exalted')data.cell.styles.textColor=[30,100,50];
-        else if(v==='Debilitated')data.cell.styles.textColor=[160,40,40];
-        else if(v==='Own Sign')data.cell.styles.textColor=[26,60,140];
-      }
+    if(!resp.ok){
+      const err=await resp.json().catch(()=>({}));
+      throw new Error(err.error||'PDF generation failed');
     }
-  });
-  y=doc.lastAutoTable.finalY+8;
+    const data=await resp.json();
+    if(!data.pdf) throw new Error('No PDF returned');
 
-  // ── SECTION: YOGAS ──
-  checkPage(40);
-  doc.setFillColor(...navy);doc.rect(margin,y,W-margin*2,7,'F');
-  addText(isOd?'✦ ଯୋଗ ଓ ବିଶେଷ ସଂଯୋଗ':'✦ Yogas & Special Combinations',margin+3,y+5,{size:10,bold:true,color:cream});
-  y+=10;
-  yogas.slice(0,5).forEach(yg=>{
-    checkPage(18);
-    doc.setFillColor(40,22,8);doc.roundedRect(margin,y,W-margin*2,16,2,2,'F');
-    doc.setDrawColor(60,40,18);doc.roundedRect(margin,y,W-margin*2,16,2,2,'S');
-    addText(yg.name,margin+3,y+6,{size:9,bold:true,color:gold});
-    const desc=yg.desc.substring(0,110)+(yg.desc.length>110?'...':'');
-    addText(desc,margin+3,y+12,{size:7.5,color:[200,178,140],maxWidth:W-margin*2-6});
-    y+=19;
-  });
-  y+=4;
+    // Convert base64 to blob and download
+    const byteChars=atob(data.pdf);
+    const byteNums=new Array(byteChars.length);
+    for(let i=0;i<byteChars.length;i++) byteNums[i]=byteChars.charCodeAt(i);
+    const byteArr=new Uint8Array(byteNums);
+    const blob=new Blob([byteArr],{type:'application/pdf'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;a.download=data.filename||'Kundli.pdf';
+    document.body.appendChild(a);a.click();
+    document.body.removeChild(a);URL.revokeObjectURL(url);
 
-  // ── SECTION: DASHA ──
-  checkPage(50);
-  doc.setFillColor(...navy);doc.rect(margin,y,W-margin*2,7,'F');
-  addText(isOd?'✦ ବିଂଶୋତ୍ତରୀ ଦଶା':'✦ Vimshottari Dasha Timeline',margin+3,y+5,{size:10,bold:true,color:cream});
-  y+=10;
-  const dRows=dashas.map(d=>{
-    const isCurr=d.planet===currDasha.planet;
-    return[d.planet+(isCurr?' ◀ NOW':''),d.start.toLocaleDateString('en-IN'),d.end.toLocaleDateString('en-IN'),d.years.toFixed(1)+' yrs'];
-  });
-  doc.autoTable({
-    head:[['Mahadasha','Start','End','Duration']],body:dRows,startY:y,margin:{left:margin,right:margin},
-    styles:{fontSize:8,cellPadding:2.5,textColor:ink,fillColor:cream,lineColor:borderCol,lineWidth:0.3},
-    headStyles:{fillColor:navy,textColor:cream,fontStyle:'bold'},
-    alternateRowStyles:{fillColor:bgCard},
-    didParseCell:(data)=>{
-      if(data.section==='body'&&data.cell.raw&&data.cell.raw.includes('NOW')){
-        data.cell.styles.textColor=[26,40,100];data.cell.styles.fontStyle='bold';
-        data.cell.styles.fillColor=[220,225,240];
-      }
-    }
-  });
-  y=doc.lastAutoTable.finalY+8;
-
-  // ── PAGE 2: AI PREDICTIONS ──
-  doc.addPage();y=margin;
-  doc.setFillColor(...navy);doc.rect(0,0,W,14,'F');
-  doc.setFillColor(...gold);doc.rect(0,13,W,1,'F');
-  addText(isOd?'AI ଭବିଷ୍ୟ ଓ ଜୀବନ ଫଳ':'AI Predictions & Life Reading',W/2,9,{size:13,bold:true,color:cream,align:'center'});
-  y=20;
-
-  const sections=[
-    {k:'overview',l:{en:'Overview & Personality',od:'ବ୍ୟକ୍ତିତ୍ୱ ସାରାଂଶ'}},
-    {k:'strengths',l:{en:'Strengths & Gifts',od:'ଶକ୍ତି ଓ ପ୍ରତିଭା'}},
-    {k:'career',l:{en:'Career & Finance',od:'କ୍ୟାରିୟର ଓ ଅର୍ଥ'}},
-    {k:'love',l:{en:'Love & Relationships',od:'ପ୍ରେମ ଓ ସମ୍ପର୍କ'}},
-    {k:'health',l:{en:'Health',od:'ସ୍ୱାସ୍ଥ୍ୟ'}},
-    {k:'dasha',l:{en:'Current Dasha Effect',od:'ଦଶା ଫଳ'}},
-  ];
-  sections.forEach(sec=>{
-    const txt=r[sec.k+'_'+(isOd?'od':'en')]||'';
-    if(!txt)return;
-    const lbl=sec.l[isOd?'od':'en'];
-    const lines=doc.splitTextToSize(txt,W-margin*2-4);
-    const h=lines.length*5+14;
-    checkPage(h);
-    doc.setFillColor(...cream);doc.roundedRect(margin,y,W-margin*2,h,2,2,'F');
-    doc.setDrawColor(...borderCol);doc.roundedRect(margin,y,W-margin*2,h,2,2,'S');
-    doc.setFillColor(...navy);doc.roundedRect(margin,y,W-margin*2,7,2,2,'F');
-    addText(lbl,margin+3,y+5,{size:8,bold:true,color:cream});
-    doc.setFontSize(8.5);doc.setTextColor(...ink);doc.setFont('helvetica','normal');
-    doc.text(lines,margin+3,y+12);
-    y+=h+5;
-  });
-
-  // ── REMEDIES ──
-  checkPage(40);
-  doc.setFillColor(...navy);doc.rect(margin,y,W-margin*2,7,'F');
-  addText(isOd?'✦ ଉପଚାର ଓ ରତ୍ନ':'✦ Remedies & Gemstones',margin+3,y+5,{size:10,bold:true,color:cream});
-  y+=10;
-  const rems=isOd?r.remedies_od:r.remedies||[];
-  const gems=isOd?r.gemstones_od:r.gemstones||[];
-  [...(rems||[]),...(gems||[])].forEach((rem,i)=>{
-    checkPage(10);
-    doc.setFillColor(...bgCard);doc.rect(margin,y,W-margin*2,8,'F');
-    doc.setDrawColor(...borderCol);doc.rect(margin,y,W-margin*2,8,'S');
-    addText((i<(rems||[]).length?'* ':'>> ')+rem,margin+3,y+5.5,{size:8,color:ink,maxWidth:W-margin*2-6});
-    y+=9;
-  });
-  y+=4;
-
-  // ── LUCKY FACTORS ──
-  checkPage(30);
-  doc.setFillColor(...navy);doc.rect(margin,y,W-margin*2,7,'F');
-  addText(isOd?'✦ ଭାଗ୍ୟ ତଥ୍ୟ':'✦ Lucky Factors',margin+3,y+5,{size:10,bold:true,color:cream});
-  y+=10;
-  const luckys=[
-    [isOd?'ଭାଗ୍ୟ ରଙ୍ଗ':'Lucky Color', isOd?r.luckyColor_od:r.luckyColor_en],
-    [isOd?'ଭାଗ୍ୟ ସଂଖ୍ୟା':'Lucky Number', String(r.luckyNumber)],
-    [isOd?'ଭାଗ୍ୟ ଦିନ':'Lucky Day', isOd?r.luckyDay_od:r.luckyDay_en],
-    ['Beeja Mantra', r.mantra||''],
-  ];
-  doc.autoTable({
-    body:luckys,startY:y,margin:{left:margin,right:margin},
-    styles:{fontSize:9,cellPadding:3,textColor:ink,fillColor:cream,lineColor:borderCol,lineWidth:0.3},
-    alternateRowStyles:{fillColor:bgCard},
-    columnStyles:{0:{fontStyle:'bold',textColor:navy,cellWidth:45}}
-  });
-  y=doc.lastAutoTable.finalY+6;
-
-  // ── FOOTER ──
-  const pageCount=doc.internal.getNumberOfPages();
-  for(let i=1;i<=pageCount;i++){
-    doc.setPage(i);
-    doc.setFillColor(...navy);doc.rect(0,286,W,11,'F');
-    doc.setFillColor(...gold);doc.rect(0,286,W,0.8,'F');
-    doc.setFontSize(7);doc.setTextColor(180,195,220);
-    doc.text('Jyotish AI · jyotishaiodisha.netlify.app · Generated '+new Date().toLocaleDateString('en-IN'),W/2,293,{align:'center'});
-    doc.text('Page '+i+' of '+pageCount,W-margin,293,{align:'right'});
+    toast(isOd?'PDF ଡାଉନଲୋଡ ହୋଇଗଲା ✦':'PDF downloaded successfully ✦');
+  }catch(e){
+    console.error('PDF error:',e);
+    toast(isOd?'PDF ତିଆରି ହେଲା ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।':'PDF generation failed: '+e.message);
   }
-
-  const fname=(input.nm||'Kundli').replace(/\s+/g,'_')+'_Kundli_'+(isOd?'Odia':'English')+'.pdf';
-  doc.save(fname);
-  btn.textContent='⬇ Download Kundli Report';btn.disabled=false;
-  toast('PDF downloaded: '+fname+' ✦');
+  btn.textContent=isOd?'⬇ କୁଣ୍ଡଳୀ ରିପୋର୍ଟ ଡାଉନଲୋଡ':'⬇ Download Kundli Report';
+  btn.disabled=false;
 }
 
 /* ═══════════════════════════════════════════════
@@ -3744,6 +3609,590 @@ Provide complete matching analysis in EXACT JSON (no markdown):
   btn.disabled=false; btn.textContent='✦ Calculate Guna Milan';
 }
 
+/* ═══════════════════════════════════════════════════════
+   NEW FEATURES ENGINE
+   Panchang · Daily Horoscope · Muhurta · Past Life
+   Career Timing · Santaan Yoga · WhatsApp Integration
+═══════════════════════════════════════════════════════*/
+
+/* ─── PANCHANG ENGINE ───────────────────────────────*/
+const TITHIS=['Pratipada','Dwitiya','Tritiya','Chaturthi','Panchami','Shashthi','Saptami','Ashtami','Navami','Dashami','Ekadashi','Dwadashi','Trayodashi','Chaturdashi','Purnima/Amavasya'];
+const TITHIS_OD=['ପ୍ରତିପଦ','ଦ୍ୱିତୀୟ','ତୃତୀୟ','ଚତୁର୍ଥ','ପଞ୍ଚମୀ','ଷଷ୍ଠୀ','ସପ୍ତମୀ','ଅଷ୍ଟମୀ','ନବମୀ','ଦଶମୀ','ଏକାଦଶୀ','ଦ୍ୱାଦଶୀ','ତ୍ରୟୋଦଶୀ','ଚତୁର୍ଦଶୀ','ପୂର୍ଣିମା/ଅମାବାସ୍ୟା'];
+const YOGAS_P=['Vishkambha','Priti','Ayushman','Saubhagya','Shobhana','Atiganda','Sukarma','Dhriti','Shula','Ganda','Vriddhi','Dhruva','Vyaghata','Harshana','Vajra','Siddhi','Vyatipata','Variyan','Parigha','Shiva','Siddha','Sadhya','Shubha','Shukla','Brahma','Indra','Vaidhriti'];
+const KARANAS=['Bava','Balava','Kaulava','Taitila','Garaja','Vanija','Vishti','Shakuni','Chatushpada','Naga','Kimstughna'];
+const WEEK_OD=['ରବିବାର','ସୋମବାର','ମଙ୍ଗଳବାର','ବୁଧବାର','ଗୁରୁବାର','ଶୁକ୍ରବାର','ଶନିବାର'];
+const WEEK_EN=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const MONTH_OD=['ଜାନୁଆରୀ','ଫେବ୍ରୁଆରୀ','ମାର୍ଚ','ଏପ୍ରିଲ','ମଇ','ଜୁନ','ଜୁଲାଇ','ଅଗଷ୍ଟ','ସେପ୍ଟେମ୍ବର','ଅକ୍ଟୋବର','ନଭେମ୍ବର','ଡିସେମ୍ବର'];
+const RAHU_KAAL=[[7.5,9],[16.5,18],[15,16.5],[12,13.5],[13.5,15],[10.5,12],[9,10.5]];
+const GULIKA=[[6,7.5],[10.5,12],[9,10.5],[7.5,9],[6,7.5],[13.5,15],[13.5,15]];
+const ABHIJIT_START=11.75,ABHIJIT_END=12.5;
+
+function n360p(d){return((d%360)+360)%360;}
+function dateToJDp(Y,M,D){
+  if(M<=2){Y--;M+=12;}
+  const A=Math.floor(Y/100),B=2-A+Math.floor(A/4);
+  return Math.floor(365.25*(Y+4716))+Math.floor(30.6001*(M+1))+D+B-1524.5;
+}
+function getSunLonPanch(jd){
+  const T=(jd-2451545)/36525;
+  const L0=280.46646+36000.76983*T;
+  const M=(357.52911+35999.05029*T)*Math.PI/180;
+  const C=1.914602*Math.sin(M)+0.019993*Math.sin(2*M);
+  return n360p(L0+C);
+}
+function getMoonLonPanch(jd){
+  const T=(jd-2451545)/36525;
+  const Lp=n360p(218.3164477+481267.88123421*T);
+  const D=n360p(297.8501921+445267.1114034*T)*Math.PI/180;
+  const M=n360p(357.5291092+35999.0502909*T)*Math.PI/180;
+  const Mp=n360p(134.9633964+477198.8675055*T)*Math.PI/180;
+  const lon=6.288774*Math.sin(Mp)+1.274027*Math.sin(2*D-Mp)+0.658314*Math.sin(2*D)+0.213618*Math.sin(2*Mp)-0.185116*Math.sin(M);
+  return n360p(Lp+lon);
+}
+function getLahiriPanch(jd){
+  const T=(jd-2451545)/36525;
+  return 23.853144+(2000+T*100-2000)*50.2388475/3600;
+}
+
+function buildPanchang(){
+  const isOd=APP_LANG==='od';
+  const now=new Date();
+  const Y=now.getFullYear(),M=now.getMonth()+1,D=now.getDate();
+  const h=now.getHours(),min=now.getMinutes();
+  const dow=now.getDay();
+
+  const jd=dateToJDp(Y,M,D)+(h+min/60-5.5)/24;
+  const ay=getLahiriPanch(jd);
+  const sunLon=n360p(getSunLonPanch(jd)-ay);
+  const moonLon=n360p(getMoonLonPanch(jd)-ay);
+
+  // Tithi = angle between moon and sun / 12
+  const tithiAngle=n360p(moonLon-sunLon);
+  const tithiIdx=Math.floor(tithiAngle/12);
+  const tithi=TITHIS[tithiIdx%15];
+  const tithiOd=TITHIS_OD[tithiIdx%15];
+  const paksha=tithiIdx<15?'Shukla Paksha':'Krishna Paksha';
+  const pakshaOd=tithiIdx<15?'ଶୁକ୍ଳ ପକ୍ଷ':'କୃଷ୍ଣ ପକ୍ଷ';
+
+  // Nakshatra
+  const nakIdx=Math.floor((moonLon*27)/360);
+  const nakName=E.NAK_NAMES[nakIdx]||'Ashwini';
+  const nakOd=E.NAK_OD[nakIdx]||'ଅଶ୍ୱିନୀ';
+
+  // Yoga (sun+moon /13.333)
+  const yogaAngle=n360p(sunLon+moonLon);
+  const yogaIdx=Math.floor(yogaAngle/13.333)%27;
+  const yoga=YOGAS_P[yogaIdx];
+
+  // Karana
+  const karanaIdx=Math.floor((tithiAngle/6))%11;
+  const karana=KARANAS[karanaIdx];
+
+  // Rahu Kaal
+  const rk=RAHU_KAAL[dow];
+  const gl=GULIKA[dow];
+  const fmtTime=t=>{const h=Math.floor(t),m=Math.round((t-h)*60);return`${h}:${String(m).padStart(2,'0')} ${h<12?'AM':'PM'}`};
+
+  // Auspicious/inauspicious check
+  const isEkadashi=tithi==='Ekadashi';
+  const isPurnima=tithiIdx===14;
+  const isAmavasya=tithiIdx===29;
+  const isGoodDay=![0,6].includes(dow)&&!['Vishkambha','Vajra','Vyatipata','Parigha','Vaidhriti'].includes(yoga);
+
+  // Masa (Odia month names)
+  const MASA_EN=['Chaitra','Vaishakha','Jyeshtha','Ashadha','Shravana','Bhadrapada','Ashwina','Kartika','Margashirsha','Pausha','Magha','Phalguna'];
+  const MASA_OD=['ଚୈତ୍ର','ବୈଶାଖ','ଜ୍ୟେଷ୍ଠ','ଆଷାଢ','ଶ୍ରାବଣ','ଭାଦ୍ରବ','ଆଶ୍ୱିନ','କାର୍ତ୍ତିକ','ମାର୍ଗଶୀର','ପୌଷ','ମାଘ','ଫାଲ୍ଗୁନ'];
+  const masaIdx=((M-4)+12)%12;
+
+  g('panchang-body').innerHTML=`
+  <div class="result-hero">
+    <div class="rname">${isOd?WEEK_OD[dow]:WEEK_EN[dow]}, ${D} ${isOd?MONTH_OD[M-1]:now.toLocaleString('en-IN',{month:'long'})} ${Y}</div>
+    <div class="rsub">${isOd?MASA_OD[masaIdx]+' ମାସ':MASA_EN[masaIdx]+' Masa'} · ${isOd?pakshaOd:paksha}</div>
+    <div class="divg">✦ ॐ ✦</div>
+    <div class="chips">
+      <div class="chip"><div class="chip-l">${isOd?'ତିଥି':'Tithi'}</div><div class="chip-v">${isOd?tithiOd:tithi}</div></div>
+      <div class="chip"><div class="chip-l">${isOd?'ନକ୍ଷତ୍ର':'Nakshatra'}</div><div class="chip-v">${isOd?nakOd:nakName}</div></div>
+      <div class="chip"><div class="chip-l">${isOd?'ଯୋଗ':'Yoga'}</div><div class="chip-v">${yoga}</div></div>
+      <div class="chip"><div class="chip-l">${isOd?'କରଣ':'Karana'}</div><div class="chip-v">${karana}</div></div>
+    </div>
+    ${isEkadashi?`<div style="background:rgba(99,192,91,.1);border:1px solid var(--green-l);border-radius:7px;padding:8px;margin-top:10px;font-size:12px;color:var(--green-l);text-align:center">${isOd?'✦ ଆଜ ଏକାଦଶୀ — ଉପବାସ ଦିନ ✦':'✦ Ekadashi Today — Fasting Day ✦'}</div>`:''}
+    ${isPurnima?`<div style="background:rgba(184,135,10,.1);border:1px solid var(--gold);border-radius:7px;padding:8px;margin-top:10px;font-size:12px;color:var(--gold-lt);text-align:center">${isOd?'✦ ଆଜ ପୂର୍ଣିମା — ଶୁଭ ଦିନ ✦':'✦ Purnima Today — Auspicious ✦'}</div>`:''}
+    ${isAmavasya?`<div style="background:rgba(200,82,10,.1);border:1px solid var(--saffron);border-radius:7px;padding:8px;margin-top:10px;font-size:12px;color:var(--saffron);text-align:center">${isOd?'✦ ଆଜ ଅମାବାସ୍ୟା — ପିତୃ ତର୍ପଣ ଦିନ ✦':'✦ Amavasya Today — Pitru Tarpan Day ✦'}</div>`:''}
+  </div>
+
+  <div class="card">
+    <div class="sh">✦ ${isOd?'ଶୁଭ ଓ ଅଶୁଭ ସମୟ':'Auspicious & Inauspicious Times'}</div>
+    <div class="panch-grid">
+      <div class="panch-item">
+        <div class="panch-lbl">${isOd?'ରାହୁ କାଳ':'Rahu Kaal'}</div>
+        <div class="panch-val" style="color:var(--red-l)">${fmtTime(rk[0])} – ${fmtTime(rk[1])}</div>
+        <div class="panch-sub">${isOd?'ଏ ସମୟ ଏଡ଼ାନ୍ତୁ':'Avoid this time'}</div>
+      </div>
+      <div class="panch-item">
+        <div class="panch-lbl">${isOd?'ଗୁଳିକ କାଳ':'Gulika Kaal'}</div>
+        <div class="panch-val" style="color:var(--saffron)">${fmtTime(gl[0])} – ${fmtTime(gl[1])}</div>
+        <div class="panch-sub">${isOd?'ଅଶୁଭ':'Inauspicious'}</div>
+      </div>
+      <div class="panch-item">
+        <div class="panch-lbl">${isOd?'ଅଭିଜିତ':'Abhijit Muhurta'}</div>
+        <div class="panch-val" style="color:var(--green-l)">${fmtTime(ABHIJIT_START)} – ${fmtTime(ABHIJIT_END)}</div>
+        <div class="panch-sub">${isOd?'ଶ୍ରେଷ୍ଠ ମୁହୂର୍ତ':'Best muhurta daily'}</div>
+      </div>
+      <div class="panch-item">
+        <div class="panch-lbl">${isOd?'ଆଜର ଶ୍ରେଷ୍ଠ':'Best Today'}</div>
+        <div class="panch-val" style="color:var(--green-l)">${isGoodDay?(isOd?'ଶୁଭ ଦିନ':'Auspicious Day'):(isOd?'ଆଂଶିକ ଶୁଭ':'Partial Good')}</div>
+        <div class="panch-sub">${isOd?'ସାମଗ୍ରିକ':'Overall'}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="sh">✦ ${isOd?'ଆଜ ବିଶେଷ':'Today Special'}</div>
+    <div class="irow"><span class="il">${isOd?'ସୂର୍ଯ୍ୟ ରାଶି':'Sun in'}</span><span class="iv">${E.RASHI_N[Math.floor(sunLon/30)]}</span></div>
+    <div class="irow"><span class="il">${isOd?'ଚନ୍ଦ୍ର ରାଶି':'Moon in'}</span><span class="iv">${isOd?E.NAK_OD[nakIdx]:nakName} (${E.RASHI_N[Math.floor(moonLon/30)]})</span></div>
+    <div class="irow"><span class="il">${isOd?'ଚନ୍ଦ୍ର ଡିଗ୍ରୀ':'Moon degree'}</span><span class="iv">${moonLon.toFixed(1)}° ${isOd?'ସାଇଡ଼ିରିଆଲ':'sidereal'}</span></div>
+    <div class="irow"><span class="il">${isOd?'ଯୋଗ ଗୁଣ':'Yoga quality'}</span><span class="iv" style="color:${['Siddhi','Shubha','Brahma','Indra','Vriddhi'].includes(yoga)?'var(--green-l)':['Vishkambha','Vajra','Vyatipata'].includes(yoga)?'var(--red-l)':'var(--gold-lt)'}">${yoga}</span></div>
+  </div>
+
+  <button class="wa-btn" onclick="shareWA('panchang','${tithi}','${nakName}','${yoga}')">
+    <div class="wa-btn-ic">📱</div>
+    <div><div class="wa-btn-txt">${isOd?'WhatsApp ରେ ଭାଗ କରନ୍ତୁ':'Share on WhatsApp'}</div>
+    <div class="wa-btn-sub">${isOd?'ବନ୍ଧୁଙ୍କ ସହ ଆଜର ପଞ୍ଚାଙ୍ଗ ଭାଗ କରନ୍ତୁ':'Share today Panchang with friends'}</div></div>
+  </button>`;
+}
+
+/* ─── DAILY HOROSCOPE ───────────────────────────────*/
+const RASHI_SYMBOLS=['♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓'];
+let selectedHoroscopeRashi=0;
+
+function buildHoroscope(){
+  const isOd=APP_LANG==='od';
+  const rashiButtons=E.RASHI_N.map((r,i)=>`
+    <div class="rashi-btn ${i===selectedHoroscopeRashi?'on':''}" onclick="selectHoroscopeRashi(${i})">
+      <div class="rashi-sym">${RASHI_SYMBOLS[i]}</div>
+      <div class="rashi-nm">${r}</div>
+      <div class="rashi-nm-od od">${E.RASHI_OD[i]}</div>
+    </div>`).join('');
+
+  g('horoscope-body').innerHTML=`
+    <div class="card">
+      <div class="sh">✦ ${isOd?'ଆପଣଙ୍କ ରାଶି ବାଛନ୍ତୁ':'Select Your Rashi (Moon Sign)'}</div>
+      <div class="rashi-horoscope-grid">${rashiButtons}</div>
+      <button class="btn" onclick="getHoroscope()">✦ ${isOd?'ଆଜର ରାଶି ଫଳ ଦେଖନ୍ତୁ':'Get Today Horoscope'}</button>
+    </div>
+    <div id="horoscope-result"></div>`;
+}
+
+function selectHoroscopeRashi(idx){
+  selectedHoroscopeRashi=idx;
+  buildHoroscope();
+}
+
+async function getHoroscope(){
+  const isOd=APP_LANG==='od';
+  const rashi=E.RASHI_N[selectedHoroscopeRashi];
+  const rashiOd=E.RASHI_OD[selectedHoroscopeRashi];
+  const today=new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const btn=event.target;btn.disabled=true;btn.textContent=isOd?'ଦେଖୁଛୁ...':'Loading...';
+
+  g('horoscope-result').innerHTML=`<div class="loader"><div class="spin"></div>${isOd?'ଭବିଷ୍ୟ ଦେଖୁଛୁ...':'Generating horoscope...'}</div>`;
+
+  // Panchang data for context
+  const now=new Date();
+  const jd=dateToJDp(now.getFullYear(),now.getMonth()+1,now.getDate())+(now.getHours()-5.5)/24;
+  const ay=getLahiriPanch(jd);
+  const moonLon=n360p(getMoonLonPanch(jd)-ay);
+  const sunLon=n360p(getSunLonPanch(jd)-ay);
+  const moonRashi=E.RASHI_N[Math.floor(moonLon/30)];
+  const nakIdx=Math.floor((moonLon*27)/360);
+  const tithiAngle=n360p(moonLon-sunLon);
+  const tithiIdx=Math.floor(tithiAngle/12);
+  const tithi=TITHIS[tithiIdx%15];
+
+  const prompt=`You are a Vedic astrologer writing a daily horoscope. Today: ${today}
+Current panchang: Moon in ${moonRashi}, Tithi: ${tithi}, Nakshatra: ${E.NAK_NAMES[nakIdx]}
+Write horoscope for ${rashi} (${rashiOd}) rashi.
+LANGUAGE: ${isOd?'Write ENTIRELY in simple conversational Odia script (ଓଡ଼ିଆ). Short sentences. Common words.':'Write in simple English.'}
+
+Respond ONLY with JSON (no markdown):
+{"overall":"2 sentences about today overall energy for ${rashi}","career":"1 sentence career/work","love":"1 sentence love/relationships","health":"1 sentence health","money":"1 sentence finance","lucky_color":"${isOd?'ରଙ୍ଗ':'color'}","lucky_number":7,"lucky_time":"time period","tip":"1 practical tip for today","rating":4}`;
+
+  try{
+    const resp=await fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:500,messages:[{role:'user',content:prompt}]})});
+    const data=await resp.json();
+    const raw=data.content?.[0]?.text||'';
+    let r;try{r=JSON.parse(raw.replace(/```json|```/g,'').trim());}catch(e){r=null;}
+
+    const stars='★'.repeat(r?.rating||4)+'☆'.repeat(5-(r?.rating||4));
+    g('horoscope-result').innerHTML=`
+    <div class="result-hero">
+      <div style="font-size:36px;margin-bottom:6px">${RASHI_SYMBOLS[selectedHoroscopeRashi]}</div>
+      <div class="rname">${rashi} / ${rashiOd}</div>
+      <div class="rsub">${today}</div>
+      <div style="color:var(--gold-lt);font-size:18px;margin-top:8px">${stars}</div>
+    </div>
+    <div class="card">
+      <div class="sh">✦ ${isOd?'ଆଜର ଫଳ':'Today\'s Reading'}</div>
+      <div class="rlbl">${isOd?'ସାମଗ୍ରିକ':'Overall'}</div><div class="rtxt">${r?.overall||''}</div>
+      <div class="rlbl">${isOd?'କ୍ୟାରିୟର':'Career'}</div><div class="rtxt">${r?.career||''}</div>
+      <div class="rlbl">${isOd?'ପ୍ରେମ':'Love'}</div><div class="rtxt">${r?.love||''}</div>
+      <div class="rlbl">${isOd?'ସ୍ୱାସ୍ଥ୍ୟ':'Health'}</div><div class="rtxt">${r?.health||''}</div>
+      <div class="rlbl">${isOd?'ଅର୍ଥ':'Finance'}</div><div class="rtxt">${r?.money||''}</div>
+    </div>
+    <div class="card">
+      <div class="sh">✦ ${isOd?'ଆଜର ଭାଗ୍ୟ':'Lucky Factors'}</div>
+      <div class="num-trait-grid">
+        <div class="ntrait"><div class="ntrait-l">${isOd?'ଶୁଭ ରଙ୍ଗ':'Lucky Color'}</div><div class="ntrait-v">${r?.lucky_color||''}</div></div>
+        <div class="ntrait"><div class="ntrait-l">${isOd?'ଶୁଭ ସଂଖ୍ୟା':'Lucky Number'}</div><div class="ntrait-v">${r?.lucky_number||''}</div></div>
+        <div class="ntrait"><div class="ntrait-l">${isOd?'ଶୁଭ ସମୟ':'Lucky Time'}</div><div class="ntrait-v">${r?.lucky_time||''}</div></div>
+      </div>
+      <div class="rlbl">${isOd?'ଆଜର ଟିପ୍ସ':'Today\'s Tip'}</div><div class="rtxt">${r?.tip||''}</div>
+    </div>
+    <button class="wa-btn" onclick="shareWAHoroscope('${rashi}','${rashiOd}')">
+      <div class="wa-btn-ic">📱</div>
+      <div><div class="wa-btn-txt">${isOd?'WhatsApp ରେ ଭାଗ':'Share on WhatsApp'}</div>
+      <div class="wa-btn-sub">${isOd?'ବନ୍ଧୁଙ୍କ ସହ ଭାଗ କରନ୍ତୁ':'Share with friends'}</div></div>
+    </button>`;
+  }catch(e){g('horoscope-result').innerHTML=`<div class="err">Could not load horoscope. Please try again.</div>`;}
+  btn.disabled=false;btn.textContent=isOd?'✦ ଆଜର ରାଶି ଫଳ ଦେଖନ୍ତୁ':'✦ Get Today Horoscope';
+}
+
+/* ─── MUHURTA FINDER ────────────────────────────────*/
+let currentMuhurtaType='vivah';
+function muhurtaTab(type){
+  currentMuhurtaType=type;
+  ['vivah','griha','business','farming'].forEach(t=>{
+    const btn=document.getElementById('mt-'+t);
+    if(btn)btn.classList.toggle('on',t===type);
+  });
+  buildMuhurta(type);
+}
+
+async function buildMuhurta(type){
+  const isOd=APP_LANG==='od';
+  const typeNames={
+    vivah:{en:'Vivah (Marriage)',od:'ବିବାହ ମୁହୂର୍ତ'},
+    griha:{en:'Griha Pravesh (House Entry)',od:'ଗୃହ ପ୍ରବେଶ ମୁହୂର୍ତ'},
+    business:{en:'Business Launch',od:'ବ୍ୟବସାୟ ଆରମ୍ଭ ମୁହୂର୍ତ'},
+    farming:{en:'Farming / Land',od:'କୃଷି / ଜମି ମୁହୂର୍ତ'},
+  };
+  const typeName=typeNames[type];
+
+  g('muhurta-body').innerHTML=`<div class="loader"><div class="spin"></div>${isOd?'ମୁହୂର୍ତ ଖୋଜୁଛୁ...':'Finding auspicious dates...'}</div>`;
+
+  const now=new Date();
+  const months=[];
+  for(let i=0;i<3;i++){
+    const d=new Date(now);d.setMonth(d.getMonth()+i);
+    months.push(d.toLocaleString('en-IN',{month:'long',year:'numeric'}));
+  }
+
+  const prompt=`You are a Vedic Muhurta expert. Find auspicious dates for: ${typeName.en}
+Current date: ${now.toLocaleDateString('en-IN')}
+Find 8 best muhurta dates for the next 3 months: ${months.join(', ')}
+LANGUAGE: ${isOd?'Write all descriptions in simple Odia script.':'Write in English.'}
+
+For ${type==='vivah'?'marriage: consider Shubha nakshatras (Rohini,Mrigashira,Magha,Uttara Phalguni,Hasta,Swati,Anuradha,Mula,Uttara Ashadha,Uttara Bhadrapada,Revati), avoid Rahu kaal, avoid Amavasya':type==='griha'?'house entry: consider Pushya, Rohini, Mrigashira, Uttara nakshatras, Shukla paksha, avoid Saturdays and inauspicious tithis':type==='farming'?'farming: consider lunar phases, Rohini for sowing, avoid Amavasya for major work':'business: consider Pushya nakshatra, Jupiter hora, avoid Rahu kaal, prefer Wednesday/Thursday/Friday'}
+
+Respond ONLY with JSON (no markdown):
+{"dates":[{"date":"DD Month YYYY","day":"weekday","nakshatra":"nakshatra name","tithi":"tithi name","quality":"Best/Good","time":"best time window","reason":"1 sentence why auspicious","reason_od":"1 sentence Odia reason"},...8 dates],"general_advice":"2 sentences general muhurta advice","general_advice_od":"2 sentences Odia"}`;
+
+  try{
+    const resp=await fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,messages:[{role:'user',content:prompt}]})});
+    const data=await resp.json();
+    const raw=data.content?.[0]?.text||'';
+    let r;try{r=JSON.parse(raw.replace(/```json|```/g,'').trim());}catch(e){r=null;}
+
+    const datesHTML=(r?.dates||[]).map(d=>`
+      <div class="muhurta-item">
+        <div class="muhurta-date">${d.date?.split(' ')[0]||'—'}<div style="font-size:8px;color:var(--muted)">${d.date?.split(' ').slice(1).join(' ')||''}</div></div>
+        <div class="muhurta-info">
+          <div class="muhurta-title">${d.day||''} · ${d.nakshatra||''}</div>
+          <div class="muhurta-detail">${d.tithi||''} · ${d.time||''}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:3px">${isOd?d.reason_od:d.reason}</div>
+        </div>
+        <span class="muhurta-quality ${d.quality==='Best'?'mq-best':'mq-good'}">${d.quality||'Good'}</span>
+      </div>`).join('');
+
+    g('muhurta-body').innerHTML=`
+    <div class="result-hero">
+      <div class="rname">${isOd?typeName.od:typeName.en}</div>
+      <div class="rsub">${isOd?'ଆଗାମୀ ୩ ମାସ ଶୁଭ ତାରିଖ':'Auspicious dates — next 3 months'}</div>
+    </div>
+    <div class="card">
+      <div class="sh">✦ ${isOd?'ଶ୍ରେଷ୍ଠ ତାରିଖ':'Best Dates'}</div>
+      <div class="muhurta-cal">${datesHTML}</div>
+    </div>
+    <div class="card">
+      <div class="sh">✦ ${isOd?'ସାଧାରଣ ପରାମର୍ଶ':'General Advice'}</div>
+      <div class="rtxt">${isOd?r?.general_advice_od:r?.general_advice}</div>
+    </div>
+    <button class="wa-btn" onclick="shareWAMuhurta('${typeName.en}')">
+      <div class="wa-btn-ic">📱</div>
+      <div><div class="wa-btn-txt">${isOd?'WhatsApp ରେ ଭାଗ':'Share Muhurta Dates'}</div>
+      <div class="wa-btn-sub">${isOd?'ପରିବାରକୁ ପଠାନ୍ତୁ':'Send to family'}</div></div>
+    </button>`;
+  }catch(e){g('muhurta-body').innerHTML=`<div class="err">Could not find muhurta dates. Please try again.</div>`;}
+}
+
+/* ─── PAST LIFE / AKASHIC ───────────────────────────*/
+async function doPastLife(){
+  const dob=g('pl-dob').value,tob=g('pl-tob').value,pob=g('pl-pob').value.trim();
+  const err=g('pl-err');err.textContent='';
+  if(!dob||!tob||!pob){err.textContent='Please fill all fields.';return;}
+  const isOd=APP_LANG==='od';
+  const btn=event.target;btn.disabled=true;btn.textContent=isOd?'ଦେଖୁଛୁ...':'Revealing...';
+  g('pastlife-body').innerHTML=`<div class="loader"><div class="spin"></div>${isOd?'ପୂର୍ବ ଜନ୍ମ ଖୋଜୁଛୁ...':'Reading Akashic records...'}</div>`;
+
+  let calcData=null;
+  try{calcData=E.calc('Seeker',dob,tob,pob,'','');}catch(e){}
+
+  const ketu=calcData?.planets.find(p=>p.name==='Ketu');
+  const rahu=calcData?.planets.find(p=>p.name==='Rahu');
+  const saturn=calcData?.planets.find(p=>p.name==='Saturn');
+  const retrograde=calcData?.planets.filter(p=>['Saturn','Mercury','Jupiter','Venus','Mars'].includes(p.name)&&[6,8,12].includes(p.house))||[];
+  const atmakaraka=calcData?[...calcData.planets].filter(p=>!['Rahu','Ketu'].includes(p.name)).sort((a,b)=>parseFloat(b.degInRashi)-parseFloat(a.degInRashi))[0]:null;
+
+  const prompt=`You are a Vedic past life astrologer specializing in Purva Janma and Karma analysis.
+DOB: ${dob}, TOB: ${tob}, Place: ${pob}
+${ketu?`Ketu (past life): ${ketu.rashiName} H${ketu.house} ${ketu.dignity}`:''}
+${rahu?`Rahu (soul mission): ${rahu.rashiName} H${rahu.house}`:''}
+${saturn?`Saturn (karmic debt): ${saturn.rashiName} H${saturn.house} ${saturn.dignity}`:''}
+${atmakaraka?`Atmakaraka (soul indicator): ${atmakaraka.name} in ${atmakaraka.rashiName}`:''}
+${retrograde.length?`Retrograde/dusthana planets (unfinished karma): ${retrograde.map(p=>p.name+' H'+p.house).join(', ')}`:''}
+12th house planets: ${calcData?.planets.filter(p=>p.house===12).map(p=>p.name).join(', ')||'none'}
+LANGUAGE: ${isOd?'Write ENTIRELY in simple conversational Odia script.':'Write in clear English.'}
+
+Generate a deeply personal past life analysis. Respond ONLY with JSON (no markdown):
+{"past_profession":"what they likely did in past life (2 sentences)","past_location":"where/what environment (1 sentence)","past_skills":"skills brought from past life (2 sentences)","karmic_debt":"main karma to resolve this life (2 sentences)","karmic_debt_od":"Odia version","soul_mission":"what Rahu shows about this life mission (2 sentences)","atmakaraka_meaning":"what the soul wants to learn (2 sentences)","unfinished_business":"what needs completion from past life (1 sentence)","spiritual_stage":"beginner/intermediate/advanced soul with brief reason","remedy":"specific spiritual practice to resolve karma","remedy_od":"Odia remedy","blessing":"1 beautiful closing blessing sentence","blessing_od":"Odia blessing"}`;
+
+  try{
+    const resp=await fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:900,messages:[{role:'user',content:prompt}]})});
+    const data=await resp.json();
+    const raw=data.content?.[0]?.text||'';
+    let r;try{r=JSON.parse(raw.replace(/```json|```/g,'').trim());}catch(e){r=null;}
+
+    const stageColor={'beginner soul':'var(--blue-l)','intermediate soul':'var(--gold-lt)','advanced soul':'var(--green-l)'}[r?.spiritual_stage?.toLowerCase().split(' with')[0]]||'var(--muted)';
+
+    g('pastlife-body').innerHTML=`
+    <div class="past-life-card" style="text-align:center">
+      <div style="font-size:32px;margin-bottom:8px">🔮</div>
+      <div style="font-family:'Cinzel',serif;font-size:16px;color:#C8A0FF;margin-bottom:4px">${isOd?'ଆକାଶିକ ରେକର୍ଡ':'Akashic Records'}</div>
+      <div style="font-size:11px;color:#A080D0">${new Date(dob).toDateString()} · ${tob} · ${pob}</div>
+      ${atmakaraka?`<div style="margin-top:10px;background:rgba(140,80,200,.1);border:1px solid rgba(140,80,200,.3);border-radius:7px;padding:8px">
+        <div style="font-size:9px;color:#A080D0;text-transform:uppercase;letter-spacing:.5px">${isOd?'ଆତ୍ମ କାରଣ (ଆତ୍ମ ସଂକେତ)':'Atmakaraka (Soul Indicator)'}</div>
+        <div style="font-family:'Cinzel',serif;font-size:15px;color:#C8A0FF;margin-top:3px">${atmakaraka.name} in ${atmakaraka.rashiName}</div>
+      </div>`:''}
+      <div style="margin-top:8px"><span style="background:rgba(140,80,200,.15);border:1px solid rgba(140,80,200,.3);border-radius:4px;padding:2px 10px;font-size:10px;font-weight:700;color:#C8A0FF">${r?.spiritual_stage||'Soul in progress'}</span></div>
+    </div>
+
+    ${r?`<div class="past-life-card">
+      <div class="past-life-title">✦ ${isOd?'ଗତ ଜନ୍ମ ପରିଚୟ':'Past Life Identity'}</div>
+      <div class="rlbl">${isOd?'ଗତ ଜନ୍ମ ବୃତ୍ତି':'Past Life Profession'}</div><div class="rtxt">${isOd?r.past_profession:r.past_profession}</div>
+      <div class="rlbl">${isOd?'ଜୀବନ ସ୍ଥାନ':'Life Environment'}</div><div class="rtxt">${r.past_location||''}</div>
+      <div class="rlbl">${isOd?'ଗତ ଜନ୍ମ ଦକ୍ଷତା':'Skills Carried Forward'}</div><div class="rtxt">${r.past_skills||''}</div>
+    </div>
+    <div class="past-life-card">
+      <div class="past-life-title">✦ ${isOd?'କର୍ମ ଓ ଆତ୍ମ ଲକ୍ଷ୍ୟ':'Karma & Soul Mission'}</div>
+      <div class="rlbl">${isOd?'କର୍ମ ଋଣ':'Karmic Debt'}</div><div class="rtxt">${isOd?r.karmic_debt_od:r.karmic_debt}</div>
+      <div class="rlbl">${isOd?'ଆତ୍ମ ଲକ୍ଷ୍ୟ (ରାହୁ)':'Soul Mission (Rahu)'}</div><div class="rtxt">${r.soul_mission||''}</div>
+      <div class="rlbl">${isOd?'ଅସ୍ଥାୟୀ କାର୍ଯ୍ୟ':'Unfinished Business'}</div><div class="rtxt">${r.unfinished_business||''}</div>
+    </div>
+    <div class="past-life-card">
+      <div class="past-life-title">✦ ${isOd?'ମୋକ୍ଷ ମାର୍ଗ':'Path to Liberation'}</div>
+      <div class="rlbl">${isOd?'ଆତ୍ମ ଶିକ୍ଷା':'Soul Lesson'}</div><div class="rtxt">${r.atmakaraka_meaning||''}</div>
+      <div class="rlbl">${isOd?'ଉପଚାର':'Karmic Remedy'}</div><div class="rtxt" style="font-family:serif;font-size:14px;color:var(--gold-lt)">${isOd?r.remedy_od:r.remedy}</div>
+      <div style="margin-top:14px;text-align:center;padding:12px;background:rgba(140,80,200,.05);border:1px solid rgba(140,80,200,.2);border-radius:8px">
+        <div style="font-size:13px;color:#C8A0FF;line-height:1.7;font-style:italic">${isOd?r.blessing_od:r.blessing}</div>
+      </div>
+    </div>`:''}`;
+  }catch(e){g('pastlife-body').innerHTML=`<div class="err">Analysis failed. Please try again.</div>`;}
+  btn.disabled=false;btn.textContent=isOd?'🔮 ମୋ ପୂର୍ବ ଜନ୍ମ ଦେଖନ୍ତୁ':'🔮 Reveal My Past Life';
+}
+
+/* ─── CAREER TIMING ─────────────────────────────────*/
+async function doCareerTiming(){
+  const dob=g('ct-dob').value,tob=g('ct-tob').value,pob=g('ct-pob').value.trim();
+  const prof=g('ct-prof').value;
+  const err=g('ct-err');err.textContent='';
+  if(!dob||!tob||!pob){err.textContent='Please fill all fields.';return;}
+  const isOd=APP_LANG==='od';
+  const btn=event.target;btn.disabled=true;btn.textContent=isOd?'ଦେଖୁଛୁ...':'Analyzing...';
+  g('career-body').innerHTML=`<div class="loader"><div class="spin"></div>${isOd?'କ୍ୟାରିୟର ବିଶ୍ଲେଷଣ ହେଉଛି...':'Analyzing career timing...'}</div>`;
+
+  let calcData=null;
+  try{calcData=E.calc('Person',dob,tob,pob,'','');}catch(e){}
+
+  const tenth=calcData?.planets.find(p=>p.house===10);
+  const tenthLord=calcData?calcData.planets.find(p=>p.name===(['Mars','Venus','Mercury','Moon','Sun','Mercury','Venus','Mars','Jupiter','Saturn','Saturn','Jupiter'][(calcData.ascendant.rashi+9)%12])):null;
+  const jupiter=calcData?.planets.find(p=>p.name==='Jupiter');
+  const currDasha=calcData?.currDasha;
+  const currAntar=calcData?.currAntar;
+  const currYear=new Date().getFullYear();
+
+  const prompt=`You are a Vedic career astrologer. Analyze career timing.
+DOB: ${dob}, TOB: ${tob}, Place: ${pob}, Current profession: ${prof}
+Lagna: ${calcData?.ascendant.rashiName||'Unknown'}
+10th house: ${tenth?tenth.name+' in '+tenth.rashiName:'empty'}
+Jupiter: ${jupiter?jupiter.rashiName+' H'+jupiter.house+' ('+jupiter.dignity+')':'unknown'}
+Current Mahadasha: ${currDasha?.planet} (ends ${currDasha?.end?.toLocaleDateString('en-IN')||'unknown'})
+Current Antardasha: ${currAntar?.planet}
+LANGUAGE: ${isOd?'Write ALL descriptions in simple Odia script.':'Write in clear English.'}
+
+Respond ONLY with JSON (no markdown):
+{"best_profession":"top 3 professions suited for this chart","10th_analysis":"2 sentences about 10th house career indicators","current_dasha_career":"2 sentences about how current ${currDasha?.planet} dasha affects career","yearly_forecast":[{"year":${currYear},"phase":"growth/stable/challenge","prediction":"1 sentence","rating":4},{"year":${currYear+1},"phase":"","prediction":"","rating":3},{"year":${currYear+2},"phase":"","prediction":"","rating":4},{"year":${currYear+3},"phase":"","prediction":"","rating":4}],"best_years":"which years in next 5 are best for career leap","foreign_prospects":"1 sentence about foreign work/settlement","business_timing":"best time to start business if applicable","government_prospects":"1 sentence about government job prospects","remedy":"career remedy","remedy_od":"ଓଡ଼ିଆ ଉପଚାର"}`;
+
+  try{
+    const resp=await fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,messages:[{role:'user',content:prompt}]})});
+    const data=await resp.json();
+    const raw=data.content?.[0]?.text||'';
+    let r;try{r=JSON.parse(raw.replace(/```json|```/g,'').trim());}catch(e){r=null;}
+
+    const phaseColor={growth:'var(--green-l)',stable:'var(--gold-lt)',challenge:'var(--red-l)'};
+    const yearRows=(r?.yearly_forecast||[]).map(y=>`
+      <div class="career-phase ${y.phase==='growth'?'best':y.phase==='challenge'?'caution':''}">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div class="career-phase-yr">${y.year}</div>
+          <span style="background:${phaseColor[y.phase]||'var(--muted)'}20;border:1px solid ${phaseColor[y.phase]||'var(--muted)'};border-radius:4px;padding:1px 8px;font-size:9px;font-weight:700;color:${phaseColor[y.phase]||'var(--muted)'}">${y.phase?.toUpperCase()||''}</span>
+        </div>
+        <div class="career-phase-desc">${y.prediction||''}</div>
+        <div style="color:var(--gold);font-size:11px;margin-top:3px">${'★'.repeat(y.rating||3)}${'☆'.repeat(5-(y.rating||3))}</div>
+      </div>`).join('');
+
+    g('career-body').innerHTML=`
+    <div class="result-hero">
+      <div class="rname">${isOd?'କ୍ୟାରିୟର ବିଶ୍ଲେଷଣ':'Career Timing Report'}</div>
+      <div class="rsub">${new Date(dob).toDateString()} · ${pob}</div>
+    </div>
+    ${r?`<div class="card">
+      <div class="sh">✦ ${isOd?'ଉପଯୁକ୍ତ ବୃତ୍ତି':'Best Suited Professions'}</div>
+      <div class="tag-wrap">${(r.best_profession?.split(','))||[r.best_profession||'']}.map(p=>\`<span class="pill pill-b">\${p.trim()}</span>\`).join('')}</div>
+      <div class="rlbl">${isOd?'ଦଶମ ଭାବ ବିଶ୍ଲେଷଣ':'10th House Analysis'}</div><div class="rtxt">${r['10th_analysis']||''}</div>
+      <div class="rlbl">${isOd?'ବର୍ତ୍ତମାନ ଦଶା':'Current Dasha Effect'}</div><div class="rtxt">${r.current_dasha_career||''}</div>
+    </div>
+    <div class="card">
+      <div class="sh">✦ ${isOd?'ବାର୍ଷିକ ଫଳ':'Year-by-Year Forecast'}</div>
+      ${yearRows}
+    </div>
+    <div class="card">
+      <div class="sh">✦ ${isOd?'ଅତିରିକ୍ତ ବିଶ୍ଲେଷଣ':'Additional Insights'}</div>
+      <div class="rlbl">${isOd?'ଶ୍ରେଷ୍ଠ ବର୍ଷ':'Best Years (Next 5)'}</div><div class="rtxt">${r.best_years||''}</div>
+      <div class="rlbl">${isOd?'ବିଦେଶ ସୁଯୋଗ':'Foreign Prospects'}</div><div class="rtxt">${r.foreign_prospects||''}</div>
+      <div class="rlbl">${isOd?'ସରକାରୀ ଚାକିରି':'Government Job'}</div><div class="rtxt">${r.government_prospects||''}</div>
+      <div class="rlbl">${isOd?'ଉପଚାର':'Career Remedy'}</div><div class="rtxt" style="color:var(--gold-lt)">${isOd?r.remedy_od:r.remedy}</div>
+    </div>`:''}`;
+  }catch(e){g('career-body').innerHTML=`<div class="err">Analysis failed. Please try again.</div>`;}
+  btn.disabled=false;btn.textContent=isOd?'💼 କ୍ୟାରିୟର ରିପୋର୍ଟ':'💼 Generate Career Report';
+}
+
+/* ─── SANTAAN YOGA ──────────────────────────────────*/
+async function doSantaan(){
+  const dob1=g('st-dob1').value,tob1=g('st-tob1').value,pob1=g('st-pob1').value.trim();
+  const dob2=g('st-dob2').value,tob2=g('st-tob2').value,pob2=g('st-pob2').value.trim();
+  const err=g('st-err');err.textContent='';
+  if(!dob1||!tob1){err.textContent='Please fill date and time of birth for Person 1.';return;}
+  const isOd=APP_LANG==='od';
+  const btn=event.target;btn.disabled=true;btn.textContent=isOd?'ଦେଖୁଛୁ...':'Analyzing...';
+  g('santaan-body').innerHTML=`<div class="loader"><div class="spin"></div>${isOd?'ସନ୍ତାନ ଯୋଗ ଦେଖୁଛୁ...':'Analyzing Santaan Yoga...'}</div>`;
+
+  let calc1=null,calc2=null;
+  try{calc1=E.calc('Person1',dob1,tob1,pob1||'Bhubaneswar','','');}catch(e){}
+  try{if(dob2&&tob2)calc2=E.calc('Person2',dob2,tob2,pob2||'Bhubaneswar','','');}catch(e){}
+
+  const fifth1=calc1?.planets.find(p=>p.house===5);
+  const jupiter1=calc1?.planets.find(p=>p.name==='Jupiter');
+  const moon1=calc1?.planets.find(p=>p.name==='Moon');
+  const fifth2=calc2?.planets.find(p=>p.house===5);
+  const jupiter2=calc2?.planets.find(p=>p.name==='Jupiter');
+
+  const prompt=`You are a Vedic astrologer specializing in Santaan Yoga (child/progeny analysis).
+Person 1 DOB: ${dob1}, TOB: ${tob1}, Place: ${pob1||'Odisha'}
+${calc1?`Person 1 - Lagna: ${calc1.ascendant.rashiName}, 5th house: ${fifth1?fifth1.name+' in '+fifth1.rashiName:'empty'}, Jupiter: ${jupiter1?jupiter1.rashiName+' H'+jupiter1.house+' ('+jupiter1.dignity+')':'unknown'}, Moon: ${moon1?moon1.rashiName:'unknown'}, Current Dasha: ${calc1.currDasha?.planet}`:''}
+${calc2?`Person 2 DOB: ${dob2}, TOB: ${tob2} - 5th house: ${fifth2?fifth2.name+' in '+fifth2.rashiName:'empty'}, Jupiter: ${jupiter2?jupiter2.rashiName+' H'+jupiter2.house+' ('+jupiter2.dignity+')':'unknown'}`:''}
+LANGUAGE: ${isOd?'Write ALL descriptions in simple Odia script.':'Write in English.'}
+
+Respond ONLY with JSON (no markdown):
+{"santaan_yoga":"Strong/Moderate/Delayed/Challenging with 2 sentence explanation","5th_house_analysis":"2 sentences about 5th house for children","jupiter_analysis":"2 sentences about Jupiter's role","best_years_for_child":"which years in next 5 are best for conception/childbirth","gender_indication":"boy/girl/both indication based on chart with disclaimer this is not scientific","delays":"any delays or challenges and why","remedies":["remedy1","remedy2","remedy3"],"remedies_od":["ଉପଚାର1","ଉପଚାର2","ଉପଚାର3"],"mantra":"specific mantra for santaan","combined_analysis":"${calc2?'2 sentences about combined couple chart':'N/A'}","blessing":"closing blessing","blessing_od":"ଓଡ଼ିଆ ଆଶୀର୍ବାଦ"}`;
+
+  try{
+    const resp=await fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:700,messages:[{role:'user',content:prompt}]})});
+    const data=await resp.json();
+    const raw=data.content?.[0]?.text||'';
+    let r;try{r=JSON.parse(raw.replace(/```json|```/g,'').trim());}catch(e){r=null;}
+
+    const yogaColor={'Strong':'var(--green-l)','Moderate':'var(--gold-lt)','Delayed':'var(--saffron)','Challenging':'var(--red-l)'}[r?.santaan_yoga?.split(' ')[0]]||'var(--muted)';
+    const rems=isOd?r?.remedies_od:r?.remedies;
+
+    g('santaan-body').innerHTML=`
+    <div class="result-hero">
+      <div style="font-size:36px;margin-bottom:8px">👶</div>
+      <div class="rname">${isOd?'ସନ୍ତାନ ଯୋଗ ବିଶ୍ଲେଷଣ':'Santaan Yoga Analysis'}</div>
+      <div class="rsub">${new Date(dob1).toDateString()}</div>
+      ${r?.santaan_yoga?`<div style="margin-top:10px"><span style="background:${yogaColor}20;border:1px solid ${yogaColor};border-radius:6px;padding:4px 14px;font-family:'Cinzel',serif;font-size:13px;color:${yogaColor}">${r.santaan_yoga.split(' ')[0]} Santaan Yoga</span></div>`:''}
+    </div>
+    ${r?`<div class="card">
+      <div class="sh">✦ ${isOd?'ସନ୍ତାନ ଯୋଗ':'Santaan Yoga Details'}</div>
+      <div class="rlbl">${isOd?'ଯୋଗ ବିବରଣ':'Yoga Assessment'}</div><div class="rtxt">${r.santaan_yoga||''}</div>
+      <div class="rlbl">${isOd?'ପଞ୍ଚମ ଭାବ':'5th House Analysis'}</div><div class="rtxt">${r['5th_house_analysis']||''}</div>
+      <div class="rlbl">${isOd?'ଗୁରୁ ଫଳ':'Jupiter\'s Role'}</div><div class="rtxt">${r.jupiter_analysis||''}</div>
+      ${r.combined_analysis&&r.combined_analysis!=='N/A'?`<div class="rlbl">${isOd?'ଦ୍ୱୟ ଚାର୍ଟ':'Combined Chart'}</div><div class="rtxt">${r.combined_analysis}</div>`:''}
+    </div>
+    <div class="card">
+      <div class="sh">✦ ${isOd?'ଶ୍ରେଷ୍ଠ ସମୟ':'Best Timing'}</div>
+      <div class="rlbl">${isOd?'ସନ୍ତାନ ପାଇଁ ଶ୍ରେଷ୍ଠ ବର୍ଷ':'Best Years for Child'}</div><div class="rtxt">${r.best_years_for_child||''}</div>
+      <div class="rlbl">${isOd?'ଲିଙ୍ଗ ସଙ୍କେତ (ବୈଜ୍ଞାନିକ ନୁହେ)':'Gender Indication (not scientific)'}</div><div class="rtxt" style="color:var(--muted)">${r.gender_indication||''}</div>
+      ${r.delays?`<div class="rlbl">${isOd?'ଦେରୀ / ଚ୍ୟାଲେଞ୍ଜ':'Delays / Challenges'}</div><div class="rtxt" style="color:#E8A870">${r.delays}</div>`:''}
+    </div>
+    <div class="card">
+      <div class="sh">✦ ${isOd?'ଉପଚାର':'Remedies'}</div>
+      <div class="tag-wrap">${(rems||[]).map(rm=>`<span class="pill pill-g">${rm}</span>`).join('')}</div>
+      <div class="rlbl" style="margin-top:10px">${isOd?'ସନ୍ତାନ ମନ୍ତ୍ର':'Santaan Mantra'}</div>
+      <div style="font-family:serif;font-size:15px;color:var(--gold-lt);text-align:center;padding:10px;background:#0C0602;border-radius:7px;margin-top:6px">${r.mantra||'ॐ देवकीसुत गोविन्द वासुदेव जगत्पते। देहि मे तनयं कृष्ण त्वामहं शरणं गतः॥'}</div>
+      <div style="margin-top:12px;text-align:center;font-size:13px;color:var(--gold-lt);line-height:1.7;font-style:italic">${isOd?r.blessing_od:r.blessing}</div>
+    </div>`:''}`;
+  }catch(e){g('santaan-body').innerHTML=`<div class="err">Analysis failed. Please try again.</div>`;}
+  btn.disabled=false;btn.textContent=isOd?'👶 ସନ୍ତାନ ଯୋଗ ରିପୋର୍ଟ':'👶 Generate Santaan Yoga Report';
+}
+
+/* ─── WHATSAPP SHARING ──────────────────────────────*/
+function shareWA(type,tithi,nakshatra,yoga){
+  const isOd=APP_LANG==='od';
+  const today=new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  let msg='';
+  if(isOd){
+    msg=`🙏 *ଆଜର ପଞ୍ଚାଙ୍ଗ*\n${today}\n\n✦ ତିଥି: ${tithi}\n✦ ନକ୍ଷତ୍ର: ${nakshatra}\n✦ ଯୋଗ: ${yoga}\n\n📱 ଜ୍ୟୋତିଷ AI ରୁ: https://jyotishaiodisha.netlify.app`;
+  }else{
+    msg=`🙏 *Today's Panchang*\n${today}\n\n✦ Tithi: ${tithi}\n✦ Nakshatra: ${nakshatra}\n✦ Yoga: ${yoga}\n\n📱 From Jyotish AI: https://jyotishaiodisha.netlify.app`;
+  }
+  window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
+}
+
+function shareWAHoroscope(rashi,rashiOd){
+  const isOd=APP_LANG==='od';
+  const today=new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'});
+  const msg=isOd
+    ?`🌙 *${rashiOd} ରାଶି ଫଳ — ${today}*\n\nଆଜ ଆପଣଙ୍କ ସଂପୂର୍ଣ ରାଶି ଫଳ ଦେଖନ୍ତୁ:\nhttps://jyotishaiodisha.netlify.app`
+    :`🌙 *${rashi} Horoscope — ${today}*\n\nGet your complete daily horoscope:\nhttps://jyotishaiodisha.netlify.app`;
+  window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
+}
+
+function shareWAMuhurta(type){
+  const isOd=APP_LANG==='od';
+  const msg=isOd
+    ?`🕐 *${type} ପାଇଁ ଶୁଭ ମୁହୂର୍ତ*\n\nଆଗାମୀ ମାସଗୁଡ଼ିକ ପାଇଁ ଶୁଭ ତାରିଖ ଦେଖନ୍ତୁ:\nhttps://jyotishaiodisha.netlify.app`
+    :`🕐 *Auspicious Muhurta for ${type}*\n\nFind the best dates for the coming months:\nhttps://jyotishaiodisha.netlify.app`;
+  window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
+}
+
+function shareKundliWA(){
+  const isOd=APP_LANG==='od';
+  const msg=isOd
+    ?`🌟 *ମୋ ଜ୍ୟୋତିଷ ଚକ୍ର ଦେଖିଲି!*\n\nଆପଣ ମଧ୍ୟ ଆପଣଙ୍କ ସଂପୂର୍ଣ ଜ୍ୟୋତିଷ ଚକ୍ର, ଦଶା, ଯୋଗ ଓ AI ଭବିଷ୍ୟ ଦେଖନ୍ତୁ — ବିନାମୂଲ୍ୟ!\nhttps://jyotishaiodisha.netlify.app`
+    :`🌟 *I just got my Vedic Kundli!*\n\nGet your complete Kundli, Dasha analysis, Yogas & AI predictions — Free!\nhttps://jyotishaiodisha.netlify.app`;
+  window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
+}
+
+
 /* ─── INIT ──────────────────────────────────────────────*/
 (async function init(){
   // ── Check language preference ──
@@ -3804,6 +4253,5 @@ Provide complete matching analysis in EXACT JSON (no markdown):
   }catch(e){console.log('Result restore error',e);}
 })();
 </script>
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </body>
 </html>
