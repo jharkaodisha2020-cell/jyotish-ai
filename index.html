@@ -236,6 +236,16 @@ select option{background:#0C0602}
 .score-ring{width:80px;height:80px;border-radius:50%;border:3px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 10px;position:relative}
 .score-n{font-family:'Cinzel',serif;font-size:22px;font-weight:700;color:var(--gold-lt)}
 .score-l{font-size:8px;color:var(--muted);text-transform:uppercase}
+/* global user details */
+.user-details-bar{background:linear-gradient(135deg,var(--surface),#1E0800);border:1px solid var(--gold);border-radius:12px;padding:14px;margin-bottom:14px}
+.ud-title{font-family:'Cinzel',serif;font-size:13px;color:var(--gold-lt);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
+.ud-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ud-item{background:#0C0602;border:1px solid var(--border);border-radius:7px;padding:8px 10px}
+.ud-lbl{font-size:9px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:2px}
+.ud-val{font-size:13px;color:var(--cream);font-weight:700}
+.ud-edit-btn{background:transparent;border:1px solid var(--border);border-radius:5px;padding:3px 10px;font-size:10px;color:var(--muted);cursor:pointer;font-family:'Lato',sans-serif}
+.ud-edit-btn:hover{border-color:var(--gold);color:var(--gold)}
+.state-district-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 /* am/pm time picker */
 .time-picker{display:flex;gap:6px;align-items:center}
 .time-picker select{background:#0C0602;border:1px solid var(--border);border-radius:7px;padding:10px 8px;font-size:14px;color:var(--cream);font-family:'Lato',sans-serif;outline:none;flex:1;cursor:pointer}
@@ -570,6 +580,12 @@ select option{background:#0C0602}
       <div style="font-family:'Cinzel',serif;font-size:19px;color:var(--cream)" id="dash-nm">Namaste 🙏</div>
       <div style="display:inline-flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--gold);border-radius:20px;padding:3px 13px;font-size:11px;color:var(--gold-lt);font-weight:700;margin-top:6px" id="dash-plan">✦ Loading</div>
     </div>
+    <div style="text-align:right;margin-bottom:8px">
+      <button class="ud-edit-btn" style="font-size:11px;padding:5px 12px" onclick="nav('userdetails')">
+        ✏ ${APP_LANG==='od'?'ବିବରଣ ସଂପାଦନ':'Edit My Details'}
+      </button>
+    </div>
+    <div id="dash-ud-bar"></div>
     <div class="stat-grid">
       <div class="stat"><div class="stat-n" id="s-k">0</div><div class="stat-l">Kundlis</div></div>
       <div class="stat"><div class="stat-n" id="s-v">—</div><div class="stat-l">Valid Till</div></div>
@@ -577,6 +593,109 @@ select option{background:#0C0602}
     <div class="action-grid" id="act-grid"></div>
     <div id="hist-wrap"></div>
     <div id="upg-wrap"></div>
+  </div>
+</div>
+
+<!-- ═══ USER DETAILS SETUP ═══ -->
+<div class="pg" id="pg-userdetails">
+  <div class="wrap">
+    <div style="font-family:'Cinzel',serif;font-size:17px;color:var(--cream);margin:14px 0 4px" id="ud-page-title">My Birth Details</div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:16px">Fill once — used across all services automatically</div>
+    <div class="card">
+      <div class="sh">✦ Personal Information</div>
+      <div class="fg"><label>Full Name / ପୂର୍ଣ ନାମ</label><input id="ud-name" placeholder="Enter your full name"/></div>
+      <div class="fg"><label>Date of Birth</label><input id="ud-dob" type="date"/></div>
+      <div class="fg"><label>Time of Birth</label>
+        <div class="time-picker">
+          <select id="ud-tob-h" onchange="syncUDTime()">
+            <option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option>
+          </select>
+          <span class="time-picker-sep">:</span>
+          <select id="ud-tob-m" onchange="syncUDTime()">
+            <option value="00">00</option><option value="05">05</option><option value="10">10</option><option value="15">15</option><option value="20">20</option><option value="25">25</option><option value="30">30</option><option value="35">35</option><option value="40">40</option><option value="45">45</option><option value="50">50</option><option value="55">55</option>
+          </select>
+          <select id="ud-tob-ampm" onchange="syncUDTime()">
+            <option value="AM">AM</option>
+            <option value="PM">PM</option>
+          </select>
+        </div>
+        <input type="hidden" id="ud-tob" value="06:00"/>
+      </div>
+      <div class="fg">
+        <label>Gender / ଲିଙ୍ଗ</label>
+        <div class="grow-row">
+          <button class="gbtn on" id="ud-gm" onclick="setUDGender('Male')">Male / ପୁରୁଷ</button>
+          <button class="gbtn" id="ud-gf" onclick="setUDGender('Female')">Female / ସ୍ତ୍ରୀ</button>
+          <button class="gbtn" id="ud-go" onclick="setUDGender('Other')">Other</button>
+        </div>
+      </div>
+      <div class="fg"><label>Gotra (Optional)</label><input id="ud-gotra" placeholder="e.g. Kashyap, Bharadwaj"/></div>
+    </div>
+    <div class="card">
+      <div class="sh">✦ Birth Place</div>
+      <div class="fg">
+        <label>State</label>
+        <select id="ud-state" onchange="updateUDDistricts()">
+          <option value="odisha">Odisha</option>
+          <option value="other">Other State</option>
+        </select>
+      </div>
+      <div id="ud-odisha-fields">
+        <div class="state-district-row">
+          <div class="fg">
+            <label>District</label>
+            <select id="ud-district" onchange="updateUDCity()">
+              <option value="angul">Angul</option>
+<option value="balangir">Balangir</option>
+<option value="balasore">Balasore</option>
+<option value="bargarh">Bargarh</option>
+<option value="bhadrak">Bhadrak</option>
+<option value="boudh">Boudh</option>
+<option value="cuttack">Cuttack</option>
+<option value="deogarh">Deogarh</option>
+<option value="dhenkanal">Dhenkanal</option>
+<option value="gajapati">Gajapati</option>
+<option value="ganjam">Ganjam</option>
+<option value="jagatsinghpur">Jagatsinghpur</option>
+<option value="jajpur">Jajpur</option>
+<option value="jharsuguda">Jharsuguda</option>
+<option value="kalahandi">Kalahandi</option>
+<option value="kandhamal">Kandhamal</option>
+<option value="kendrapada">Kendrapada</option>
+<option value="kendujhar">Kendujhar</option>
+<option value="khurda">Khurda</option>
+<option value="koraput">Koraput</option>
+<option value="malkangiri">Malkangiri</option>
+<option value="mayurbhanj">Mayurbhanj</option>
+<option value="nabarangpur">Nabarangpur</option>
+<option value="nayagarh">Nayagarh</option>
+<option value="nuapada">Nuapada</option>
+<option value="puri">Puri</option>
+<option value="rayagada">Rayagada</option>
+<option value="sambalpur">Sambalpur</option>
+<option value="subarnapur">Subarnapur</option>
+<option value="sundargarh">Sundargarh</option>
+            </select>
+          </div>
+          <div class="fg">
+            <label>City / Town</label>
+            <select id="ud-city-select">
+              <option value="">Select city</option>
+            </select>
+          </div>
+        </div>
+        <div class="fg">
+          <label>Or type city name</label>
+          <input id="ud-city-manual" placeholder="e.g. Bhubaneswar, Cuttack"/>
+        </div>
+      </div>
+      <div id="ud-other-state-fields" style="display:none">
+        <div class="fg"><label>City, State</label><input id="ud-city-other" placeholder="e.g. Mumbai, Maharashtra"/></div>
+      </div>
+    </div>
+    <div id="ud-err" class="err"></div>
+    <button class="btn" onclick="saveUserDetails()">✦ Save My Details</button>
+    <button class="btn-outline" onclick="dashGo('dash')" style="margin-top:6px">Skip for now</button>
   </div>
 </div>
 
@@ -1000,9 +1119,10 @@ select option{background:#0C0602}
   <div class="wrap">
     <div style="font-family:'Cinzel',serif;font-size:17px;color:var(--cream);margin:14px 0 2px">Akashic Records</div>
     <div style="font-size:11px;color:var(--muted);margin-bottom:14px" class="od">ପୂର୍ବ ଜନ୍ମ ବିଶ୍ଲେଷଣ</div>
+    <div id="pl-ud-bar"></div>
     <div class="card">
       <div class="sh">🔮 Past Life & Soul Purpose Analysis</div>
-      <div style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.7">Based on Ketu (past life), Rahu (soul mission), Saturn (karmic debt), retrograde planets, and Atmakaraka — your soul story across lifetimes.</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.7">Based on Ketu, Rahu, Saturn, Atmakaraka — your soul story. <span style="color:var(--gold-lt)">Details pre-filled from your profile ↑</span></div>
       <div class="fg"><label>Date of Birth</label><input id="pl-dob" type="date"/></div>
       <div class="fg"><label>Time of Birth</label><div class="time-picker" id="pl-tob-picker">
           <select id="pl-tob-h" onchange="syncTime('pl-tob')">
@@ -1030,6 +1150,7 @@ select option{background:#0C0602}
 <div class="pg" id="pg-career">
   <div class="wrap">
     <div style="font-family:'Cinzel',serif;font-size:17px;color:var(--cream);margin:14px 0 2px">Career Timing Report</div>
+    <div id="ct-ud-bar"></div>
     <div style="font-size:11px;color:var(--muted);margin-bottom:14px" class="od">କ୍ୟାରିୟର ସମୟ ବିଶ୍ଲେଷଣ</div>
     <div class="card">
       <div class="sh">💼 Career & Finance Timing</div>
@@ -1695,7 +1816,10 @@ function dashGo(tab){
     if(el)el.classList.toggle('on',t===tab);
   });
   if(tab==='dash'){buildDash();nav('dash');}
-  else if(tab==='kundli'){nav('form');}
+  else if(tab==='kundli'){nav('form');setTimeout(()=>{
+    const bar=g('kundli-ud-bar');
+    if(bar)bar.innerHTML=renderUserDetailsBar();
+  },50);}
   else if(tab==='anka'){nav('anka');}
   else if(tab==='services'){nav('services');}
   else if(tab==='predict'){buildPredict();nav('predict');}
@@ -1703,9 +1827,13 @@ function dashGo(tab){
   else if(tab==='panchang'){buildPanchang();nav('panchang');}
   else if(tab==='horoscope'){buildHoroscope();nav('horoscope');}
   else if(tab==='muhurta'){buildMuhurta('vivah');nav('muhurta');}
-  else if(tab==='pastlife'){nav('pastlife');}
-  else if(tab==='career'){nav('career');}
+  else if(tab==='pastlife'){nav('pastlife');setTimeout(showPastLifePage,50);}
+  else if(tab==='career'){nav('career');setTimeout(()=>{
+    const bar=g('ct-ud-bar');
+    if(bar)bar.innerHTML=renderUserDetailsBar();
+  },50);}
   else if(tab==='santaan'){nav('santaan');}
+  else if(tab==='userdetails'){nav('userdetails');}
 }
 
 /* ─── PLAN ──────────────────────────────────────────────*/
@@ -1872,6 +2000,10 @@ function buildDash(){
     <div class="ac" onclick="dashGo('profile')"><div class="ac-ic">👤</div><div class="ac-nm">Profile</div><div class="ac-sub">Account</div></div>`;
   const hist=(u.kundlis||[]).slice(-4).reverse();
   g('hist-wrap').innerHTML=hist.length?`<div class="sec-title" style="font-size:13px">Recent Kundlis</div>`+hist.map((k,i)=>`<div class="hist-item" onclick="viewKundli(${i})"><div><div class="hist-n">${k.nm}</div><div class="hist-d">${k.date} · ${k.ascName} Lagna · ${k.rashiName}</div></div><div style="color:var(--gold);font-size:16px">›</div></div>`).join(''):'';
+  // Show user details bar
+  const udBar=g('dash-ud-bar');
+  if(udBar)udBar.innerHTML=renderUserDetailsBar();
+
   const upg=g('upg-wrap');
   upg.innerHTML=''; // Testing mode — no upgrade banners
 }
@@ -1889,8 +2021,12 @@ function setKG(g2){
 }
 
 async function doKundli(){
-  const nm=g('k-nm').value.trim(),dob=g('k-dob').value,tob=g('k-tob').value;
-  const pob=g('k-pob').value.trim(),gotra=g('k-gotra').value.trim();
+  const ud=S.userDetails;
+  const nm=g('k-nm')?.value.trim()||(ud?.name||'');
+  const dob=g('k-dob')?.value||(ud?.dob||'');
+  const tob=g('k-tob')?.value||(ud?.tob||'');
+  const pob=g('k-pob')?.value.trim()||(ud?.city?ud.city+', Odisha':'');
+  const gotra=g('k-gotra')?.value.trim()||(ud?.gotra||'');
   const err=g('k-err');err.textContent='';
   if(!nm||!dob||!tob||!pob){err.textContent='Please fill all required fields.';return;}
   // Testing mode — open access, no restrictions
@@ -4067,119 +4203,80 @@ Respond ONLY with JSON (no markdown):
 }
 
 /* ─── PAST LIFE / AKASHIC ───────────────────────────*/
+function showPastLifePage(){
+  const bar=g('pl-ud-bar');
+  if(bar)bar.innerHTML=renderUserDetailsBar();
+}
+
 async function doPastLife(btnEl){
-  const dob=g('pl-dob').value,tob=g('pl-tob').value,pob=g('pl-pob').value.trim();
-  const err=g('pl-err');err.textContent='';
-  if(!dob){err.textContent='Please enter date of birth.';return;}
-  if(!tob){err.textContent='Please enter time of birth.';return;}
-  if(!pob){err.textContent='Please enter place of birth.';return;}
+  const ud=S.userDetails;
+  const dob=(ud&&ud.dob)||g('pl-dob').value||'';
+  const tob=(ud&&ud.tob)||g('pl-tob').value||'06:00';
+  const pob=(ud&&ud.city)?(ud.city+', Odisha'):(g('pl-pob').value||'Bhubaneswar');
+  const err=g('pl-err');
+  if(err)err.textContent='';
+  if(!dob){
+    if(err)err.textContent='Please fill your birth details first.';
+    setTimeout(()=>nav('userdetails'),1500);
+    return;
+  }
   const isOd=APP_LANG==='od';
   const btn=btnEl||g('pl-btn');
   if(btn){btn.disabled=true;btn.textContent=isOd?'ଦେଖୁଛୁ...':'Revealing...';}
-  g('pastlife-body').innerHTML=`<div class="loader"><div class="spin"></div>${isOd?'ପୂର୍ବ ଜନ୍ମ ଖୋଜୁଛୁ...':'Reading Akashic records...'}</div>`;
 
+  // Show loading
+  g('pastlife-body').innerHTML='<div class="loader"><div class="spin"></div>'+(isOd?'ପୂର୍ବ ଜନ୍ମ ଖୋଜୁଛୁ...':'Reading Akashic records...')+'</div>';
+
+  // Calculate chart
   let calcData=null;
-  try{calcData=E.calc('Seeker',dob,tob,pob,'','');}catch(e){console.log('Calc error:',e);}
+  try{calcData=E.calc('Seeker',dob,tob,pob,'','');}catch(e){console.log('Calc:',e);}
 
-  const ketu=calcData?.planets?.find(p=>p.name==='Ketu')||{rashiName:'Scorpio',house:8,dignity:'Neutral'};
-  const rahu=calcData?.planets?.find(p=>p.name==='Rahu')||{rashiName:'Taurus',house:2};
-  const saturn=calcData?.planets?.find(p=>p.name==='Saturn')||{rashiName:'Capricorn',house:10,dignity:'Own Sign'};
-  const retrograde=calcData?.planets?.filter(p=>['Saturn','Mercury','Jupiter','Venus','Mars'].includes(p.name)&&[6,8,12].includes(p.house))||[];
-  const atmakaraka=calcData?[...calcData.planets].filter(p=>!['Rahu','Ketu'].includes(p.name)).sort((a,b)=>parseFloat(b.degInRashi)-parseFloat(a.degInRashi))[0]:{name:'Sun',rashiName:'Leo'};
+  const planets=calcData?calcData.planets:[];
+  const ketu=planets.find(p=>p.name==='Ketu')||{rashiName:'Scorpio',house:8,dignity:'Neutral'};
+  const rahu=planets.find(p=>p.name==='Rahu')||{rashiName:'Taurus',house:2,dignity:'Neutral'};
+  const saturn=planets.find(p=>p.name==='Saturn')||{rashiName:'Capricorn',house:10,dignity:'Own Sign'};
+  const retrograde=planets.filter(p=>['Saturn','Mercury','Jupiter','Venus','Mars'].includes(p.name)&&[6,8,12].includes(p.house));
+  const nonNodes=planets.filter(p=>p.name!=='Rahu'&&p.name!=='Ketu');
+  const atmakaraka=nonNodes.length?nonNodes.sort((a,b)=>parseFloat(b.degInRashi||0)-parseFloat(a.degInRashi||0))[0]:{name:'Sun',rashiName:'Leo'};
+  const h12=planets.filter(p=>p.house===12).map(p=>p.name).join(', ')||'none';
 
-  // Show fallback reading immediately while AI loads
-  renderPastLifeResult(null, ketu, rahu, saturn, atmakaraka, isOd, dob, tob, pob);
+  // Show chart-based reading immediately (no waiting for AI)
+  renderPastLifeResult(null,ketu,rahu,saturn,atmakaraka,isOd,dob,tob,pob);
 
-  const prompt=`You are a Vedic past life astrologer specializing in Purva Janma and Karma analysis.
-DOB: ${dob}, TOB: ${tob}, Place: ${pob}
-${ketu?`Ketu (past life): ${ketu.rashiName} H${ketu.house} ${ketu.dignity}`:''}
-${rahu?`Rahu (soul mission): ${rahu.rashiName} H${rahu.house}`:''}
-${saturn?`Saturn (karmic debt): ${saturn.rashiName} H${saturn.house} ${saturn.dignity}`:''}
-${atmakaraka?`Atmakaraka (soul indicator): ${atmakaraka.name} in ${atmakaraka.rashiName}`:''}
-${retrograde.length?`Retrograde/dusthana planets (unfinished karma): ${retrograde.map(p=>p.name+' H'+p.house).join(', ')}`:''}
-12th house planets: ${calcData?.planets.filter(p=>p.house===12).map(p=>p.name).join(', ')||'none'}
-LANGUAGE: ${isOd?'Write ENTIRELY in simple conversational Odia script.':'Write in clear English.'}
-
-Generate a deeply personal past life analysis. Respond ONLY with JSON (no markdown):
-{"past_profession":"what they likely did in past life (2 sentences)","past_location":"where/what environment (1 sentence)","past_skills":"skills brought from past life (2 sentences)","karmic_debt":"main karma to resolve this life (2 sentences)","karmic_debt_od":"Odia version","soul_mission":"what Rahu shows about this life mission (2 sentences)","atmakaraka_meaning":"what the soul wants to learn (2 sentences)","unfinished_business":"what needs completion from past life (1 sentence)","spiritual_stage":"beginner/intermediate/advanced soul with brief reason","remedy":"specific spiritual practice to resolve karma","remedy_od":"Odia remedy","blessing":"1 beautiful closing blessing sentence","blessing_od":"Odia blessing"}`;
+  // Then fetch AI for richer reading
+  const prompt='You are a Vedic past life astrologer. DOB:'+dob+' TOB:'+tob+' Place:'+pob+'\nKetu:'+ketu.rashiName+' H'+ketu.house+'\nRahu:'+rahu.rashiName+' H'+rahu.house+'\nSaturn:'+saturn.rashiName+' H'+saturn.house+' '+saturn.dignity+'\nAtmakaraka:'+atmakaraka.name+' in '+atmakaraka.rashiName+'\nRetrograde:'+retrograde.map(p=>p.name).join(',')+'\n12th house:'+h12+'\nLANGUAGE:'+(isOd?'Write ALL in simple Odia script':'Write in clear English')+'\nRespond ONLY with valid JSON, no markdown:\n{"past_profession":"2 sentences","past_location":"1 sentence","past_skills":"2 sentences","karmic_debt":"2 sentences","soul_mission":"2 sentences","atmakaraka_meaning":"2 sentences","unfinished_business":"1 sentence","spiritual_stage":"beginner/intermediate/advanced soul - brief reason","remedy":"specific practice","blessing":"1 closing sentence"}';
 
   try{
-    const resp=await fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:900,messages:[{role:'user',content:prompt}]})});
+    const resp=await fetch('/.netlify/functions/chat',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:700,messages:[{role:'user',content:prompt}]})
+    });
     const data=await resp.json();
-    const raw=data.content?.[0]?.text||'';
-    let r;try{r=JSON.parse(raw.replace(/```json|```/g,'').trim());}catch(e){r=null;}
-
-    const stageColor={'beginner soul':'var(--blue-l)','intermediate soul':'var(--gold-lt)','advanced soul':'var(--green-l)'}[r?.spiritual_stage?.toLowerCase().split(' with')[0]]||'var(--muted)';
-    // Update with AI content if r is valid
+    const raw=(data.content&&data.content[0]&&data.content[0].text)||'';
+    let r=null;
+    try{r=JSON.parse(raw.replace(/```json|```/g,'').trim());}catch(e){r=null;}
     if(r&&r.past_profession){
-      renderPastLifeResult(r, ketu, rahu, saturn, atmakaraka, isOd, dob, tob, pob);
+      renderPastLifeResult(r,ketu,rahu,saturn,atmakaraka,isOd,dob,tob,pob);
     }
-    // Dummy string to prevent syntax issues
-    const _unused=`
-    <div class="past-life-card" style="text-align:center">
-      <div style="font-size:32px;margin-bottom:8px">🔮</div>
-      <div style="font-family:'Cinzel',serif;font-size:16px;color:#C8A0FF;margin-bottom:4px">${isOd?'ଆକାଶିକ ରେକର୍ଡ':'Akashic Records'}</div>
-      <div style="font-size:11px;color:#A080D0">${new Date(dob).toDateString()} · ${tob} · ${pob}</div>
-      ${atmakaraka?`<div style="margin-top:10px;background:rgba(140,80,200,.1);border:1px solid rgba(140,80,200,.3);border-radius:7px;padding:8px">
-        <div style="font-size:9px;color:#A080D0;text-transform:uppercase;letter-spacing:.5px">${isOd?'ଆତ୍ମ କାରଣ (ଆତ୍ମ ସଂକେତ)':'Atmakaraka (Soul Indicator)'}</div>
-        <div style="font-family:'Cinzel',serif;font-size:15px;color:#C8A0FF;margin-top:3px">${atmakaraka.name} in ${atmakaraka.rashiName}</div>
-      </div>`:''}
-      <div style="margin-top:8px"><span style="background:rgba(140,80,200,.15);border:1px solid rgba(140,80,200,.3);border-radius:4px;padding:2px 10px;font-size:10px;font-weight:700;color:#C8A0FF">${r?.spiritual_stage||'Soul in progress'}</span></div>
-    </div>
-
-    <div class="past-life-card">
-      <div class="past-life-title">✦ ${isOd?'ଗତ ଜନ୍ମ ପରିଚୟ':'Past Life Identity'}</div>
-      <div class="rlbl">${isOd?'ଗତ ଜନ୍ମ ବୃତ୍ତି':'Past Life Profession'}</div>
-      <div class="rtxt">${r?.past_profession||getPastLifeFallback(ketu,isOd,'profession')}</div>
-      <div class="rlbl">${isOd?'ଜୀବନ ସ୍ଥାନ':'Life Environment'}</div>
-      <div class="rtxt">${r?.past_location||getPastLifeFallback(ketu,isOd,'location')}</div>
-      <div class="rlbl">${isOd?'ଗତ ଜନ୍ମ ଦକ୍ଷତା':'Skills Carried Forward'}</div>
-      <div class="rtxt">${r?.past_skills||getPastLifeFallback(ketu,isOd,'skills')}</div>
-    </div>
-    <div class="past-life-card">
-      <div class="past-life-title">✦ ${isOd?'କର୍ମ ଓ ଆତ୍ମ ଲକ୍ଷ୍ୟ':'Karma & Soul Mission'}</div>
-      <div class="rlbl">${isOd?'କର୍ମ ଋଣ':'Karmic Debt'}</div>
-      <div class="rtxt">${r?.karmic_debt||getPastLifeFallback(saturn,isOd,'karma')}</div>
-      <div class="rlbl">${isOd?'ଆତ୍ମ ଲକ୍ଷ୍ୟ (ରାହୁ)':'Soul Mission (Rahu)'}</div>
-      <div class="rtxt">${r?.soul_mission||getPastLifeFallback(rahu,isOd,'mission')}</div>
-      <div class="rlbl">${isOd?'ଅସ୍ଥାୟୀ କାର୍ଯ୍ୟ':'Unfinished Business'}</div>
-      <div class="rtxt">${r?.unfinished_business||(isOd?'ଗତ ଜନ୍ମ ଅସ୍ଥାୟୀ ସଂପର୍କ ଓ ଦାୟିତ୍ୱ ଏ ଜୀବନରେ ସମ୍ପୂର୍ଣ ହେବ।':'Relationships and responsibilities left incomplete from past life will find resolution in this one.')}</div>
-    </div>
-    <div class="past-life-card">
-      <div class="past-life-title">✦ ${isOd?'ମୋକ୍ଷ ମାର୍ଗ':'Path to Liberation'}</div>
-      <div class="rlbl">${isOd?'ଆତ୍ମ ଶିକ୍ଷା':'Soul Lesson'}</div>
-      <div class="rtxt">${r?.atmakaraka_meaning||(atmakaraka?`Your soul's indicator ${atmakaraka.name} in ${atmakaraka.rashiName} shows the deepest lesson of this lifetime is mastery of ${atmakaraka.rashiName} energy — surrender to it and growth accelerates.`:'Your soul carries deep wisdom from previous journeys. Trust your intuitive guidance.')}</div>
-      <div class="rlbl">${isOd?'ଉପଚାର':'Karmic Remedy'}</div>
-      <div class="rtxt" style="font-family:serif;font-size:14px;color:var(--gold-lt)">${r?.remedy||(isOd?'ପ୍ରତ୍ୟେକ ଶନିବାର ଶନି ଦେବଙ୍କୁ ତିଳ ତେଲ ଅର୍ପଣ କରନ୍ତୁ। ଗାୟତ୍ରୀ ମନ୍ତ୍ର ୧୦୮ ବାର ଜପ କରନ୍ତୁ।':'Offer sesame oil to Saturn every Saturday. Chant Gayatri Mantra 108 times daily at sunrise.')}</div>
-      <div style="margin-top:14px;text-align:center;padding:12px;background:rgba(140,80,200,.05);border:1px solid rgba(140,80,200,.2);border-radius:8px">
-        <div style="font-size:13px;color:#C8A0FF;line-height:1.7;font-style:italic">${r?.blessing||(isOd?'ଆପଣଙ୍କ ଆତ୍ମା ଏକ ଦୀର୍ଘ ଯାତ୍ରାରେ ଅଛି — ଏ ଜୀବନ ଏକ ଶ୍ରେଷ୍ଠ ଅଧ୍ୟାୟ। ଆଗ ବଢ଼ନ୍ତୁ।':'Your soul is on a magnificent journey. This lifetime is a precious chapter. Walk forward with courage and love.')}</div>
-      </div>
-    </div>`;
   }catch(e){
-    console.error('Past life error:',e);
-    // Show what we calculated even if AI failed
-    g('pastlife-body').innerHTML=`
-    <div class="past-life-card">
-      <div class="past-life-title">✦ ${isOd?'ଗ୍ରହ ଆଧାରିତ ବିଶ୍ଲେଷଣ':'Chart-Based Analysis'}</div>
-      <div class="rlbl">${isOd?'ଗତ ଜନ୍ମ (କେତୁ)':'Past Life (Ketu)'}</div>
-      <div class="rtxt">${getPastLifeFallback(ketu,isOd,'profession')}</div>
-      <div class="rlbl">${isOd?'କର୍ମ ଋଣ (ଶନି)':'Karmic Debt (Saturn)'}</div>
-      <div class="rtxt">${getPastLifeFallback(saturn,isOd,'karma')}</div>
-      <div class="rlbl">${isOd?'ଆତ୍ମ ଲକ୍ଷ୍ୟ (ରାହୁ)':'Soul Mission (Rahu)'}</div>
-      <div class="rtxt">${getPastLifeFallback(rahu,isOd,'mission')}</div>
-      <div class="rlbl">${isOd?'ଉପଚାର':'Remedy'}</div>
-      <div class="rtxt" style="color:var(--gold-lt)">${isOd?'ପ୍ରତ୍ୟେକ ଶନିବାର ଶନି ଦେବଙ୍କୁ ତିଳ ତେଲ ଅର୍ପଣ କରନ୍ତୁ।':'Offer sesame oil to Saturn every Saturday and chant Mahamrityunjaya mantra daily.'}</div>
-    </div>`;
+    console.error('AI error:',e);
+    // Chart-based reading already shown — that's fine
   }
-  if(btn){btn.disabled=false;btn.textContent=isOd?'🔮 ମୋ ପୂର୍ବ ଜନ୍ମ ଦେଖନ୍ତୁ':'🔮 Reveal My Past Life';}
+
+  if(btn){btn.disabled=false;btn.textContent=isOd?'🔮 ପୁଣି ଦେଖନ୍ତୁ':'🔮 Regenerate Reading';}
 }
+
 
 /* ─── CAREER TIMING ─────────────────────────────────*/
 async function doCareerTiming(btnEl){
-  const dob=g('ct-dob').value,tob=g('ct-tob').value,pob=g('ct-pob').value.trim();
+  const ud=S.userDetails;
+  const dob=ud?.dob||g('ct-dob')?.value||'';
+  const tob=ud?.tob||g('ct-tob')?.value||'';
+  const pob=ud?.city?(ud.city+', Odisha'):g('ct-pob')?.value?.trim()||'Bhubaneswar';
   const prof=g('ct-prof').value;
-  const err=g('ct-err');err.textContent='';
-  if(!dob||!tob||!pob){err.textContent='Please fill all fields.';return;}
+  const err=g('ct-err');if(err)err.textContent='';
+  if(!dob){if(err)err.textContent='Please save your birth details first.';setTimeout(()=>nav('userdetails'),1500);return;}
   const isOd=APP_LANG==='od';
   const btn=btnEl||g('ct-btn');
   if(btn){btn.disabled=true;btn.textContent=isOd?'ଦେଖୁଛୁ...':'Analyzing...';}
@@ -4498,6 +4595,236 @@ function setTimePicker(id, timeStr){
   });
 })();
 
+
+/* ═══════════════════════════════════════════════════════
+   GLOBAL USER DETAILS — Fill once, use everywhere
+═══════════════════════════════════════════════════════*/
+
+// District → Cities mapping for Odisha
+const ODISHA_CITIES = {
+  'angul': ['Angul','Talcher','Banarpal','Chhendipada','Pallahara'],
+  'balangir': ['Bolangir','Titlagarh','Kantabanji','Patnagarh','Saintala'],
+  'balasore': ['Balasore','Bhadrak','Jaleswar','Remuna','Nilagiri'],
+  'bargarh': ['Bargarh','Padampur','Sohela','Barpali','Attabira'],
+  'bhadrak': ['Bhadrak','Basudevpur','Bhandaripokhari','Dhamnagar','Tihidi'],
+  'boudh': ['Boudh','Kantamal','Purunakatak'],
+  'cuttack': ['Cuttack','Choudwar','Athgarh','Banki','Kendrapara','Jagatsinghpur'],
+  'deogarh': ['Deogarh','Barkote'],
+  'dhenkanal': ['Dhenkanal','Kamakhyanagar','Hindol','Palahara'],
+  'gajapati': ['Paralakhemundi','Mohana','Rayagada','Gumma'],
+  'ganjam': ['Berhampur','Chhatrapur','Bhanjanagar','Phulbani','Aska','Digapahandi'],
+  'jagatsinghpur': ['Jagatsinghpur','Paradip','Ersama','Kujang'],
+  'jajpur': ['Jajpur','Dharmasala','Barchana','Vyasanagar'],
+  'jharsuguda': ['Jharsuguda','Belpahar','Brajarajnagar'],
+  'kalahandi': ['Bhawanipatna','Junagarh','Kesinga','Dharamgarh','Narla'],
+  'kandhamal': ['Phulbani','Baliguda','Raikia','G.Udayagiri'],
+  'kendrapada': ['Kendrapara','Pattamundai','Marshaghai'],
+  'kendujhar': ['Keonjhar','Barbil','Champua','Anandapur'],
+  'khurda': ['Bhubaneswar','Khurda','Jatni','Balipatna','Tangi','Nimapara'],
+  'koraput': ['Koraput','Jeypore','Sunabeda','Nabarangpur'],
+  'malkangiri': ['Malkangiri','Chitrakonda','Mathili'],
+  'mayurbhanj': ['Baripada','Rairangpur','Karanjia','Bangriposi'],
+  'nabarangpur': ['Nabarangpur','Umerkote','Kosagumuda'],
+  'nayagarh': ['Nayagarh','Daspalla','Khandapara','Nuapada'],
+  'nuapada': ['Nuapada','Khariar','Komna'],
+  'puri': ['Puri','Nimapara','Pipili','Konark','Satyabadi'],
+  'rayagada': ['Rayagada','Gunupur','Padwa','Kashipur'],
+  'sambalpur': ['Sambalpur','Bargarh','Jharsuguda','Rairakhol','Kuchinda'],
+  'subarnapur': ['Sonepur','Binika','Binka','Ullunda'],
+  'sundargarh': ['Rourkela','Sundargarh','Bonaigarh','Rajgangpur','Talsamalai'],
+};
+
+let udGender = 'Male';
+function setUDGender(g){
+  udGender=g;
+  ['Male','Female','Other'].forEach(x=>{
+    const el=document.getElementById('ud-g'+x[0].toLowerCase());
+    if(el)el.classList.toggle('on',x===g);
+  });
+}
+
+function syncUDTime(){
+  const h=document.getElementById('ud-tob-h');
+  const m=document.getElementById('ud-tob-m');
+  const ampm=document.getElementById('ud-tob-ampm');
+  const hidden=document.getElementById('ud-tob');
+  if(!h||!m||!ampm||!hidden)return;
+  let hour=parseInt(h.value);
+  if(ampm.value==='PM'&&hour!==12)hour+=12;
+  if(ampm.value==='AM'&&hour===12)hour=0;
+  hidden.value=String(hour).padStart(2,'0')+':'+m.value;
+}
+
+function updateUDDistricts(){
+  const state=document.getElementById('ud-state').value;
+  document.getElementById('ud-odisha-fields').style.display=state==='odisha'?'block':'none';
+  document.getElementById('ud-other-state-fields').style.display=state==='other'?'block':'none';
+}
+
+function updateUDCity(){
+  const dist=document.getElementById('ud-district').value;
+  const cities=ODISHA_CITIES[dist]||[];
+  const sel=document.getElementById('ud-city-select');
+  sel.innerHTML='<option value="">Select city</option>'+
+    cities.map(c=>`<option value="${c.toLowerCase()}">${c}</option>`).join('');
+  if(cities.length>0){
+    sel.value=cities[0].toLowerCase();
+    document.getElementById('ud-city-manual').value=cities[0];
+  }
+}
+
+function getUDCity(){
+  const manual=document.getElementById('ud-city-manual')?.value.trim();
+  const select=document.getElementById('ud-city-select')?.value;
+  const other=document.getElementById('ud-city-other')?.value.trim();
+  const state=document.getElementById('ud-state')?.value;
+  if(state==='other')return other||'';
+  return manual||select||'Bhubaneswar';
+}
+
+function saveUserDetails(){
+  const name=document.getElementById('ud-name').value.trim();
+  const dob=document.getElementById('ud-dob').value;
+  const tob=document.getElementById('ud-tob').value;
+  const err=document.getElementById('ud-err');
+  err.textContent='';
+  if(!name){err.textContent='Please enter your name.';return;}
+  if(!dob){err.textContent='Please enter date of birth.';return;}
+  if(!tob){err.textContent='Please enter time of birth.';return;}
+
+  const city=getUDCity();
+  const gotra=document.getElementById('ud-gotra')?.value.trim()||'';
+
+  const details={name,dob,tob,gender:udGender,gotra,city,
+    district:document.getElementById('ud-district')?.value||'',
+    state:document.getElementById('ud-state')?.value||'odisha'};
+
+  // Save to state and localStorage
+  S.userDetails=details;
+  localStorage.setItem('jyotish_user_details',JSON.stringify(details));
+
+  // Also save to user profile in Supabase
+  if(S.user){
+    S.user.name=name;
+    saveU();
+  }
+
+  toast(APP_LANG==='od'?'ବିବରଣ ସଞ୍ଚୟ ହୋଇଗଲା ✦':'Details saved successfully ✦');
+
+  // Pre-fill all service forms
+  prefillAllForms();
+  dashGo('dash');
+}
+
+function prefillAllForms(){
+  const d=S.userDetails;
+  if(!d)return;
+  const city=d.city||d.district||'Bhubaneswar';
+
+  // Kundli form
+  safeSet('k-nm', d.name);
+  safeSet('k-dob', d.dob);
+  setTimePicker('k-tob', d.tob);
+  safeSet('k-pob', city+', Odisha');
+  safeSet('k-gotra', d.gotra);
+  if(d.gender){
+    kG=d.gender;
+    ['Male','Female','Other'].forEach(x=>{
+      const el=document.getElementById('kg-'+x[0].toLowerCase());
+      if(el)el.classList.toggle('on',x===d.gender);
+    });
+  }
+
+  // Past life form
+  safeSet('pl-dob', d.dob);
+  setTimePicker('pl-tob', d.tob);
+  safeSet('pl-pob', city+', Odisha');
+
+  // Career timing
+  safeSet('ct-dob', d.dob);
+  setTimePicker('ct-tob', d.tob);
+  safeSet('ct-pob', city+', Odisha');
+
+  // Health report
+  safeSet('hr-dob', d.dob);
+  setTimePicker('hr-tob', d.tob);
+  safeSet('hr-pob', city+', Odisha');
+
+  // Chakra
+  safeSet('ch-dob', d.dob);
+  setTimePicker('ch-tob', d.tob);
+
+  // Namakarana (child form — don't prefill child data with user data)
+
+  // Guna Milan — Person 1
+  safeSet('gm-name', d.name);
+  safeSet('gm-dob', d.dob);
+  setTimePicker('gm-tob', d.tob);
+  safeSet('gm-pob', city+', Odisha');
+
+  // Santaan
+  safeSet('st-dob1', d.dob);
+  setTimePicker('st-tob1', d.tob);
+  safeSet('st-pob1', city+', Odisha');
+}
+
+function safeSet(id, val){
+  const el=document.getElementById(id);
+  if(el&&val)el.value=val;
+}
+
+function loadUserDetails(){
+  // Load from localStorage
+  const saved=localStorage.getItem('jyotish_user_details');
+  if(saved){
+    try{
+      S.userDetails=JSON.parse(saved);
+      // Pre-fill the user details form
+      const d=S.userDetails;
+      safeSet('ud-name', d.name);
+      safeSet('ud-dob', d.dob);
+      if(d.tob)setTimePicker('ud-tob',d.tob);
+      if(d.gender){
+        udGender=d.gender;
+        ['Male','Female','Other'].forEach(x=>{
+          const el=document.getElementById('ud-g'+x[0].toLowerCase());
+          if(el)el.classList.toggle('on',x===d.gender);
+        });
+      }
+      safeSet('ud-gotra', d.gotra);
+      if(d.state){
+        safeSet('ud-state', d.state);
+        updateUDDistricts();
+      }
+      if(d.district){
+        safeSet('ud-district', d.district);
+        updateUDCity();
+      }
+      if(d.city)safeSet('ud-city-manual', d.city);
+      // Pre-fill all service forms
+      setTimeout(prefillAllForms, 300);
+    }catch(e){}
+  }
+}
+
+// Show user details bar on service pages
+function renderUserDetailsBar(container){
+  const d=S.userDetails;
+  if(!d)return'';
+  const isOd=APP_LANG==='od';
+  return`<div class="user-details-bar">
+    <div class="ud-title">
+      <span>✦ ${isOd?'ଆପଣଙ୍କ ବିବରଣ':'Your Details'}</span>
+      <button class="ud-edit-btn" onclick="nav('userdetails')">${isOd?'ବଦଳାନ୍ତୁ':'Edit'}</button>
+    </div>
+    <div class="ud-grid">
+      <div class="ud-item"><div class="ud-lbl">${isOd?'ନାମ':'Name'}</div><div class="ud-val">${d.name||'—'}</div></div>
+      <div class="ud-item"><div class="ud-lbl">${isOd?'ଜନ୍ମ ତାରିଖ':'DOB'}</div><div class="ud-val">${d.dob?new Date(d.dob).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}):'—'}</div></div>
+      <div class="ud-item"><div class="ud-lbl">${isOd?'ସମୟ':'Time'}</div><div class="ud-val">${d.tob||'—'}</div></div>
+      <div class="ud-item"><div class="ud-lbl">${isOd?'ସ୍ଥାନ':'Place'}</div><div class="ud-val">${d.city||'—'}</div></div>
+    </div>
+  </div>`;
+}
 /* ─── INIT ──────────────────────────────────────────────*/
 (async function init(){
   // ── Check language preference ──
@@ -4536,6 +4863,9 @@ function setTimePicker(id, timeStr){
       }
     }catch(e){console.log('Session restore error',e);}
   }
+  // ── Load user details ──
+  loadUserDetails();
+
   // ── Restore last Kundli result if available ──
   try{
     const lastResult=localStorage.getItem('jyotish_last_result');
