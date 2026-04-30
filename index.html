@@ -402,7 +402,7 @@ select option{background:#0C0602}
       </div>
       <div class="tb-acts" id="tb-acts">
       <button class="nbtn" onclick="nav('login')">Login</button>
-      <button class="nbtn hi" onclick="nav('plans')">Get Started</button>
+      <button class="nbtn hi" onclick="dashGo('dash')">Get Started</button>
       </div>
     </div>
   </div>
@@ -508,45 +508,9 @@ select option{background:#0C0602}
       <div style="text-align:center"><div style="font-family:'Cinzel',serif;font-size:20px;color:var(--gold-lt);font-weight:700">EN+OD</div><div style="font-size:10px;color:var(--muted)">Bilingual</div></div>
     </div>
     <div class="sec-title">Choose Your Plan</div>
-    <div class="plan" onclick="pickPlan('basic')">
-      <div class="pname">🌟 Jataka Reading</div>
-      <div style="font-size:11px;color:var(--muted)" class="od">ଜାତକ ପଠନ</div>
-      <div class="pprice"><sup>₹</sup>100<span> one-time</span></div>
-      <div class="pfeat">
-        <div class="pf hi">Complete birth Kundli + Lagna chart</div>
-        <div class="pf hi">Accurate Nakshatra, Rashi, Navamsa</div>
-        <div class="pf hi">Yogas & planetary dignity</div>
-        <div class="pf hi">Vimshottari Dasha with exact dates</div>
-        <div class="pf">Ashtakavarga scores · Remedies</div>
-        <div class="pf">AI predictions English + Odia</div>
-      </div>
-    </div>
-    <div class="plan feat" onclick="pickPlan('monthly')">
-      <div class="pbadge">POPULAR</div>
-      <div class="pname">🔮 Monthly Predictions</div>
-      <div style="font-size:11px;color:var(--muted)" class="od">ମାସିକ ଭବିଷ୍ୟ</div>
-      <div class="pprice"><sup>₹</sup>50<span>/month</span></div>
-      <div class="pfeat">
-        <div class="pf hi">All Jataka features</div>
-        <div class="pf hi">Monthly horoscope update</div>
-        <div class="pf hi">Antardasha analysis</div>
-        <div class="pf hi">Auspicious dates / Muhurta</div>
-        <div class="pf hi">Love, career, health forecast</div>
-      </div>
-    </div>
-    <div class="plan" onclick="pickPlan('yearly')">
-      <div class="pbadge" style="background:var(--maroon)">BEST VALUE</div>
-      <div class="pname">👑 Varshik Annual</div>
-      <div style="font-size:11px;color:var(--muted)" class="od">ବାର୍ଷିକ ଯୋଜନା · Save ₹100</div>
-      <div class="pprice"><sup>₹</sup>500<span>/year</span></div>
-      <div class="pfeat">
-        <div class="pf hi">Everything in Monthly</div>
-        <div class="pf hi">Kundli Matching (Guna Milan)</div>
-        <div class="pf hi">Full year forecast</div>
-        <div class="pf hi">Business & career timing</div>
-        <div class="pf hi">Unlimited readings</div>
-      </div>
-    </div>
+    
+    
+    
   </div>
 </div>
 
@@ -591,16 +555,6 @@ select option{background:#0C0602}
       </div>
 
     </div>
-  </div>
-</div>
-
-<!-- ═══ PLANS PAGE ═══ -->
-<div class="pg" id="pg-plans">
-  <div class="wrap"><div class="back" onclick="nav('landing')">← Back</div>
-    <div class="sec-title">Select Plan</div>
-    <div class="plan" onclick="pickPlan('basic')"><div class="pname">🌟 Jataka Reading</div><div class="pprice"><sup>₹</sup>100<span> one-time</span></div></div>
-    <div class="plan feat" onclick="pickPlan('monthly')"><div class="pbadge">POPULAR</div><div class="pname">🔮 Monthly</div><div class="pprice"><sup>₹</sup>50<span>/month</span></div></div>
-    <div class="plan" onclick="pickPlan('yearly')"><div class="pbadge" style="background:var(--maroon)">BEST VALUE</div><div class="pname">👑 Varshik Annual</div><div class="pprice"><sup>₹</sup>500<span>/year</span></div></div>
   </div>
 </div>
 
@@ -1527,7 +1481,7 @@ function setNav(li){
   const isOd = APP_LANG==='od';
   document.getElementById('tb-acts').innerHTML=li
     ?`<span style="font-size:11px;color:var(--gold-lt)">✦ ${S.user.name.split(' ')[0]}</span>`
-    :`<button class="nbtn" onclick="nav('login')">${isOd?'ଲଗ୍ ଇନ':'Login'}</button><button class="nbtn hi" onclick="nav('plans')">${isOd?'ଆରମ୍ଭ କରନ୍ତୁ':'Get Started'}</button>`;
+    :`<button class="nbtn" onclick="nav('login')">${isOd?'ଲଗ୍ ଇନ':'Login'}</button><button class="nbtn hi" onclick="dashGo('dash')">${isOd?'ଆରମ୍ଭ କରନ୍ତୁ':'Get Started'}</button>`;
   document.getElementById('bnav').classList.toggle('on',li);
   const fab=document.getElementById('chat-fab');
   if(fab)fab.classList.toggle('show',li);
@@ -1646,8 +1600,8 @@ async function verifyOTP(){
   localStorage.setItem('jyotish_session',JSON.stringify({token:res.access_token,user:S.user}));
   setNav(true);
   btn.disabled=false;btn.textContent='Verify & Sign In ✦';
-  if(S.plan){activatePlan();}
-  else{buildDash();nav('dash');}
+  await ensurePlan();
+  buildDash();nav('dash');
 }
 
 function backToEmail(){
@@ -1677,6 +1631,14 @@ function saveU(){
   localStorage.setItem('jyotish_session',JSON.stringify({token:S.token,user:S.user}));
 }
 
+async function ensurePlan(){
+  // Give all users yearly access during testing
+  if(!S.user.plan||!S.user.plan_expiry||new Date(S.user.plan_expiry)<new Date()){
+    S.plan='yearly';
+    await activatePlan();
+  }
+}
+
 /* ── RAZORPAY PAYMENT ──────────────────────────────────*/
 function pickPlan(p){
   S.plan=p;
@@ -1685,19 +1647,18 @@ function pickPlan(p){
 }
 
 async function activatePlan(){
-  const pl=PLANS[S.plan];
-  const expiry=new Date(Date.now()+pl.days*86400000).toISOString();
+  // Testing mode — auto yearly access for all users
+  const expiry=new Date(Date.now()+365*86400000).toISOString();
   const start=new Date().toISOString();
-  S.user.plan=S.plan;
+  S.user.plan='yearly';
   S.user.plan_start=start;
   S.user.plan_expiry=expiry;
   await supaFetch('/rest/v1/users?id=eq.'+S.user.id,{
     method:'PATCH',
-    body:JSON.stringify({plan:S.plan,plan_start:start,plan_expiry:expiry})
+    body:JSON.stringify({plan:'yearly',plan_start:start,plan_expiry:expiry})
   });
   saveU();
   buildDash();nav('dash');
-  toast('Plan activated: '+pl.n+' ✦');
 }
 
 /* ─── DASHBOARD ─────────────────────────────────────────*/
@@ -1720,15 +1681,13 @@ function buildDash(){
     <div class="ac" onclick="nav('santaan')"><div class="ac-ic">👶</div><div class="ac-nm">${APP_LANG==='od'?'ସନ୍ତାନ ଯୋଗ':'Santaan Yoga'}</div><div class="ac-sub">${APP_LANG==='od'?'ସନ୍ତାନ':'Child prediction'}</div></div>
     <div class="ac" onclick="dashGo('anka')"><div class="ac-ic">🔢</div><div class="ac-nm">${APP_LANG==='od'?'ଅଙ୍କ ଶାସ୍ତ୍ର':'Anka Shastra'}</div><div class="ac-sub">${APP_LANG==='od'?'ସଂଖ୍ୟା':'Numerology'}</div></div>
     <div class="ac" onclick="dashGo('services')"><div class="ac-ic">🌟</div><div class="ac-nm">${APP_LANG==='od'?'ସେବା':'Services'}</div><div class="ac-sub">${APP_LANG==='od'?'ଚକ୍ର · ସ୍ୱାସ୍ଥ୍ୟ':'Chakra · Health'}</div></div>
-    <div class="ac ${isM?'':'locked'}" onclick="${isM?"dashGo('predict')":"toast('Upgrade to Monthly plan')"}"><div class="ac-ic">🔮</div><div class="ac-nm">Monthly</div><div class="ac-sub">Predictions</div>${!isM?'<div class="lock-tag">Upgrade</div>':''}</div>
-    <div class="ac ${isY?'':'locked'}" onclick="${isY?"toast('Guna Milan coming soon!')":"toast('Upgrade to Annual plan')"}"><div class="ac-ic">💑</div><div class="ac-nm">Guna Milan</div><div class="ac-sub">Kundli match</div>${!isY?'<div class="lock-tag">Annual Only</div>':''}</div>
+    <div class="ac ${isM?'':'locked'}" onclick="${isM?"dashGo('predict')":"toast('Upgrade to Monthly plan')"}"><div class="ac-ic">🔮</div><div class="ac-nm">Monthly</div><div class="ac-sub">Predictions</div></div>
+    <div class="ac ${isY?'':'locked'}" onclick="${isY?"toast('Guna Milan coming soon!')":"toast('Upgrade to Annual plan')"}"><div class="ac-ic">💑</div><div class="ac-nm">Guna Milan</div><div class="ac-sub">Kundli match</div></div>
     <div class="ac" onclick="dashGo('profile')"><div class="ac-ic">👤</div><div class="ac-nm">Profile</div><div class="ac-sub">Account</div></div>`;
   const hist=(u.kundlis||[]).slice(-4).reverse();
   g('hist-wrap').innerHTML=hist.length?`<div class="sec-title" style="font-size:13px">Recent Kundlis</div>`+hist.map((k,i)=>`<div class="hist-item" onclick="viewKundli(${i})"><div><div class="hist-n">${k.nm}</div><div class="hist-d">${k.date} · ${k.ascName} Lagna · ${k.rashiName}</div></div><div style="color:var(--gold);font-size:16px">›</div></div>`).join(''):'';
   const upg=g('upg-wrap');
-  if(!u.plan){upg.innerHTML=`<div class="upg-banner"><h3>✦ Unlock Your Kundli</h3><p>Get accurate Vedic chart with AI predictions in English & Odia</p><button class="btn btn-gold" onclick="nav('plans')" style="width:auto;padding:9px 22px;font-size:13px">View Plans from ₹100</button></div>`;}
-  else if(u.plan==='basic'){upg.innerHTML=`<div class="upg-banner"><h3>✦ Get Monthly Predictions</h3><p>Upgrade for live horoscope, Antardasha analysis & Muhurta</p><button class="btn btn-gold" onclick="pickPlan('monthly')" style="width:auto;padding:9px 22px;font-size:13px">Upgrade — ₹50/month</button></div>`;}
-  else upg.innerHTML='';
+  upg.innerHTML=''; // Testing mode — no upgrade banners
 }
 
 function viewKundli(i){
@@ -1748,21 +1707,7 @@ async function doKundli(){
   const pob=g('k-pob').value.trim(),gotra=g('k-gotra').value.trim();
   const err=g('k-err');err.textContent='';
   if(!nm||!dob||!tob||!pob){err.textContent='Please fill all required fields.';return;}
-  if(!S.user.plan){
-    err.textContent=APP_LANG==='od'?'ଦୟାକରି ପ୍ରଥମ ଏକ ଯୋଜନା କିଣନ୍ତୁ।':'Please get a plan first.';
-    setTimeout(()=>nav('plans'),1500);return;
-  }
-  // ── Plan-based Kundli limits ──
-  const kundliCount=(S.user.kundlis||[]).length;
-  const planLimits={basic:1,monthly:10,yearly:9999};
-  const myLimit=planLimits[S.user.plan]||1;
-  // Check plan expiry
-  if(S.user.plan_expiry&&new Date(S.user.plan_expiry)<new Date()){
-    err.textContent=APP_LANG==='od'?'ଆପଣଙ୍କ ଯୋଜନା ଶେଷ ହୋଇଗଲା। ଦୟାକରି ନବୀକରଣ କରନ୍ତୁ।':'Your plan has expired. Please renew.';
-    setTimeout(()=>nav('plans'),2000);return;
-  }
-  // Testing mode — no kundli limits
-  // if(kundliCount>=myLimit){ ... }
+  // Testing mode — open access, no restrictions
 
   g('k-gen-btn').disabled=true;
   g('load-msg').textContent=APP_LANG==='od'?'ଗ୍ରହ ସ୍ଥିତି ଗଣନା ହେଉଛି...':'Calculating planetary positions...';
@@ -2106,8 +2051,8 @@ function buildNIChart(planets,asc){
 function buildPredict(){
   const u=S.user;const isM=u&&(u.plan==='monthly'||u.plan==='yearly');
   if(!isM){
-    g('predict-body').innerHTML=`<div class="upg-banner"><h3>✦ Monthly Predictions</h3><p>Personalized monthly horoscope, Antardasha timing & Muhurta in English + Odia</p><button class="btn btn-gold" onclick="pickPlan('monthly')" style="width:auto;padding:9px 22px;font-size:13px">Upgrade — ₹50/month</button></div>`;
-    return;
+    // Testing mode - all features open
+    // Fall through to show predictions
   }
   const now=new Date();
   const mn=now.toLocaleString('en-IN',{month:'long',year:'numeric'});
@@ -2196,7 +2141,7 @@ function buildProfile(){
       ${isOd?'₹100 ଯୋଜନା — ୧ ଟି ଜୀବନ କାଳ କୁଣ୍ଡଳୀ। ₹50/ମାସ ଯୋଜନାରେ ୧୦ ଟି/ମାସ।':'₹100 Basic — 1 lifetime Kundli. Upgrade to ₹50/month for 10 Kundlis/month.'}
     </div>`:''}
 
-    <button class="btn" style="margin-top:12px" onclick="nav('plans')">${isActive?(isOd?'ଅପଗ୍ରେଡ଼ / ନবীকରଣ ✦':'Upgrade / Renew ✦'):(isOd?'ଯୋଜନା ନିଅନ୍ତୁ ✦':'Get a Plan ✦')}</button>
+    <button class="btn" style="margin-top:12px" onclick="dashGo('dash')">${isActive?(isOd?'ଅପଗ୍ରେଡ଼ / ନবীকରଣ ✦':'Upgrade / Renew ✦'):(isOd?'ଯୋଜନା ନିଅନ୍ତୁ ✦':'Get a Plan ✦')}</button>
   </div>
   <div class="card">
     <div class="sh">✦ ${APP_LANG==='od'?'ଭାଷା ସେଟିଂ':'Language Setting'}</div>
