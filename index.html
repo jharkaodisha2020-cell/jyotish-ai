@@ -522,10 +522,6 @@ select option{background:#0C0602}
       <div style="text-align:center"><div style="font-family:'Cinzel',serif;font-size:20px;color:var(--gold-lt);font-weight:700">27</div><div style="font-size:10px;color:var(--muted)">Nakshatras</div></div>
       <div style="text-align:center"><div style="font-family:'Cinzel',serif;font-size:20px;color:var(--gold-lt);font-weight:700">EN+OD</div><div style="font-size:10px;color:var(--muted)">Bilingual</div></div>
     </div>
-    <div class="sec-title">Choose Your Plan</div>
-    
-    
-    
   </div>
 </div>
 
@@ -1014,7 +1010,7 @@ select option{background:#0C0602}
         <div class="fg"><label>Gotra (optional)</label><input id="nm-gotra" placeholder="Family gotra"/></div>
         <div class="fg"><label>Preferred starting letter (optional)</label><input id="nm-letter" placeholder="e.g. S, P, A — leave blank for Nakshatra-based" maxlength="3"/></div>
         <div id="nm-err" class="err"></div>
-        <button class="btn" onclick="doNamakarana()">✦ Suggest Auspicious Names</button>
+        <button class="btn" onclick="doNamakarana(this)" id="nm-btn">✦ Suggest Auspicious Names</button>
       </div>
       <div id="nm-result" style="display:none"></div>
     </div>
@@ -1072,7 +1068,7 @@ select option{background:#0C0602}
           <div class="fg"><label>Place of Birth</label><input id="gf-pob" placeholder="City, Odisha"/></div>
         </div>
         <div id="guna-err" class="err"></div>
-        <button class="btn" onclick="doGunaMilan()">✦ Calculate Guna Milan</button>
+        <button class="btn" onclick="doGunaMilan(this)" id="guna-btn">✦ Calculate Guna Milan</button>
       </div>
       <div id="guna-result" style="display:none"></div>
     </div>
@@ -1836,21 +1832,7 @@ function dashGo(tab){
   else if(tab==='userdetails'){nav('userdetails');}
 }
 
-/* ─── PLAN ──────────────────────────────────────────────*/
-function pickPlan(p){
-  S.plan=p;
-  S.user?activatePlan():nav('login');
-}
-function activatePlan(){
-  // In testing mode: directly activate without payment
-  S.user.plan=S.plan;
-  const days=PLANS[S.plan].days;
-  const exp=new Date(Date.now()+days*86400000);
-  S.user.planExpiry=exp.toLocaleDateString('en-IN');
-  S.user.planStart=new Date().toLocaleDateString('en-IN');
-  saveU();buildDash();nav('dash');
-  toast('Plan activated: '+PLANS[S.plan].n+' ✦');
-}
+/* ─── PLAN removed duplicate ──────────────────────────────────────────────*/
 
 /* ─── AUTH ──────────────────────────────────────────────*/
 /* ── OTP AUTH ─────────────────────────────────────────*/
@@ -2459,9 +2441,6 @@ function buildProfile(){
       <span class="iv" style="color:${kundliCount>=myLimit?'var(--red-l)':'var(--green-l)'}">${kundliCount} / ${myLimit===9999?'∞':myLimit} ${isOd?'ଟି ବ୍ୟବହାର':'used'}</span>
     </div>
 
-    ${u.plan==='basic'?`<div style="background:rgba(184,135,10,.08);border:1px solid rgba(184,135,10,.2);border-radius:7px;padding:10px;margin-top:10px;font-size:11px;color:var(--muted)">
-      ${isOd?'₹100 ଯୋଜନା — ୧ ଟି ଜୀବନ କାଳ କୁଣ୍ଡଳୀ। ₹50/ମାସ ଯୋଜନାରେ ୧୦ ଟି/ମାସ।':'₹100 Basic — 1 lifetime Kundli. Upgrade to ₹50/month for 10 Kundlis/month.'}
-    </div>`:''}
 
     <button class="btn" style="margin-top:12px" onclick="dashGo('dash')">${isActive?(isOd?'ଅପଗ୍ରେଡ଼ / ନবীকରଣ ✦':'Upgrade / Renew ✦'):(isOd?'ଯୋଜନା ନିଅନ୍ତୁ ✦':'Get a Plan ✦')}</button>
   </div>
@@ -3087,7 +3066,7 @@ async function analyzeMobile(btnEl){
   const err=g('mob-err');err.textContent='';
   if(!num||num.length<10){err.textContent='Please enter a valid 10-digit mobile number.';return;}
 
-  const btn=event.target;btn.disabled=true;btn.textContent='Analyzing...';
+  const btn=btnEl||g('mob-btn');if(btn){btn.disabled=true;}btn.textContent='Analyzing...';
 
   // Calculate digit values
   const digits=[...num].map(Number);
@@ -3174,7 +3153,7 @@ async function analyzeNameCorrection(btnEl){
   if(!name){err.textContent='Please enter your full name.';return;}
   if(!dob){err.textContent='Please enter your date of birth.';return;}
 
-  const btn=event.target;btn.disabled=true;btn.textContent='Generating Report...';
+  const btn=btnEl||g('nc-btn');if(btn){btn.disabled=true;}btn.textContent='Generating Report...';
 
   // Calculate current name numbers
   const clean=name.toUpperCase().replace(/[^A-Z]/g,'');
@@ -3292,7 +3271,7 @@ async function analyzeChakra(btnEl){
   if(!dob||!tob){err.textContent='Please enter date and time of birth.';return;}
 
   const challenges=[...document.querySelectorAll('#chakra-challenges input:checked')].map(c=>c.value);
-  const btn=event.target;btn.disabled=true;btn.textContent='Generating Report...';
+  const btn=btnEl||g('ch-btn');if(btn){btn.disabled=true;}btn.textContent='Generating Report...';
 
   // Calculate basic chakra states from planetary positions
   let planets=[];
@@ -3414,7 +3393,7 @@ async function analyzeHealth(btnEl){
   const err=g('hr-err');err.textContent='';
   if(!dob||!tob||!pob){err.textContent='Please fill date, time, and place of birth.';return;}
 
-  const btn=event.target;btn.disabled=true;btn.textContent='Generating Report...';
+  const btn=btnEl||g('hr-btn');if(btn){btn.disabled=true;}btn.textContent='Generating Report...';
 
   let calcData=null;
   try{calcData=E.calc('Patient',dob,tob,pob,'',hrG);}catch(e){}
@@ -3565,7 +3544,8 @@ async function doNamakarana(){
   const err = g('nm-err'); err.textContent='';
   if(!dob||!tob){err.textContent='Please enter date and time of birth.';return;}
 
-  const btn=event.target; btn.disabled=true; btn.textContent='Calculating...';
+  const btn=btnEl||document.querySelector('#nm-btn');
+  if(btn){btn.disabled=true;btn.textContent='Calculating...';}
 
   // Calculate nakshatra
   let nakIdx=0, pada=1, moonRashi='', moonRashiOd='', lagnaName='';
@@ -3744,7 +3724,8 @@ async function doGunaMilan(){
   if(!gmName||!gmDob||!gmTob||!gfName||!gfDob||!gfTob){
     err.textContent='Please fill all details for both Groom and Bride.'; return;
   }
-  const btn=event.target; btn.disabled=true; btn.textContent='Calculating Guna Milan...';
+  const btn=btnEl||document.querySelector('#guna-btn');
+  if(btn){btn.disabled=true;btn.textContent='Calculating Guna Milan...';}
 
   // Calculate both charts
   let mCalc=null, fCalc=null;
@@ -4045,7 +4026,7 @@ function buildHoroscope(){
     <div class="card">
       <div class="sh">✦ ${isOd?'ଆପଣଙ୍କ ରାଶି ବାଛନ୍ତୁ':'Select Your Rashi (Moon Sign)'}</div>
       <div class="rashi-horoscope-grid">${rashiButtons}</div>
-      <button class="btn" onclick="getHoroscope()">✦ ${isOd?'ଆଜର ରାଶି ଫଳ ଦେଖନ୍ତୁ':'Get Today Horoscope'}</button>
+      <button class="btn" onclick="getHoroscope(this)" class="horoscope-get-btn">✦ ${isOd?'ଆଜର ରାଶି ଫଳ ଦେଖନ୍ତୁ':'Get Today Horoscope'}</button>
     </div>
     <div id="horoscope-result"></div>`;
 }
@@ -4055,12 +4036,13 @@ function selectHoroscopeRashi(idx){
   buildHoroscope();
 }
 
-async function getHoroscope(){
+async function getHoroscope(btnEl){
   const isOd=APP_LANG==='od';
   const rashi=E.RASHI_N[selectedHoroscopeRashi];
   const rashiOd=E.RASHI_OD[selectedHoroscopeRashi];
   const today=new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-  const btn=event.target;btn.disabled=true;btn.textContent=isOd?'ଦେଖୁଛୁ...':'Loading...';
+  const btn=btnEl||document.querySelector('.horoscope-get-btn');
+  if(btn){btn.disabled=true;btn.textContent=isOd?'ଦେଖୁଛୁ...':'Loading...';}
 
   g('horoscope-result').innerHTML=`<div class="loader"><div class="spin"></div>${isOd?'ଭବିଷ୍ୟ ଦେଖୁଛୁ...':'Generating horoscope...'}</div>`;
 
@@ -4121,7 +4103,7 @@ Respond ONLY with JSON (no markdown):
       <div class="wa-btn-sub">${isOd?'ବନ୍ଧୁଙ୍କ ସହ ଭାଗ କରନ୍ତୁ':'Share with friends'}</div></div>
     </button>`;
   }catch(e){g('horoscope-result').innerHTML=`<div class="err">Could not load horoscope. Please try again.</div>`;}
-  btn.disabled=false;btn.textContent=isOd?'✦ ଆଜର ରାଶି ଫଳ ଦେଖନ୍ତୁ':'✦ Get Today Horoscope';
+  if(btn){btn.disabled=false;btn.textContent=isOd?'✦ ଆଜର ରାଶି ଫଳ ଦେଖନ୍ତୁ':'✦ Get Today Horoscope';}
 }
 
 /* ─── MUHURTA FINDER ────────────────────────────────*/
