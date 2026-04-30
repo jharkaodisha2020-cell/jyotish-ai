@@ -1,8 +1,0 @@
-{
-  "name": "jyotish-ai-functions",
-  "version": "1.0.0",
-  "description": "Netlify functions for Jyotish AI",
-  "dependencies": {
-    "pdfkit": "^0.15.0"
-  }
-}
