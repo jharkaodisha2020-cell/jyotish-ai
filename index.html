@@ -236,6 +236,11 @@ select option{background:#0C0602}
 .score-ring{width:80px;height:80px;border-radius:50%;border:3px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 10px;position:relative}
 .score-n{font-family:'Cinzel',serif;font-size:22px;font-weight:700;color:var(--gold-lt)}
 .score-l{font-size:8px;color:var(--muted);text-transform:uppercase}
+/* am/pm time picker */
+.time-picker{display:flex;gap:6px;align-items:center}
+.time-picker select{background:#0C0602;border:1px solid var(--border);border-radius:7px;padding:10px 8px;font-size:14px;color:var(--cream);font-family:'Lato',sans-serif;outline:none;flex:1;cursor:pointer}
+.time-picker select:focus{border-color:var(--gold)}
+.time-picker-sep{color:var(--muted);font-size:16px;font-weight:700;flex-shrink:0}
 /* new features */
 .feature-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
 .feature-card{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:16px;text-align:center;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
@@ -584,7 +589,20 @@ select option{background:#0C0602}
       <div class="fg"><label>Full Name / ପୂର୍ଣ ନାମ</label><input id="k-nm" placeholder="Enter full name"/></div>
       <div class="g2">
         <div class="fg"><label>Date of Birth</label><input id="k-dob" type="date"/></div>
-        <div class="fg"><label>Time of Birth (IST)</label><input id="k-tob" type="time"/></div>
+        <div class="fg"><label>Time of Birth (IST)</label><div class="time-picker" id="k-tob-picker">
+          <select id="k-tob-h" onchange="syncTime('k-tob')">
+            <option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option>
+          </select>
+          <span class="time-picker-sep">:</span>
+          <select id="k-tob-m" onchange="syncTime('k-tob')">
+            <option value="00">00</option><option value="05">05</option><option value="10">10</option><option value="15">15</option><option value="20">20</option><option value="25">25</option><option value="30">30</option><option value="35">35</option><option value="40">40</option><option value="45">45</option><option value="50">50</option><option value="55">55</option>
+          </select>
+          <select id="k-tob-ampm" onchange="syncTime('k-tob')">
+            <option value="AM">AM</option>
+            <option value="PM">PM</option>
+          </select>
+          <input type="hidden" id="k-tob" value="06:00"/>
+        </div></div>
       </div>
       <div class="fg">
         <label>Place of Birth / ଜନ୍ମ ସ୍ଥାନ</label>
@@ -773,7 +791,20 @@ select option{background:#0C0602}
         <div class="sh">🕉 Seven Chakra Report</div>
         <div style="font-size:11px;color:var(--muted);margin-bottom:12px">Based on your birth chart planetary positions, discover which chakras are open, blocked, or imbalanced.</div>
         <div class="fg"><label>Date of Birth</label><input id="ch-dob" type="date"/></div>
-        <div class="fg"><label>Time of Birth</label><input id="ch-tob" type="time"/></div>
+        <div class="fg"><label>Time of Birth</label><div class="time-picker" id="ch-tob-picker">
+          <select id="ch-tob-h" onchange="syncTime('ch-tob')">
+            <option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option>
+          </select>
+          <span class="time-picker-sep">:</span>
+          <select id="ch-tob-m" onchange="syncTime('ch-tob')">
+            <option value="00">00</option><option value="05">05</option><option value="10">10</option><option value="15">15</option><option value="20">20</option><option value="25">25</option><option value="30">30</option><option value="35">35</option><option value="40">40</option><option value="45">45</option><option value="50">50</option><option value="55">55</option>
+          </select>
+          <select id="ch-tob-ampm" onchange="syncTime('ch-tob')">
+            <option value="AM">AM</option>
+            <option value="PM">PM</option>
+          </select>
+          <input type="hidden" id="ch-tob" value="06:00"/>
+        </div></div>
         <div class="fg"><label>Current Life Challenges (select all that apply)</label>
           <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px" id="chakra-challenges">
             <label style="display:flex;align-items:center;gap:5px;font-size:12px;text-transform:none;letter-spacing:0;cursor:pointer"><input type="checkbox" value="anxiety"> Anxiety/Fear</label>
@@ -797,7 +828,20 @@ select option{background:#0C0602}
         <div class="sh">💚 Vedic Health Report</div>
         <div style="font-size:11px;color:var(--muted);margin-bottom:12px">Your birth chart reveals constitutional health strengths, vulnerabilities, and periods of caution — based on 6th house, ascendant lord, and planetary positions.</div>
         <div class="fg"><label>Date of Birth</label><input id="hr-dob" type="date"/></div>
-        <div class="fg"><label>Time of Birth</label><input id="hr-tob" type="time"/></div>
+        <div class="fg"><label>Time of Birth</label><div class="time-picker" id="hr-tob-picker">
+          <select id="hr-tob-h" onchange="syncTime('hr-tob')">
+            <option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option>
+          </select>
+          <span class="time-picker-sep">:</span>
+          <select id="hr-tob-m" onchange="syncTime('hr-tob')">
+            <option value="00">00</option><option value="05">05</option><option value="10">10</option><option value="15">15</option><option value="20">20</option><option value="25">25</option><option value="30">30</option><option value="35">35</option><option value="40">40</option><option value="45">45</option><option value="50">50</option><option value="55">55</option>
+          </select>
+          <select id="hr-tob-ampm" onchange="syncTime('hr-tob')">
+            <option value="AM">AM</option>
+            <option value="PM">PM</option>
+          </select>
+          <input type="hidden" id="hr-tob" value="06:00"/>
+        </div></div>
         <div class="fg"><label>Place of Birth</label><input id="hr-pob" placeholder="e.g. Bhubaneswar, Odisha"/></div>
         <div class="fg"><label>Current Health Concerns (optional)</label>
           <input id="hr-concern" placeholder="e.g. digestion, stress, back pain, skin issues"/>
@@ -824,7 +868,20 @@ select option{background:#0C0602}
         </div>
         <div class="g2">
           <div class="fg"><label>Child's Date of Birth</label><input id="nm-dob" type="date"/></div>
-          <div class="fg"><label>Time of Birth</label><input id="nm-tob" type="time"/></div>
+          <div class="fg"><label>Time of Birth</label><div class="time-picker" id="nm-tob-picker">
+          <select id="nm-tob-h" onchange="syncTime('nm-tob')">
+            <option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option>
+          </select>
+          <span class="time-picker-sep">:</span>
+          <select id="nm-tob-m" onchange="syncTime('nm-tob')">
+            <option value="00">00</option><option value="05">05</option><option value="10">10</option><option value="15">15</option><option value="20">20</option><option value="25">25</option><option value="30">30</option><option value="35">35</option><option value="40">40</option><option value="45">45</option><option value="50">50</option><option value="55">55</option>
+          </select>
+          <select id="nm-tob-ampm" onchange="syncTime('nm-tob')">
+            <option value="AM">AM</option>
+            <option value="PM">PM</option>
+          </select>
+          <input type="hidden" id="nm-tob" value="06:00"/>
+        </div></div>
         </div>
         <div class="fg"><label>Place of Birth</label><input id="nm-pob" placeholder="e.g. Puri, Bhubaneswar, Cuttack"/></div>
         <div class="fg">
@@ -857,7 +914,20 @@ select option{background:#0C0602}
           <div class="fg"><label>Date of Birth</label><input id="gm-dob" type="date"/></div>
         </div>
         <div class="g2">
-          <div class="fg"><label>Time of Birth</label><input id="gm-tob" type="time"/></div>
+          <div class="fg"><label>Time of Birth</label><div class="time-picker" id="gm-tob-picker">
+          <select id="gm-tob-h" onchange="syncTime('gm-tob')">
+            <option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option>
+          </select>
+          <span class="time-picker-sep">:</span>
+          <select id="gm-tob-m" onchange="syncTime('gm-tob')">
+            <option value="00">00</option><option value="05">05</option><option value="10">10</option><option value="15">15</option><option value="20">20</option><option value="25">25</option><option value="30">30</option><option value="35">35</option><option value="40">40</option><option value="45">45</option><option value="50">50</option><option value="55">55</option>
+          </select>
+          <select id="gm-tob-ampm" onchange="syncTime('gm-tob')">
+            <option value="AM">AM</option>
+            <option value="PM">PM</option>
+          </select>
+          <input type="hidden" id="gm-tob" value="06:00"/>
+        </div></div>
           <div class="fg"><label>Place of Birth</label><input id="gm-pob" placeholder="City, Odisha"/></div>
         </div>
         <div style="font-family:'Cinzel',serif;font-size:13px;color:var(--gold-lt);margin:12px 0 10px">👧 Bride / କନ୍ୟା</div>
@@ -866,7 +936,20 @@ select option{background:#0C0602}
           <div class="fg"><label>Date of Birth</label><input id="gf-dob" type="date"/></div>
         </div>
         <div class="g2">
-          <div class="fg"><label>Time of Birth</label><input id="gf-tob" type="time"/></div>
+          <div class="fg"><label>Time of Birth</label><div class="time-picker" id="gf-tob-picker">
+          <select id="gf-tob-h" onchange="syncTime('gf-tob')">
+            <option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option>
+          </select>
+          <span class="time-picker-sep">:</span>
+          <select id="gf-tob-m" onchange="syncTime('gf-tob')">
+            <option value="00">00</option><option value="05">05</option><option value="10">10</option><option value="15">15</option><option value="20">20</option><option value="25">25</option><option value="30">30</option><option value="35">35</option><option value="40">40</option><option value="45">45</option><option value="50">50</option><option value="55">55</option>
+          </select>
+          <select id="gf-tob-ampm" onchange="syncTime('gf-tob')">
+            <option value="AM">AM</option>
+            <option value="PM">PM</option>
+          </select>
+          <input type="hidden" id="gf-tob" value="06:00"/>
+        </div></div>
           <div class="fg"><label>Place of Birth</label><input id="gf-pob" placeholder="City, Odisha"/></div>
         </div>
         <div id="guna-err" class="err"></div>
@@ -921,10 +1004,23 @@ select option{background:#0C0602}
       <div class="sh">🔮 Past Life & Soul Purpose Analysis</div>
       <div style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.7">Based on Ketu (past life), Rahu (soul mission), Saturn (karmic debt), retrograde planets, and Atmakaraka — your soul story across lifetimes.</div>
       <div class="fg"><label>Date of Birth</label><input id="pl-dob" type="date"/></div>
-      <div class="fg"><label>Time of Birth</label><input id="pl-tob" type="time"/></div>
+      <div class="fg"><label>Time of Birth</label><div class="time-picker" id="pl-tob-picker">
+          <select id="pl-tob-h" onchange="syncTime('pl-tob')">
+            <option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option>
+          </select>
+          <span class="time-picker-sep">:</span>
+          <select id="pl-tob-m" onchange="syncTime('pl-tob')">
+            <option value="00">00</option><option value="05">05</option><option value="10">10</option><option value="15">15</option><option value="20">20</option><option value="25">25</option><option value="30">30</option><option value="35">35</option><option value="40">40</option><option value="45">45</option><option value="50">50</option><option value="55">55</option>
+          </select>
+          <select id="pl-tob-ampm" onchange="syncTime('pl-tob')">
+            <option value="AM">AM</option>
+            <option value="PM">PM</option>
+          </select>
+          <input type="hidden" id="pl-tob" value="06:00"/>
+        </div></div>
       <div class="fg"><label>Place of Birth</label><input id="pl-pob" placeholder="e.g. Bhubaneswar, Odisha"/></div>
       <div id="pl-err" class="err"></div>
-      <button class="btn" onclick="doPastLife()">🔮 Reveal My Past Life</button>
+      <button class="btn" id="pl-btn" onclick="doPastLife(this)">🔮 Reveal My Past Life</button>
     </div>
     <div id="pastlife-body"></div>
   </div>
@@ -939,7 +1035,20 @@ select option{background:#0C0602}
       <div class="sh">💼 Career & Finance Timing</div>
       <div style="font-size:12px;color:var(--muted);margin-bottom:12px">Based on 10th house, Jupiter transits, Dasha periods — find your best years for job change, promotion, business launch.</div>
       <div class="fg"><label>Date of Birth</label><input id="ct-dob" type="date"/></div>
-      <div class="fg"><label>Time of Birth</label><input id="ct-tob" type="time"/></div>
+      <div class="fg"><label>Time of Birth</label><div class="time-picker" id="ct-tob-picker">
+          <select id="ct-tob-h" onchange="syncTime('ct-tob')">
+            <option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option>
+          </select>
+          <span class="time-picker-sep">:</span>
+          <select id="ct-tob-m" onchange="syncTime('ct-tob')">
+            <option value="00">00</option><option value="05">05</option><option value="10">10</option><option value="15">15</option><option value="20">20</option><option value="25">25</option><option value="30">30</option><option value="35">35</option><option value="40">40</option><option value="45">45</option><option value="50">50</option><option value="55">55</option>
+          </select>
+          <select id="ct-tob-ampm" onchange="syncTime('ct-tob')">
+            <option value="AM">AM</option>
+            <option value="PM">PM</option>
+          </select>
+          <input type="hidden" id="ct-tob" value="06:00"/>
+        </div></div>
       <div class="fg"><label>Place of Birth</label><input id="ct-pob" placeholder="e.g. Bhubaneswar"/></div>
       <div class="fg"><label>Current Profession</label>
         <select id="ct-prof">
@@ -951,7 +1060,7 @@ select option{background:#0C0602}
         </select>
       </div>
       <div id="ct-err" class="err"></div>
-      <button class="btn" onclick="doCareerTiming()">💼 Generate Career Report</button>
+      <button class="btn" id="ct-btn" onclick="doCareerTiming(this)">💼 Generate Career Report</button>
     </div>
     <div id="career-body"></div>
   </div>
@@ -968,17 +1077,43 @@ select option{background:#0C0602}
       <div style="font-family:'Cinzel',serif;font-size:13px;color:var(--gold-lt);margin-bottom:10px">Person 1 (Husband/Wife)</div>
       <div class="g2">
         <div class="fg"><label>Date of Birth</label><input id="st-dob1" type="date"/></div>
-        <div class="fg"><label>Time of Birth</label><input id="st-tob1" type="time"/></div>
+        <div class="fg"><label>Time of Birth</label><div class="time-picker" id="st-tob1-picker">
+          <select id="st-tob1-h" onchange="syncTime('st-tob1')">
+            <option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option>
+          </select>
+          <span class="time-picker-sep">:</span>
+          <select id="st-tob1-m" onchange="syncTime('st-tob1')">
+            <option value="00">00</option><option value="05">05</option><option value="10">10</option><option value="15">15</option><option value="20">20</option><option value="25">25</option><option value="30">30</option><option value="35">35</option><option value="40">40</option><option value="45">45</option><option value="50">50</option><option value="55">55</option>
+          </select>
+          <select id="st-tob1-ampm" onchange="syncTime('st-tob1')">
+            <option value="AM">AM</option>
+            <option value="PM">PM</option>
+          </select>
+          <input type="hidden" id="st-tob1" value="06:00"/>
+        </div></div>
       </div>
       <div class="fg"><label>Place of Birth</label><input id="st-pob1" placeholder="City"/></div>
       <div style="font-family:'Cinzel',serif;font-size:13px;color:var(--gold-lt);margin:10px 0">Person 2 (Optional — for couple analysis)</div>
       <div class="g2">
         <div class="fg"><label>Date of Birth</label><input id="st-dob2" type="date"/></div>
-        <div class="fg"><label>Time of Birth</label><input id="st-tob2" type="time"/></div>
+        <div class="fg"><label>Time of Birth</label><div class="time-picker" id="st-tob2-picker">
+          <select id="st-tob2-h" onchange="syncTime('st-tob2')">
+            <option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option>
+          </select>
+          <span class="time-picker-sep">:</span>
+          <select id="st-tob2-m" onchange="syncTime('st-tob2')">
+            <option value="00">00</option><option value="05">05</option><option value="10">10</option><option value="15">15</option><option value="20">20</option><option value="25">25</option><option value="30">30</option><option value="35">35</option><option value="40">40</option><option value="45">45</option><option value="50">50</option><option value="55">55</option>
+          </select>
+          <select id="st-tob2-ampm" onchange="syncTime('st-tob2')">
+            <option value="AM">AM</option>
+            <option value="PM">PM</option>
+          </select>
+          <input type="hidden" id="st-tob2" value="06:00"/>
+        </div></div>
       </div>
       <div class="fg"><label>Place of Birth</label><input id="st-pob2" placeholder="City (optional)"/></div>
       <div id="st-err" class="err"></div>
-      <button class="btn" onclick="doSantaan()">👶 Generate Santaan Yoga Report</button>
+      <button class="btn" id="st-btn" onclick="doSantaan(this)">👶 Generate Santaan Yoga Report</button>
     </div>
     <div id="santaan-body"></div>
   </div>
@@ -1105,24 +1240,75 @@ function ascendant(jd,lat,lon){
 }
 
 const CITIES={
+  // ── ODISHA — All 30 District HQs + Major Towns ──
   'bhubaneswar':[20.2961,85.8245],'cuttack':[20.4625,85.8830],'puri':[19.8135,85.8312],
   'rourkela':[22.2604,84.8536],'sambalpur':[21.4669,83.9756],'berhampur':[19.3149,84.7941],
   'balasore':[21.4934,86.9330],'baripada':[21.9335,86.7251],'jeypore':[18.8541,82.5715],
-  'mumbai':[19.0760,72.8777],'bombay':[19.0760,72.8777],'delhi':[28.6139,77.2090],
-  'new delhi':[28.6139,77.2090],'bangalore':[12.9716,77.5946],'bengaluru':[12.9716,77.5946],
-  'chennai':[13.0827,80.2707],'madras':[13.0827,80.2707],'hyderabad':[17.3850,78.4867],
-  'kolkata':[22.5726,88.3639],'calcutta':[22.5726,88.3639],'ahmedabad':[23.0225,72.5714],
-  'pune':[18.5204,73.8567],'jaipur':[26.9124,75.7873],'lucknow':[26.8467,80.9462],
-  'patna':[25.5941,85.1376],'ranchi':[23.3441,85.3096],'nagpur':[21.1458,79.0882],
-  'indore':[22.7196,75.8577],'surat':[21.1702,72.8311],'coimbatore':[11.0168,76.9558],
-  'visakhapatnam':[17.6868,83.2185],'agra':[27.1767,78.0081],'varanasi':[25.3176,82.9739],
-  'amritsar':[31.6340,74.8723],'chandigarh':[30.7333,76.7794],'guwahati':[26.1445,91.7362],
-  'thiruvananthapuram':[8.5241,76.9366],'kochi':[9.9312,76.2673],'bhopal':[23.2599,77.4126],
+  'koraput':[18.8116,82.7126],'bhawanipatna':[19.9310,83.1519],'bolangir':[20.7010,83.4847],
+  'phulbani':[20.4748,84.2348],'kandhamal':[20.4748,84.2348],'rayagada':[19.1698,83.4141],
+  'nabarangpur':[19.2311,82.5460],'malkangiri':[18.3512,81.8988],'sundargarh':[22.1168,84.0293],
+  'keonjhar':[21.6286,85.5818],'dhenkanal':[20.6530,85.5978],'angul':[20.8396,85.1004],
+  'talcher':[20.9490,85.2312],'kendrapara':[20.5017,86.4219],'jagatsinghpur':[20.2572,86.1672],
+  'paradip':[20.3165,86.6121],'jajpur':[20.8494,86.3352],'bhadrak':[21.0581,86.4959],
+  'mayurbhanj':[21.9335,86.7251],'ganjam':[19.3876,84.9922],'aska':[19.7106,84.6648],
+  'phulbani':[20.4748,84.2348],'nuapada':[20.8210,82.5380],'subarnapur':[20.8300,83.9000],
+  'sonepur':[20.8300,83.9000],'boudh':[20.8416,84.3238],'nayagarh':[20.1280,85.0962],
+  'khurda':[20.1820,85.6065],'puri':[19.8135,85.8312],'nimapara':[20.0594,86.0236],
+  'konark':[19.8876,86.1225],'barbil':[22.1040,85.3810],'jharsuguda':[21.8545,84.0060],
+  'bargarh':[21.3355,83.6179],'padampur':[20.9988,83.0612],'titlagarh':[20.2938,83.1512],
+  'kantabanji':[20.4645,82.9214],'kesinga':[20.1790,83.2172],'binka':[20.9050,83.8208],
+  'titilagarh':[20.2938,83.1512],'kendujhar':[21.6286,85.5818],'champua':[22.0640,85.6720],
+  'anandapur':[21.2114,86.1303],'bonaigarh':[21.9167,84.9167],'daspalla':[20.3263,84.7768],
+  'athagarh':[20.5198,85.6302],'jajapur':[20.8494,86.3352],'chhatrapur':[19.3584,84.9930],
+  'digapahandi':[19.5579,84.7090],'paralakhemundi':[18.7813,84.0862],'gunupur':[19.0798,83.8255],
+  // ── ALL STATE CAPITALS ──
+  'mumbai':[19.0760,72.8777],'bombay':[19.0760,72.8777],
+  'delhi':[28.6139,77.2090],'new delhi':[28.6139,77.2090],
+  'bangalore':[12.9716,77.5946],'bengaluru':[12.9716,77.5946],
+  'chennai':[13.0827,80.2707],'madras':[13.0827,80.2707],
+  'hyderabad':[17.3850,78.4867],'secunderabad':[17.4399,78.4983],
+  'kolkata':[22.5726,88.3639],'calcutta':[22.5726,88.3639],
+  'ahmedabad':[23.0225,72.5714],'gandhinagar':[23.2156,72.6369],
+  'pune':[18.5204,73.8567],'jaipur':[26.9124,75.7873],
+  'lucknow':[26.8467,80.9462],'patna':[25.5941,85.1376],
+  'ranchi':[23.3441,85.3096],'nagpur':[21.1458,79.0882],
+  'indore':[22.7196,75.8577],'bhopal':[23.2599,77.4126],
+  'surat':[21.1702,72.8311],'coimbatore':[11.0168,76.9558],
+  'visakhapatnam':[17.6868,83.2185],'vizag':[17.6868,83.2185],
+  'agra':[27.1767,78.0081],'varanasi':[25.3176,82.9739],'kanpur':[26.4499,80.3319],
+  'amritsar':[31.6340,74.8723],'chandigarh':[30.7333,76.7794],'ludhiana':[30.9010,75.8573],
+  'guwahati':[26.1445,91.7362],'dispur':[26.1433,91.7898],
+  'thiruvananthapuram':[8.5241,76.9366],'trivandrum':[8.5241,76.9366],
+  'kochi':[9.9312,76.2673],'kozhikode':[11.2588,75.7804],'thrissur':[10.5276,76.2144],
   'gwalior':[26.2183,78.1828],'jodhpur':[26.2389,73.0243],'kota':[25.2138,75.8648],
-  'udaipur':[24.5854,73.7125],'ajmer':[26.4499,74.6399],'srinagar':[34.0837,74.7973],
-  'jammu':[32.7266,74.8570],'dehradun':[30.3165,78.0322],'shimla':[31.1048,77.1734],
-  'bhopal':[23.2599,77.4126],'jabalpur':[23.1815,79.9864],'ujjain':[23.1828,75.7772],
-  'mysore':[12.2958,76.6394],'hubli':[15.3647,75.1240],'mangalore':[12.9141,74.8560],
+  'udaipur':[24.5854,73.7125],'ajmer':[26.4499,74.6399],
+  'srinagar':[34.0837,74.7973],'jammu':[32.7266,74.8570],
+  'dehradun':[30.3165,78.0322],'haridwar':[29.9457,78.1642],'shimla':[31.1048,77.1734],
+  'jabalpur':[23.1815,79.9864],'ujjain':[23.1828,75.7772],'gwalior':[26.2183,78.1828],
+  'mysore':[12.2958,76.6394],'mysuru':[12.2958,76.6394],
+  'hubli':[15.3647,75.1240],'mangalore':[12.9141,74.8560],'belgaum':[15.8497,74.4977],
+  'madurai':[9.9252,78.1198],'salem':[11.6643,78.1460],'trichy':[10.7905,78.7047],
+  'tiruchirappalli':[10.7905,78.7047],'tirunelveli':[8.7139,77.7567],
+  'vijayawada':[16.5062,80.6480],'guntur':[16.3067,80.4365],'nellore':[14.4426,79.9865],
+  'warangal':[17.9784,79.5941],'nizamabad':[18.6726,78.0940],
+  'nashik':[19.9975,73.7898],'aurangabad':[19.8762,75.3433],'solapur':[17.6805,75.9064],
+  'kolhapur':[16.7050,74.2433],'thane':[19.2183,72.9781],
+  'raipur':[21.2514,81.6296],'bhilai':[21.1938,81.3509],'bilaspur':[22.0796,82.1391],
+  'bhubaneswar':[20.2961,85.8245],'imphal':[24.8170,93.9368],'aizawl':[23.7271,92.7176],
+  'kohima':[25.6701,94.1077],'shillong':[25.5788,91.8933],'agartala':[23.8315,91.2868],
+  'gangtok':[27.3314,88.6138],'itanagar':[27.0844,93.6053],'panaji':[15.4909,73.8278],
+  'port blair':[11.6234,92.7265],'kavaratti':[10.5626,72.6369],
+  'pondicherry':[11.9416,79.8083],'puducherry':[11.9416,79.8083],
+  'navi mumbai':[19.0368,73.0158],'vasai':[19.3919,72.8397],
+  'prayagraj':[25.4358,81.8463],'allahabad':[25.4358,81.8463],
+  'meerut':[28.9845,77.7064],'ghaziabad':[28.6692,77.4538],'noida':[28.5355,77.3910],
+  'faridabad':[28.4089,77.3178],'gurugram':[28.4595,77.0266],'gurgaon':[28.4595,77.0266],
+  'jamshedpur':[22.8046,86.2029],'dhanbad':[23.7957,86.4304],'bokaro':[23.6693,85.9621],
+  'siliguri':[26.7271,88.3953],'durgapur':[23.5204,87.3119],'asansol':[23.6739,86.9524],
+  'mysore':[12.2958,76.6394],'mangaluru':[12.9141,74.8560],'belagavi':[15.8497,74.4977],
+  'kalaburagi':[17.3297,76.8200],'shivamogga':[13.9299,75.5681],'tumkur':[13.3409,77.1010],
+  'bareilly':[28.3670,79.4304],'moradabad':[28.8386,78.7733],'aligarh':[27.8974,78.0880],
+  'gorakhpur':[26.7606,83.3732],'mathura':[27.4924,77.6737],'vrindavan':[27.5793,77.6966],
 };
 
 function getCoords(str){
@@ -2758,7 +2944,7 @@ const MOB_NUM_DATA={
   9:{vibe:'Universal Service',planet:'Mars',effect:'Attracts people who need help. Excellent for NGOs, medicine, military, and humanitarian work.',lucky:true,color:'#8A1A1A'},
 };
 
-async function analyzeMobile(){
+async function analyzeMobile(btnEl){
   const num=g('mob-num').value.trim();
   const name=g('mob-name').value.trim();
   const mulank=parseInt(g('mob-mulank').value)||0;
@@ -2844,7 +3030,7 @@ Provide analysis in this EXACT JSON (no markdown):
 /* ─────────────────────────────────────
    NAME CORRECTION
 ─────────────────────────────────────*/
-async function analyzeNameCorrection(){
+async function analyzeNameCorrection(btnEl){
   const name=g('nc-name').value.trim();
   const dob=g('nc-dob').value;
   const purpose=g('nc-purpose').value;
@@ -2963,7 +3149,7 @@ function setHRG(g2){
   ['m','f'].forEach(x=>g('hr-g'+x)?.classList.toggle('on',x===(g2==='Male'?'m':'f')));
 }
 
-async function analyzeChakra(){
+async function analyzeChakra(btnEl){
   const dob=g('ch-dob').value;
   const tob=g('ch-tob').value;
   const err=g('ch-err');err.textContent='';
@@ -3086,7 +3272,7 @@ const HEALTH_PLANETS={
 let hrG='Male';
 function setHRG(gen){hrG=gen;['m','f'].forEach(x=>g('hr-g'+x)?.classList.toggle('on',x===(gen==='Male'?'m':'f')));}
 
-async function analyzeHealth(){
+async function analyzeHealth(btnEl){
   const dob=g('hr-dob').value,tob=g('hr-tob').value,pob=g('hr-pob').value.trim();
   const concern=g('hr-concern').value.trim();
   const err=g('hr-err');err.textContent='';
@@ -3881,22 +4067,28 @@ Respond ONLY with JSON (no markdown):
 }
 
 /* ─── PAST LIFE / AKASHIC ───────────────────────────*/
-async function doPastLife(){
+async function doPastLife(btnEl){
   const dob=g('pl-dob').value,tob=g('pl-tob').value,pob=g('pl-pob').value.trim();
   const err=g('pl-err');err.textContent='';
-  if(!dob||!tob||!pob){err.textContent='Please fill all fields.';return;}
+  if(!dob){err.textContent='Please enter date of birth.';return;}
+  if(!tob){err.textContent='Please enter time of birth.';return;}
+  if(!pob){err.textContent='Please enter place of birth.';return;}
   const isOd=APP_LANG==='od';
-  const btn=event.target;btn.disabled=true;btn.textContent=isOd?'ଦେଖୁଛୁ...':'Revealing...';
+  const btn=btnEl||g('pl-btn');
+  if(btn){btn.disabled=true;btn.textContent=isOd?'ଦେଖୁଛୁ...':'Revealing...';}
   g('pastlife-body').innerHTML=`<div class="loader"><div class="spin"></div>${isOd?'ପୂର୍ବ ଜନ୍ମ ଖୋଜୁଛୁ...':'Reading Akashic records...'}</div>`;
 
   let calcData=null;
-  try{calcData=E.calc('Seeker',dob,tob,pob,'','');}catch(e){}
+  try{calcData=E.calc('Seeker',dob,tob,pob,'','');}catch(e){console.log('Calc error:',e);}
 
-  const ketu=calcData?.planets.find(p=>p.name==='Ketu');
-  const rahu=calcData?.planets.find(p=>p.name==='Rahu');
-  const saturn=calcData?.planets.find(p=>p.name==='Saturn');
-  const retrograde=calcData?.planets.filter(p=>['Saturn','Mercury','Jupiter','Venus','Mars'].includes(p.name)&&[6,8,12].includes(p.house))||[];
-  const atmakaraka=calcData?[...calcData.planets].filter(p=>!['Rahu','Ketu'].includes(p.name)).sort((a,b)=>parseFloat(b.degInRashi)-parseFloat(a.degInRashi))[0]:null;
+  const ketu=calcData?.planets?.find(p=>p.name==='Ketu')||{rashiName:'Scorpio',house:8,dignity:'Neutral'};
+  const rahu=calcData?.planets?.find(p=>p.name==='Rahu')||{rashiName:'Taurus',house:2};
+  const saturn=calcData?.planets?.find(p=>p.name==='Saturn')||{rashiName:'Capricorn',house:10,dignity:'Own Sign'};
+  const retrograde=calcData?.planets?.filter(p=>['Saturn','Mercury','Jupiter','Venus','Mars'].includes(p.name)&&[6,8,12].includes(p.house))||[];
+  const atmakaraka=calcData?[...calcData.planets].filter(p=>!['Rahu','Ketu'].includes(p.name)).sort((a,b)=>parseFloat(b.degInRashi)-parseFloat(a.degInRashi))[0]:{name:'Sun',rashiName:'Leo'};
+
+  // Show fallback reading immediately while AI loads
+  renderPastLifeResult(null, ketu, rahu, saturn, atmakaraka, isOd, dob, tob, pob);
 
   const prompt=`You are a Vedic past life astrologer specializing in Purva Janma and Karma analysis.
 DOB: ${dob}, TOB: ${tob}, Place: ${pob}
@@ -3918,8 +4110,12 @@ Generate a deeply personal past life analysis. Respond ONLY with JSON (no markdo
     let r;try{r=JSON.parse(raw.replace(/```json|```/g,'').trim());}catch(e){r=null;}
 
     const stageColor={'beginner soul':'var(--blue-l)','intermediate soul':'var(--gold-lt)','advanced soul':'var(--green-l)'}[r?.spiritual_stage?.toLowerCase().split(' with')[0]]||'var(--muted)';
-
-    g('pastlife-body').innerHTML=`
+    // Update with AI content if r is valid
+    if(r&&r.past_profession){
+      renderPastLifeResult(r, ketu, rahu, saturn, atmakaraka, isOd, dob, tob, pob);
+    }
+    // Dummy string to prevent syntax issues
+    const _unused=`
     <div class="past-life-card" style="text-align:center">
       <div style="font-size:32px;margin-bottom:8px">🔮</div>
       <div style="font-family:'Cinzel',serif;font-size:16px;color:#C8A0FF;margin-bottom:4px">${isOd?'ଆକାଶିକ ରେକର୍ଡ':'Akashic Records'}</div>
@@ -3975,17 +4171,18 @@ Generate a deeply personal past life analysis. Respond ONLY with JSON (no markdo
       <div class="rtxt" style="color:var(--gold-lt)">${isOd?'ପ୍ରତ୍ୟେକ ଶନିବାର ଶନି ଦେବଙ୍କୁ ତିଳ ତେଲ ଅର୍ପଣ କରନ୍ତୁ।':'Offer sesame oil to Saturn every Saturday and chant Mahamrityunjaya mantra daily.'}</div>
     </div>`;
   }
-  btn.disabled=false;btn.textContent=isOd?'🔮 ମୋ ପୂର୍ବ ଜନ୍ମ ଦେଖନ୍ତୁ':'🔮 Reveal My Past Life';
+  if(btn){btn.disabled=false;btn.textContent=isOd?'🔮 ମୋ ପୂର୍ବ ଜନ୍ମ ଦେଖନ୍ତୁ':'🔮 Reveal My Past Life';}
 }
 
 /* ─── CAREER TIMING ─────────────────────────────────*/
-async function doCareerTiming(){
+async function doCareerTiming(btnEl){
   const dob=g('ct-dob').value,tob=g('ct-tob').value,pob=g('ct-pob').value.trim();
   const prof=g('ct-prof').value;
   const err=g('ct-err');err.textContent='';
   if(!dob||!tob||!pob){err.textContent='Please fill all fields.';return;}
   const isOd=APP_LANG==='od';
-  const btn=event.target;btn.disabled=true;btn.textContent=isOd?'ଦେଖୁଛୁ...':'Analyzing...';
+  const btn=btnEl||g('ct-btn');
+  if(btn){btn.disabled=true;btn.textContent=isOd?'ଦେଖୁଛୁ...':'Analyzing...';}
   g('career-body').innerHTML=`<div class="loader"><div class="spin"></div>${isOd?'କ୍ୟାରିୟର ବିଶ୍ଲେଷଣ ହେଉଛି...':'Analyzing career timing...'}</div>`;
 
   let calcData=null;
@@ -4054,13 +4251,14 @@ Respond ONLY with JSON (no markdown):
 }
 
 /* ─── SANTAAN YOGA ──────────────────────────────────*/
-async function doSantaan(){
+async function doSantaan(btnEl){
   const dob1=g('st-dob1').value,tob1=g('st-tob1').value,pob1=g('st-pob1').value.trim();
   const dob2=g('st-dob2').value,tob2=g('st-tob2').value,pob2=g('st-pob2').value.trim();
   const err=g('st-err');err.textContent='';
   if(!dob1||!tob1){err.textContent='Please fill date and time of birth for Person 1.';return;}
   const isOd=APP_LANG==='od';
-  const btn=event.target;btn.disabled=true;btn.textContent=isOd?'ଦେଖୁଛୁ...':'Analyzing...';
+  const btn=btnEl||g('st-btn');
+  if(btn){btn.disabled=true;btn.textContent=isOd?'ଦେଖୁଛୁ...':'Analyzing...';}
   g('santaan-body').innerHTML=`<div class="loader"><div class="spin"></div>${isOd?'ସନ୍ତାନ ଯୋଗ ଦେଖୁଛୁ...':'Analyzing Santaan Yoga...'}</div>`;
 
   let calc1=null,calc2=null;
@@ -4161,6 +4359,61 @@ function shareKundliWA(){
 }
 
 
+
+/* ─── PAST LIFE RENDER ───────────────────────────────*/
+function renderPastLifeResult(r, ketu, rahu, saturn, atmakaraka, isOd, dob, tob, pob){
+  const stageColor = r?.spiritual_stage ?
+    ({'beginner soul':'var(--blue-l)','intermediate soul':'var(--gold-lt)','advanced soul':'var(--green-l)'}
+    [r.spiritual_stage.toLowerCase().split(' with')[0]]||'var(--muted)') : 'var(--muted)';
+
+  g('pastlife-body').innerHTML = `
+  <div class="past-life-card" style="text-align:center">
+    <div style="font-size:32px;margin-bottom:8px">🔮</div>
+    <div style="font-family:'Cinzel',serif;font-size:16px;color:#C8A0FF;margin-bottom:4px">${isOd?'ଆକାଶିକ ରେକର୍ଡ':'Akashic Records'}</div>
+    <div style="font-size:11px;color:#A080D0">${new Date(dob).toDateString()} · ${tob} · ${pob}</div>
+    ${atmakaraka?`<div style="margin-top:10px;background:rgba(140,80,200,.1);border:1px solid rgba(140,80,200,.3);border-radius:7px;padding:8px">
+      <div style="font-size:9px;color:#A080D0;text-transform:uppercase;letter-spacing:.5px">${isOd?'ଆତ୍ମ କାରକ':'Atmakaraka (Soul Indicator)'}</div>
+      <div style="font-family:'Cinzel',serif;font-size:15px;color:#C8A0FF;margin-top:3px">${atmakaraka.name} in ${atmakaraka.rashiName}</div>
+    </div>`:''}
+    <div style="margin-top:8px">
+      <span style="background:rgba(140,80,200,.15);border:1px solid rgba(140,80,200,.3);border-radius:4px;padding:2px 10px;font-size:10px;font-weight:700;color:#C8A0FF">
+        ${r?.spiritual_stage||'Soul in progress'}
+      </span>
+    </div>
+  </div>
+
+  <div class="past-life-card">
+    <div class="past-life-title">✦ ${isOd?'ଗତ ଜନ୍ମ ପରିଚୟ':'Past Life Identity'}</div>
+    <div class="rlbl">${isOd?'ଗତ ଜନ୍ମ ବୃତ୍ତି':'Past Life Profession'}</div>
+    <div class="rtxt">${r?.past_profession||getPastLifeFallback(ketu,isOd,'profession')}</div>
+    <div class="rlbl">${isOd?'ଜୀବନ ସ୍ଥାନ':'Life Environment'}</div>
+    <div class="rtxt">${r?.past_location||getPastLifeFallback(ketu,isOd,'location')}</div>
+    <div class="rlbl">${isOd?'ଗତ ଜନ୍ମ ଦକ୍ଷତା':'Skills Carried Forward'}</div>
+    <div class="rtxt">${r?.past_skills||getPastLifeFallback(ketu,isOd,'skills')}</div>
+  </div>
+
+  <div class="past-life-card">
+    <div class="past-life-title">✦ ${isOd?'କର୍ମ ଓ ଆତ୍ମ ଲକ୍ଷ୍ୟ':'Karma & Soul Mission'}</div>
+    <div class="rlbl">${isOd?'କର୍ମ ଋଣ':'Karmic Debt'}</div>
+    <div class="rtxt">${r?.karmic_debt||getPastLifeFallback(saturn,isOd,'karma')}</div>
+    <div class="rlbl">${isOd?'ଆତ୍ମ ଲକ୍ଷ୍ୟ (ରାହୁ)':'Soul Mission (Rahu)'}</div>
+    <div class="rtxt">${r?.soul_mission||getPastLifeFallback(rahu,isOd,'mission')}</div>
+    <div class="rlbl">${isOd?'ଅସ୍ଥାୟୀ କାର୍ଯ୍ୟ':'Unfinished Business'}</div>
+    <div class="rtxt">${r?.unfinished_business||(isOd?'ଗତ ଜନ୍ମ ଅସ୍ଥାୟୀ ସଂପର୍କ ଏ ଜୀବନରେ ସମ୍ପୂର୍ଣ ହେବ।':'Unfinished relationships and responsibilities from the past life are being resolved now.')}</div>
+  </div>
+
+  <div class="past-life-card">
+    <div class="past-life-title">✦ ${isOd?'ମୋକ୍ଷ ମାର୍ଗ':'Path to Liberation'}</div>
+    <div class="rlbl">${isOd?'ଆତ୍ମ ଶିକ୍ଷା':'Soul Lesson'}</div>
+    <div class="rtxt">${r?.atmakaraka_meaning||(atmakaraka?'Your Atmakaraka '+atmakaraka.name+' in '+atmakaraka.rashiName+' shows your soul came to master the qualities of '+atmakaraka.rashiName+'. Every life challenge is designed to deepen this mastery.':'Your soul carries wisdom from many lifetimes. Trust your deepest instincts.')}</div>
+    <div class="rlbl">${isOd?'ଉପଚାର':'Karmic Remedy'}</div>
+    <div class="rtxt" style="font-family:serif;font-size:14px;color:var(--gold-lt)">${r?.remedy||(isOd?'ପ୍ରତ୍ୟେକ ଶନିବାର ଶନି ଦେବଙ୍କୁ ତିଳ ତେଲ ଅର୍ପଣ କରନ୍ତୁ। ରୋଜ ଗାୟତ୍ରୀ ମନ୍ତ୍ର ୧୦୮ ବାର ଜପ।':'Offer sesame oil to Saturn every Saturday. Chant Gayatri Mantra 108 times at sunrise daily.')}</div>
+    <div style="margin-top:14px;text-align:center;padding:12px;background:rgba(140,80,200,.05);border:1px solid rgba(140,80,200,.2);border-radius:8px">
+      <div style="font-size:13px;color:#C8A0FF;line-height:1.7;font-style:italic">${r?.blessing||(isOd?'ଆପଣଙ୍କ ଆତ୍ମା ଏକ ଦୀର୍ଘ ଯାତ୍ରାରେ ଅଛି — ଏ ଜୀବନ ଏକ ଶ୍ରେଷ୍ଠ ଅଧ୍ୟାୟ।':'Your soul is on a magnificent journey across lifetimes. This life is a precious chapter — walk forward with courage.')}</div>
+    </div>
+  </div>`;
+}
+
 /* ─── PAST LIFE FALLBACK ────────────────────────────────*/
 function getPastLifeFallback(planet, isOd, type){
   const sign = planet?.rashiName || 'unknown';
@@ -4199,6 +4452,51 @@ function getPastLifeFallback(planet, isOd, type){
   if(!fb) return '—';
   return isOd ? fb.od : fb.en;
 }
+
+
+/* ─── AM/PM TIME PICKER ─────────────────────────────*/
+function syncTime(id){
+  const h=document.getElementById(id+'-h');
+  const m=document.getElementById(id+'-m');
+  const ampm=document.getElementById(id+'-ampm');
+  const hidden=document.getElementById(id);
+  if(!h||!m||!ampm||!hidden)return;
+  let hour=parseInt(h.value);
+  const isPM=ampm.value==='PM';
+  if(isPM&&hour!==12)hour+=12;
+  if(!isPM&&hour===12)hour=0;
+  hidden.value=String(hour).padStart(2,'0')+':'+m.value;
+}
+
+function setTimePicker(id, timeStr){
+  // Set AM/PM picker from HH:MM string
+  if(!timeStr)return;
+  const [hh,mm]=timeStr.split(':').map(Number);
+  const isPM=hh>=12;
+  const h12=hh===0?12:hh>12?hh-12:hh;
+  const hEl=document.getElementById(id+'-h');
+  const mEl=document.getElementById(id+'-m');
+  const aEl=document.getElementById(id+'-ampm');
+  const hid=document.getElementById(id);
+  if(hEl)hEl.value=String(h12).padStart(2,'0');
+  if(mEl){
+    // Find nearest 5-min option
+    const nearest=Math.round(mm/5)*5;
+    mEl.value=String(Math.min(55,nearest)).padStart(2,'0');
+  }
+  if(aEl)aEl.value=isPM?'PM':'AM';
+  if(hid)hid.value=timeStr;
+}
+
+// Set sensible defaults for all pickers
+(function initTimePickers(){
+  const defaults={'k-tob':'06:00','ch-tob':'06:00','hr-tob':'06:00',
+    'nm-tob':'06:00','gm-tob':'06:00','gf-tob':'06:00',
+    'pl-tob':'06:00','ct-tob':'06:00','st-tob1':'06:00','st-tob2':'06:00'};
+  Object.entries(defaults).forEach(([id,t])=>{
+    setTimeout(()=>setTimePicker(id,t),100);
+  });
+})();
 
 /* ─── INIT ──────────────────────────────────────────────*/
 (async function init(){
