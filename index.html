@@ -1822,7 +1822,10 @@ function dashGo(tab){
   else if(tab==='profile'){buildProfile();nav('profile');}
   else if(tab==='panchang'){buildPanchang();nav('panchang');}
   else if(tab==='horoscope'){buildHoroscope();nav('horoscope');}
-  else if(tab==='muhurta'){buildMuhurta('vivah');nav('muhurta');}
+  else if(tab==='muhurta'){
+    nav('muhurta');
+    setTimeout(()=>buildMuhurta('vivah'),100);
+  }
   else if(tab==='pastlife'){nav('pastlife');setTimeout(showPastLifePage,50);}
   else if(tab==='career'){nav('career');setTimeout(()=>{
     const bar=g('ct-ud-bar');
@@ -1965,8 +1968,9 @@ function buildDash(){
   g('dash-plan').textContent=pl?`✦ ${pl.n}`:'✦ No Active Plan';
   g('s-k').textContent=(u.kundlis||[]).length;
   g('s-v').textContent=u.planExpiry||'—';
-  const isM=u.plan==='monthly'||u.plan==='yearly';
-  const isY=u.plan==='yearly';
+  const isM=true; // Testing mode - all features open
+  const isY=true; // Testing mode - all features open
+  const isOd=APP_LANG==='od';
   g('act-grid').innerHTML=`
     <div class="ac" onclick="dashGo('kundli')"><div class="ac-ic">☀</div><div class="ac-nm">${APP_LANG==='od'?'ନୂଆ କୁଣ୍ଡଳୀ':'New Kundli'}</div><div class="ac-sub">${APP_LANG==='od'?'ଜନ୍ମ ଚକ୍ର':'Birth chart'}</div></div>
     <div class="ac" onclick="nav('panchang');buildPanchang()"><div class="ac-ic">📅</div><div class="ac-nm">${APP_LANG==='od'?'ପଞ୍ଚାଙ୍ଗ':'Panchang'}</div><div class="ac-sub">${APP_LANG==='od'?'ଆଜର ତିଥି':'Today'}</div></div>
@@ -1975,11 +1979,11 @@ function buildDash(){
     <div class="ac" onclick="nav('pastlife')"><div class="ac-ic">🔮</div><div class="ac-nm">${APP_LANG==='od'?'ପୂର୍ବ ଜନ୍ମ':'Past Life'}</div><div class="ac-sub">${APP_LANG==='od'?'ଆକାଶିକ':'Akashic'}</div></div>
     <div class="ac" onclick="nav('career')"><div class="ac-ic">💼</div><div class="ac-nm">${APP_LANG==='od'?'କ୍ୟାରିୟର':'Career'}</div><div class="ac-sub">${APP_LANG==='od'?'ସମୟ ଫଳ':'Timing'}</div></div>
     <div class="ac" onclick="nav('santaan')"><div class="ac-ic">👶</div><div class="ac-nm">${APP_LANG==='od'?'ସନ୍ତାନ ଯୋଗ':'Santaan Yoga'}</div><div class="ac-sub">${APP_LANG==='od'?'ସନ୍ତାନ':'Child prediction'}</div></div>
-    <div class="ac" onclick="dashGo('anka')"><div class="ac-ic">🔢</div><div class="ac-nm">${APP_LANG==='od'?'ଅଙ୍କ ଶାସ୍ତ୍ର':'Anka Shastra'}</div><div class="ac-sub">${APP_LANG==='od'?'ସଂଖ୍ୟା':'Numerology'}</div></div>
-    <div class="ac" onclick="dashGo('services')"><div class="ac-ic">🌟</div><div class="ac-nm">${APP_LANG==='od'?'ସେବା':'Services'}</div><div class="ac-sub">${APP_LANG==='od'?'ଚକ୍ର · ସ୍ୱାସ୍ଥ୍ୟ':'Chakra · Health'}</div></div>
-    <div class="ac ${isM?'':'locked'}" onclick="${isM?"dashGo('predict')":"toast('Upgrade to Monthly plan')"}"><div class="ac-ic">🔮</div><div class="ac-nm">Monthly</div><div class="ac-sub">Predictions</div></div>
-    <div class="ac ${isY?'':'locked'}" onclick="${isY?"toast('Guna Milan coming soon!')":"toast('Upgrade to Annual plan')"}"><div class="ac-ic">💑</div><div class="ac-nm">Guna Milan</div><div class="ac-sub">Kundli match</div></div>
-    <div class="ac" onclick="dashGo('profile')"><div class="ac-ic">👤</div><div class="ac-nm">Profile</div><div class="ac-sub">Account</div></div>`;
+    <div class="ac" onclick="dashGo('anka')"><div class="ac-ic">🔢</div><div class="ac-nm">${isOd?'ଅଙ୍କ ଶାସ୍ତ୍ର':'Anka Shastra'}</div><div class="ac-sub">${isOd?'ସଂଖ୍ୟା':'Numerology'}</div></div>
+    <div class="ac" onclick="dashGo('services')"><div class="ac-ic">🌟</div><div class="ac-nm">${isOd?'ସେବା':'Services'}</div><div class="ac-sub">${isOd?'ଚକ୍ର · ସ୍ୱାସ୍ଥ୍ୟ':'Chakra · Health'}</div></div>
+    <div class="ac" onclick="dashGo('predict')"><div class="ac-ic">🔮</div><div class="ac-nm">${isOd?'ଭବିଷ୍ୟ':'Predictions'}</div><div class="ac-sub">${isOd?'ମାସିକ':'Monthly'}</div></div>
+    <div class="ac" onclick="svcTab('guna');dashGo('services')"><div class="ac-ic">💑</div><div class="ac-nm">${isOd?'ଗୁଣ ମିଳାନ':'Guna Milan'}</div><div class="ac-sub">${isOd?'ବିବାହ ଯୋଗ':'Kundli match'}</div></div>
+    <div class="ac" onclick="dashGo('profile')"><div class="ac-ic">👤</div><div class="ac-nm">${isOd?'ପ୍ରୋଫାଇଲ':'Profile'}</div><div class="ac-sub">${isOd?'ଖାତା':'Account'}</div></div>`;
   const hist=(u.kundlis||[]).slice(-4).reverse();
   g('hist-wrap').innerHTML=hist.length?`<div class="sec-title" style="font-size:13px">Recent Kundlis</div>`+hist.map((k,i)=>`<div class="hist-item" onclick="viewKundli(${i})"><div><div class="hist-n">${k.nm}</div><div class="hist-d">${k.date} · ${k.ascName} Lagna · ${k.rashiName}</div></div><div style="color:var(--gold);font-size:16px">›</div></div>`).join(''):'';
   // Show user details bar
@@ -4158,7 +4162,7 @@ Respond ONLY with JSON (no markdown):
         <div class="muhurta-info">
           <div class="muhurta-title">${d.day||''} · ${d.nakshatra||''}</div>
           <div class="muhurta-detail">${d.tithi||''} · ${d.time||''}</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:3px">${isOd?d.reason_od:d.reason}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:3px">${d.reason||d.reason_od||''}</div>
         </div>
         <span class="muhurta-quality ${d.quality==='Best'?'mq-best':'mq-good'}">${d.quality||'Good'}</span>
       </div>`).join('');
@@ -4174,7 +4178,7 @@ Respond ONLY with JSON (no markdown):
     </div>
     <div class="card">
       <div class="sh">✦ ${isOd?'ସାଧାରଣ ପରାମର୍ଶ':'General Advice'}</div>
-      <div class="rtxt">${isOd?r?.general_advice_od:r?.general_advice}</div>
+      <div class="rtxt">${r?.general_advice||r?.general_advice_od||'Choose an auspicious day with good nakshatra, avoid Rahu Kaal, and perform the ceremony in the morning hours for best results.'}</div>
     </div>
     <button class="wa-btn" onclick="shareWAMuhurta('${typeName.en}')">
       <div class="wa-btn-ic">📱</div>
