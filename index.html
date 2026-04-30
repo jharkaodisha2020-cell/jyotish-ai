@@ -3931,27 +3931,50 @@ Generate a deeply personal past life analysis. Respond ONLY with JSON (no markdo
       <div style="margin-top:8px"><span style="background:rgba(140,80,200,.15);border:1px solid rgba(140,80,200,.3);border-radius:4px;padding:2px 10px;font-size:10px;font-weight:700;color:#C8A0FF">${r?.spiritual_stage||'Soul in progress'}</span></div>
     </div>
 
-    ${r?`<div class="past-life-card">
+    <div class="past-life-card">
       <div class="past-life-title">✦ ${isOd?'ଗତ ଜନ୍ମ ପରିଚୟ':'Past Life Identity'}</div>
-      <div class="rlbl">${isOd?'ଗତ ଜନ୍ମ ବୃତ୍ତି':'Past Life Profession'}</div><div class="rtxt">${isOd?r.past_profession:r.past_profession}</div>
-      <div class="rlbl">${isOd?'ଜୀବନ ସ୍ଥାନ':'Life Environment'}</div><div class="rtxt">${r.past_location||''}</div>
-      <div class="rlbl">${isOd?'ଗତ ଜନ୍ମ ଦକ୍ଷତା':'Skills Carried Forward'}</div><div class="rtxt">${r.past_skills||''}</div>
+      <div class="rlbl">${isOd?'ଗତ ଜନ୍ମ ବୃତ୍ତି':'Past Life Profession'}</div>
+      <div class="rtxt">${r?.past_profession||getPastLifeFallback(ketu,isOd,'profession')}</div>
+      <div class="rlbl">${isOd?'ଜୀବନ ସ୍ଥାନ':'Life Environment'}</div>
+      <div class="rtxt">${r?.past_location||getPastLifeFallback(ketu,isOd,'location')}</div>
+      <div class="rlbl">${isOd?'ଗତ ଜନ୍ମ ଦକ୍ଷତା':'Skills Carried Forward'}</div>
+      <div class="rtxt">${r?.past_skills||getPastLifeFallback(ketu,isOd,'skills')}</div>
     </div>
     <div class="past-life-card">
       <div class="past-life-title">✦ ${isOd?'କର୍ମ ଓ ଆତ୍ମ ଲକ୍ଷ୍ୟ':'Karma & Soul Mission'}</div>
-      <div class="rlbl">${isOd?'କର୍ମ ଋଣ':'Karmic Debt'}</div><div class="rtxt">${isOd?r.karmic_debt_od:r.karmic_debt}</div>
-      <div class="rlbl">${isOd?'ଆତ୍ମ ଲକ୍ଷ୍ୟ (ରାହୁ)':'Soul Mission (Rahu)'}</div><div class="rtxt">${r.soul_mission||''}</div>
-      <div class="rlbl">${isOd?'ଅସ୍ଥାୟୀ କାର୍ଯ୍ୟ':'Unfinished Business'}</div><div class="rtxt">${r.unfinished_business||''}</div>
+      <div class="rlbl">${isOd?'କର୍ମ ଋଣ':'Karmic Debt'}</div>
+      <div class="rtxt">${r?.karmic_debt||getPastLifeFallback(saturn,isOd,'karma')}</div>
+      <div class="rlbl">${isOd?'ଆତ୍ମ ଲକ୍ଷ୍ୟ (ରାହୁ)':'Soul Mission (Rahu)'}</div>
+      <div class="rtxt">${r?.soul_mission||getPastLifeFallback(rahu,isOd,'mission')}</div>
+      <div class="rlbl">${isOd?'ଅସ୍ଥାୟୀ କାର୍ଯ୍ୟ':'Unfinished Business'}</div>
+      <div class="rtxt">${r?.unfinished_business||(isOd?'ଗତ ଜନ୍ମ ଅସ୍ଥାୟୀ ସଂପର୍କ ଓ ଦାୟିତ୍ୱ ଏ ଜୀବନରେ ସମ୍ପୂର୍ଣ ହେବ।':'Relationships and responsibilities left incomplete from past life will find resolution in this one.')}</div>
     </div>
     <div class="past-life-card">
       <div class="past-life-title">✦ ${isOd?'ମୋକ୍ଷ ମାର୍ଗ':'Path to Liberation'}</div>
-      <div class="rlbl">${isOd?'ଆତ୍ମ ଶିକ୍ଷା':'Soul Lesson'}</div><div class="rtxt">${r.atmakaraka_meaning||''}</div>
-      <div class="rlbl">${isOd?'ଉପଚାର':'Karmic Remedy'}</div><div class="rtxt" style="font-family:serif;font-size:14px;color:var(--gold-lt)">${isOd?r.remedy_od:r.remedy}</div>
+      <div class="rlbl">${isOd?'ଆତ୍ମ ଶିକ୍ଷା':'Soul Lesson'}</div>
+      <div class="rtxt">${r?.atmakaraka_meaning||(atmakaraka?`Your soul's indicator ${atmakaraka.name} in ${atmakaraka.rashiName} shows the deepest lesson of this lifetime is mastery of ${atmakaraka.rashiName} energy — surrender to it and growth accelerates.`:'Your soul carries deep wisdom from previous journeys. Trust your intuitive guidance.')}</div>
+      <div class="rlbl">${isOd?'ଉପଚାର':'Karmic Remedy'}</div>
+      <div class="rtxt" style="font-family:serif;font-size:14px;color:var(--gold-lt)">${r?.remedy||(isOd?'ପ୍ରତ୍ୟେକ ଶନିବାର ଶନି ଦେବଙ୍କୁ ତିଳ ତେଲ ଅର୍ପଣ କରନ୍ତୁ। ଗାୟତ୍ରୀ ମନ୍ତ୍ର ୧୦୮ ବାର ଜପ କରନ୍ତୁ।':'Offer sesame oil to Saturn every Saturday. Chant Gayatri Mantra 108 times daily at sunrise.')}</div>
       <div style="margin-top:14px;text-align:center;padding:12px;background:rgba(140,80,200,.05);border:1px solid rgba(140,80,200,.2);border-radius:8px">
-        <div style="font-size:13px;color:#C8A0FF;line-height:1.7;font-style:italic">${isOd?r.blessing_od:r.blessing}</div>
+        <div style="font-size:13px;color:#C8A0FF;line-height:1.7;font-style:italic">${r?.blessing||(isOd?'ଆପଣଙ୍କ ଆତ୍ମା ଏକ ଦୀର୍ଘ ଯାତ୍ରାରେ ଅଛି — ଏ ଜୀବନ ଏକ ଶ୍ରେଷ୍ଠ ଅଧ୍ୟାୟ। ଆଗ ବଢ଼ନ୍ତୁ।':'Your soul is on a magnificent journey. This lifetime is a precious chapter. Walk forward with courage and love.')}</div>
       </div>
-    </div>`:''}`;
-  }catch(e){g('pastlife-body').innerHTML=`<div class="err">Analysis failed. Please try again.</div>`;}
+    </div>`;
+  }catch(e){
+    console.error('Past life error:',e);
+    // Show what we calculated even if AI failed
+    g('pastlife-body').innerHTML=`
+    <div class="past-life-card">
+      <div class="past-life-title">✦ ${isOd?'ଗ୍ରହ ଆଧାରିତ ବିଶ୍ଲେଷଣ':'Chart-Based Analysis'}</div>
+      <div class="rlbl">${isOd?'ଗତ ଜନ୍ମ (କେତୁ)':'Past Life (Ketu)'}</div>
+      <div class="rtxt">${getPastLifeFallback(ketu,isOd,'profession')}</div>
+      <div class="rlbl">${isOd?'କର୍ମ ଋଣ (ଶନି)':'Karmic Debt (Saturn)'}</div>
+      <div class="rtxt">${getPastLifeFallback(saturn,isOd,'karma')}</div>
+      <div class="rlbl">${isOd?'ଆତ୍ମ ଲକ୍ଷ୍ୟ (ରାହୁ)':'Soul Mission (Rahu)'}</div>
+      <div class="rtxt">${getPastLifeFallback(rahu,isOd,'mission')}</div>
+      <div class="rlbl">${isOd?'ଉପଚାର':'Remedy'}</div>
+      <div class="rtxt" style="color:var(--gold-lt)">${isOd?'ପ୍ରତ୍ୟେକ ଶନିବାର ଶନି ଦେବଙ୍କୁ ତିଳ ତେଲ ଅର୍ପଣ କରନ୍ତୁ।':'Offer sesame oil to Saturn every Saturday and chant Mahamrityunjaya mantra daily.'}</div>
+    </div>`;
+  }
   btn.disabled=false;btn.textContent=isOd?'🔮 ମୋ ପୂର୍ବ ଜନ୍ମ ଦେଖନ୍ତୁ':'🔮 Reveal My Past Life';
 }
 
@@ -4137,6 +4160,45 @@ function shareKundliWA(){
   window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
 }
 
+
+/* ─── PAST LIFE FALLBACK ────────────────────────────────*/
+function getPastLifeFallback(planet, isOd, type){
+  const sign = planet?.rashiName || 'unknown';
+  const house = planet?.house || 0;
+  const fallbacks = {
+    profession:{
+      en:`Based on Ketu in ${sign} (House ${house}), your past life likely involved ${
+        ['Aries','Scorpio'].includes(sign)?'military, surgery, or physical leadership':
+        ['Taurus','Libra'].includes(sign)?'arts, crafts, or material accumulation':
+        ['Gemini','Virgo'].includes(sign)?'writing, teaching, or trade':
+        ['Cancer'].includes(sign)?'healing, nursing, or family service':
+        ['Leo'].includes(sign)?'royalty, governance, or performance':
+        ['Sagittarius','Pisces'].includes(sign)?'spiritual teaching, philosophy, or travel':
+        ['Capricorn','Aquarius'].includes(sign)?'administration, science, or social reform':
+        'service and knowledge work'}. You mastered these skills across multiple lifetimes.`,
+      od:`ଆପଣଙ୍କ ଗତ ଜନ୍ମ ${sign} ରାଶିର ପ୍ରଭାବ ଅନୁଯାୟୀ ଜ୍ଞାନ ଓ ସେବା କ୍ଷେତ୍ରରେ ଥିଲା। ଆପଣ ଏ ଦକ୍ଷତା ଏ ଜନ୍ମକୁ ଆଣିଛନ୍ତି।`
+    },
+    location:{
+      en:`Your past life environment was likely ${['Cancer','Pisces','Scorpio'].includes(sign)?'near water — rivers, oceans, or lakes':['Aries','Leo','Sagittarius'].includes(sign)?'in warm, active regions with strong social structures':['Capricorn','Taurus','Virgo'].includes(sign)?'in agricultural or mountainous areas focused on practical work':'in urban or spiritual centers of learning'}.`,
+      od:`ଆପଣଙ୍କ ଗତ ଜନ୍ମ ପରିବେଶ ଆଧ୍ୟାତ୍ମିକ ଓ ଶ୍ରମଶୀଳ ଥିଲା।`
+    },
+    skills:{
+      en:`You carry forward natural intuition, deep empathy, and an innate understanding of ${['Gemini','Virgo','Sagittarius'].includes(sign)?'language, learning, and communication':'spiritual and healing energies'}. These gifts surface effortlessly in this life.`,
+      od:`ଆପଣ ସ୍ୱାଭାବିକ ଜ୍ଞାନ, ଅନ୍ତଦୃଷ୍ଟି ଓ ଆଧ୍ୟାତ୍ମିକ ଶକ୍ତି ନେଇ ଆସିଛନ୍ତି।`
+    },
+    karma:{
+      en:`Saturn in ${sign} (House ${house}) shows your primary karmic lesson involves ${[1,4,7,10].includes(house)?'responsibility in relationships and social roles':[2,5,9].includes(house)?'honest use of resources and knowledge':'releasing control and trusting the divine plan'}. This debt is being resolved through your current life challenges.`,
+      od:`ଶନି ଗ୍ରହ ଆପଣଙ୍କ ମୁଖ୍ୟ କର୍ମ ଋଣ ଦର୍ଶାଉଛି। ଏ ଜୀବନର ଚ୍ୟାଲେଞ୍ଜ ଏ ଋଣ ଶୋଧ କରୁଛି।`
+    },
+    mission:{
+      en:`Rahu in ${sign} shows your soul has come to experience and master ${sign} energy — what felt unfamiliar in past lives is now your growth edge. Lean into it.`,
+      od:`ରାହୁ ଆପଣଙ୍କ ଆତ୍ମ ଲକ୍ଷ୍ୟ ଦର୍ଶାଉଛି। ଏ ଜୀବନ ନୂଆ ଶିକ୍ଷା ଓ ବିକାଶ ପାଇଁ।`
+    }
+  };
+  const fb = fallbacks[type];
+  if(!fb) return '—';
+  return isOd ? fb.od : fb.en;
+}
 
 /* ─── INIT ──────────────────────────────────────────────*/
 (async function init(){
