@@ -1,25 +1,28 @@
 exports.handler = async function(event) {
-  // Handle CORS preflight
+  const headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Content-Type': 'application/json'
+  };
+
   if(event.httpMethod === 'OPTIONS'){
-    return {
-      statusCode: 200,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS'
-      },
-      body: ''
-    };
+    return { statusCode: 200, headers, body: '' };
   }
 
   if(event.httpMethod !== 'POST'){
-    return {statusCode: 405, body: 'Method not allowed'};
+    return { statusCode: 405, headers, body: JSON.stringify({error:{message:'Method not allowed'}}) };
   }
 
-  if(!process.env.ANTHROPIC_API_KEY){
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+
+  if(!apiKey){
     return {
-      statusCode: 500,
-      body: JSON.stringify({error:{message:'API key not configured. Please add ANTHROPIC_API_KEY in Netlify environment variables.'}})
+      statusCode: 200,
+      headers,
+      body: JSON.stringify({
+        content:[{type:'text',text:'API key not set. Go to Netlify → Site configuration → Environment variables → Add ANTHROPIC_API_KEY → Redeploy.'}]
+      })
     };
   }
 
@@ -30,7 +33,7 @@ exports.handler = async function(event) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': process.env.ANTHROPIC_API_KEY,
+        'x-api-key': apiKey,
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify(body)
@@ -38,20 +41,28 @@ exports.handler = async function(event) {
 
     const data = await response.json();
 
-    return {
-      statusCode: response.status,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    };
+    // If model not found retry with stable model
+    if(data.error && (data.error.type === 'not_found_error' || data.error.type === 'invalid_request_error')){
+      const retry = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01'
+        },
+        body: JSON.stringify({...body, model:'claude-3-5-sonnet-20241022'})
+      });
+      const retryData = await retry.json();
+      return { statusCode: 200, headers, body: JSON.stringify(retryData) };
+    }
+
+    return { statusCode: 200, headers, body: JSON.stringify(data) };
 
   }catch(e){
     return {
       statusCode: 500,
-      headers: {'Access-Control-Allow-Origin': '*'},
-      body: JSON.stringify({error: {message: e.message}})
+      headers,
+      body: JSON.stringify({error:{message:e.message}})
     };
   }
 };
