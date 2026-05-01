@@ -293,16 +293,44 @@ select option{background:#0C0602}
 .wa-btn-txt{font-size:14px;font-weight:700;color:#fff}
 .wa-btn-sub{font-size:10px;color:rgba(255,255,255,.8);margin-top:1px}
 /* language selection */
-.lang-select-page{position:fixed;inset:0;background:var(--bg);z-index:999;display:flex;align-items:center;justify-content:center;padding:20px}
-.lang-select-box{text-align:center;max-width:320px;width:100%}
-.lang-select-logo{width:70px;height:70px;margin:0 auto 20px;display:flex;align-items:center;justify-content:center}
-.lang-select-title{font-family:'Cinzel',serif;font-size:22px;color:var(--cream);margin-bottom:6px}
-.lang-select-sub{font-size:13px;color:var(--muted);margin-bottom:32px;line-height:1.6}
-.lang-btn-big{display:flex;align-items:center;gap:14px;background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:18px 22px;width:100%;margin-bottom:12px;cursor:pointer;transition:all .2s;text-align:left}
-.lang-btn-big:hover{border-color:var(--gold);transform:translateY(-2px)}
-.lang-btn-big-icon{font-size:28px;flex-shrink:0}
-.lang-btn-big-title{font-family:'Cinzel',serif;font-size:16px;color:var(--cream);font-weight:600}
-.lang-btn-big-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.lang-select-page{position:fixed;inset:0;z-index:999;display:flex;flex-direction:column;overflow-y:auto;
+  background:radial-gradient(ellipse at 50% 0%,#2A0E04 0%,#0E0804 50%,#050302 100%)}
+.ls-stars{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+.ls-star{position:absolute;border-radius:50%;animation:twinkle var(--dur,3s) ease-in-out infinite;opacity:0}
+@keyframes twinkle{0%,100%{opacity:0;transform:scale(.8)}50%{opacity:var(--op,.8);transform:scale(1)}}
+.ls-wrap{position:relative;z-index:1;width:100%;max-width:420px;margin:0 auto;padding:28px 20px 40px}
+.ls-hero{text-align:center;padding:20px 0 24px}
+.ls-logo-ring{width:90px;height:90px;margin:0 auto 16px;position:relative}
+.ls-logo-ring svg{width:100%;height:100%}
+.ls-title{font-family:'Cinzel',serif;font-size:28px;font-weight:700;
+  background:linear-gradient(135deg,#F0D080,#B8870A,#F0D080);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:4px}
+.ls-tagline{font-size:12px;color:#A08060;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px}
+.ls-tagline-od{font-size:13px;color:#C8A070;margin-bottom:24px}
+.ls-features{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:24px}
+.ls-feat{background:rgba(184,135,10,.06);border:1px solid rgba(184,135,10,.15);border-radius:10px;padding:12px 10px;text-align:center;transition:all .2s}
+.ls-feat:hover{background:rgba(184,135,10,.12);border-color:rgba(184,135,10,.3)}
+.ls-feat-ic{font-size:22px;margin-bottom:5px}
+.ls-feat-nm{font-family:'Cinzel',serif;font-size:11px;color:#D4A850;font-weight:600;line-height:1.3}
+.ls-feat-od{font-size:10px;color:#806040;margin-top:2px}
+.ls-divider{display:flex;align-items:center;gap:10px;margin:20px 0}
+.ls-divider-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(184,135,10,.3),transparent)}
+.ls-divider-text{font-size:11px;color:#806040;white-space:nowrap}
+.ls-lang-title{font-family:'Cinzel',serif;font-size:15px;color:#D4C090;text-align:center;margin-bottom:14px}
+.ls-lang-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.ls-lang-btn{background:rgba(30,14,6,.8);border:1.5px solid rgba(184,135,10,.25);border-radius:12px;padding:16px 12px;cursor:pointer;transition:all .25s;text-align:center;position:relative;overflow:hidden}
+.ls-lang-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(184,135,10,.08),transparent);opacity:0;transition:.2s}
+.ls-lang-btn:hover{border-color:rgba(184,135,10,.7);transform:translateY(-3px);box-shadow:0 8px 24px rgba(184,135,10,.2)}
+.ls-lang-btn:hover::before{opacity:1}
+.ls-lang-flag{font-size:26px;margin-bottom:6px}
+.ls-lang-name{font-family:'Cinzel',serif;font-size:16px;color:#F0E4CC;font-weight:700;margin-bottom:3px}
+.ls-lang-sub{font-size:10px;color:#806040}
+.ls-stats{display:flex;justify-content:center;gap:20px;padding:16px 0;border-top:1px solid rgba(184,135,10,.1);border-bottom:1px solid rgba(184,135,10,.1);margin-bottom:20px}
+.ls-stat{text-align:center}
+.ls-stat-n{font-family:'Cinzel',serif;font-size:18px;color:#D4A850;font-weight:700}
+.ls-stat-l{font-size:9px;color:#806040;text-transform:uppercase;letter-spacing:.5px;margin-top:1px}
+.ls-footer{text-align:center;font-size:10px;color:#503020;padding-top:10px}
 /* global lang toggle in topbar */
 .lang-pill{display:flex;gap:0;border:1px solid var(--border);border-radius:20px;overflow:hidden}
 .lang-pill-btn{padding:4px 10px;font-size:10px;font-weight:700;cursor:pointer;border:none;background:transparent;color:var(--muted);font-family:'Lato',sans-serif;transition:all .15s}
@@ -466,62 +494,192 @@ select option{background:#0C0602}
 <!-- ═══ LANDING ═══ -->
 <!-- ═══ LANGUAGE SELECTION ═══ -->
 <div class="lang-select-page" id="lang-select-page">
-  <div class="lang-select-box">
-    <div class="lang-select-logo">
-      <svg width="70" height="70" viewBox="0 0 70 70">
-        <circle cx="35" cy="35" r="33" fill="#1E110A" stroke="#B8870A" stroke-width="1"/>
-        <circle cx="35" cy="35" r="28" stroke="#B8870A" stroke-width="0.5" stroke-dasharray="4 5" fill="none"/>
-        <polygon points="35,8 38,24 52,24 41,34 45,50 35,41 25,50 29,34 18,24 32,24" fill="#C8520A" opacity="0.2"/>
-        <polygon points="35,8 38,24 52,24 41,34 45,50 35,41 25,50 29,34 18,24 32,24" fill="none" stroke="#B8870A" stroke-width="1"/>
-        <text x="35" y="40" text-anchor="middle" font-size="14" fill="#B8870A" font-family="serif">ॐ</text>
-      </svg>
-    </div>
-    <div class="lang-select-title">Jyotish AI</div>
-    <div class="lang-select-sub">
-      ଆପଣଙ୍କ ଭାଷା ବାଛନ୍ତୁ<br/>
-      Choose your language<br/>
-      <span style="font-size:11px;color:var(--border)">You can change this anytime in Profile</span>
-    </div>
-    <button class="lang-btn-big" onclick="selectAppLang('en')">
-      <div class="lang-btn-big-icon">🇬🇧</div>
-      <div>
-        <div class="lang-btn-big-title">English</div>
-        <div class="lang-btn-big-sub">All predictions & chat in English</div>
+
+  <!-- Animated stars background -->
+  <div class="ls-stars" id="ls-stars"></div>
+
+  <div class="ls-wrap">
+
+    <!-- HERO -->
+    <div class="ls-hero">
+      <div class="ls-logo-ring">
+        <svg viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#B8870A" stop-opacity="0.3"/>
+              <stop offset="100%" stop-color="#B8870A" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+          <circle cx="45" cy="45" r="42" fill="url(#glow)"/>
+          <circle cx="45" cy="45" r="40" fill="#1A0A02" stroke="#B8870A" stroke-width="1"/>
+          <circle cx="45" cy="45" r="35" stroke="#B8870A" stroke-width="0.5" stroke-dasharray="3 4" fill="none">
+            <animateTransform attributeName="transform" type="rotate" from="0 45 45" to="360 45 45" dur="20s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="45" cy="45" r="28" stroke="#C8520A" stroke-width="0.4" stroke-dasharray="2 6" fill="none">
+            <animateTransform attributeName="transform" type="rotate" from="360 45 45" to="0 45 45" dur="30s" repeatCount="indefinite"/>
+          </circle>
+          <!-- Star of Astrology -->
+          <polygon points="45,12 49,30 65,30 52,40 57,58 45,49 33,58 38,40 25,30 41,30" fill="#C8520A" opacity="0.2"/>
+          <polygon points="45,12 49,30 65,30 52,40 57,58 45,49 33,58 38,40 25,30 41,30" fill="none" stroke="#B8870A" stroke-width="1.2"/>
+          <!-- OM -->
+          <circle cx="45" cy="45" r="11" fill="#1A0A02" stroke="#B8870A" stroke-width="0.7"/>
+          <text x="45" y="50" text-anchor="middle" font-size="14" fill="#D4A020" font-family="serif">ॐ</text>
+          <!-- Planet dots -->
+          <circle cx="45" cy="7" r="2" fill="#B8870A" opacity="0.8"/>
+          <circle cx="78" cy="25" r="1.5" fill="#C8520A" opacity="0.7"/>
+          <circle cx="78" cy="65" r="2" fill="#B8870A" opacity="0.6"/>
+          <circle cx="45" cy="83" r="1.5" fill="#C8520A" opacity="0.8"/>
+          <circle cx="12" cy="65" r="2" fill="#B8870A" opacity="0.7"/>
+          <circle cx="12" cy="25" r="1.5" fill="#C8520A" opacity="0.6"/>
+        </svg>
       </div>
-    </button>
-    <button class="lang-btn-big" onclick="selectAppLang('od')">
-      <div class="lang-btn-big-icon">🏛️</div>
-      <div>
-        <div class="lang-btn-big-title">ଓଡ଼ିଆ</div>
-        <div class="lang-btn-big-sub">ସମସ୍ତ ଭବିଷ୍ୟ ଓ ଚାଟ ଓଡ଼ିଆରେ</div>
+      <div class="ls-title">Jyotish AI</div>
+      <div class="ls-tagline">Vedic Astrology · AI Powered · Odisha</div>
+      <div class="ls-tagline-od">ଭାରତର ଅଗ୍ରଣୀ AI ଜ୍ୟୋତିଷ ସେବା</div>
+    </div>
+
+    <!-- STATS BAR -->
+    <div class="ls-stats">
+      <div class="ls-stat"><div class="ls-stat-n">VSOP87</div><div class="ls-stat-l">Engine</div></div>
+      <div class="ls-stat"><div class="ls-stat-n">27</div><div class="ls-stat-l">Nakshatras</div></div>
+      <div class="ls-stat"><div class="ls-stat-n">12+</div><div class="ls-stat-l">Services</div></div>
+      <div class="ls-stat"><div class="ls-stat-n">EN·OD</div><div class="ls-stat-l">Bilingual</div></div>
+    </div>
+
+    <!-- FEATURES GRID -->
+    <div class="ls-features">
+      <div class="ls-feat">
+        <div class="ls-feat-ic">☀️</div>
+        <div class="ls-feat-nm">Accurate Kundli</div>
+        <div class="ls-feat-od">ଜନ୍ମ ଚକ୍ର</div>
       </div>
-    </button>
+      <div class="ls-feat">
+        <div class="ls-feat-ic">🔮</div>
+        <div class="ls-feat-nm">Past Life Analysis</div>
+        <div class="ls-feat-od">ପୂର୍ବ ଜନ୍ମ</div>
+      </div>
+      <div class="ls-feat">
+        <div class="ls-feat-ic">💑</div>
+        <div class="ls-feat-nm">Guna Milan</div>
+        <div class="ls-feat-od">ବିବାହ ଯୋଗ</div>
+      </div>
+      <div class="ls-feat">
+        <div class="ls-feat-ic">📅</div>
+        <div class="ls-feat-nm">Daily Panchang</div>
+        <div class="ls-feat-od">ଆଜର ପଞ୍ଚାଙ୍ଗ</div>
+      </div>
+      <div class="ls-feat">
+        <div class="ls-feat-ic">👶</div>
+        <div class="ls-feat-nm">Namakarana</div>
+        <div class="ls-feat-od">ଶିଶୁ ନାମ</div>
+      </div>
+      <div class="ls-feat">
+        <div class="ls-feat-ic">🕐</div>
+        <div class="ls-feat-nm">Muhurta Finder</div>
+        <div class="ls-feat-od">ଶୁଭ ମୁହୂର୍ତ</div>
+      </div>
+      <div class="ls-feat">
+        <div class="ls-feat-ic">💼</div>
+        <div class="ls-feat-nm">Career Timing</div>
+        <div class="ls-feat-od">କ୍ୟାରିୟର</div>
+      </div>
+      <div class="ls-feat">
+        <div class="ls-feat-ic">🕉️</div>
+        <div class="ls-feat-nm">Seven Chakra</div>
+        <div class="ls-feat-od">ସାତ ଚକ୍ର</div>
+      </div>
+    </div>
+
+    <!-- DIVIDER -->
+    <div class="ls-divider">
+      <div class="ls-divider-line"></div>
+      <div class="ls-divider-text">ଆପଣଙ୍କ ଭାଷା ବାଛନ୍ତୁ · Choose Language</div>
+      <div class="ls-divider-line"></div>
+    </div>
+
+    <!-- LANGUAGE BUTTONS -->
+    <div class="ls-lang-grid">
+      <button class="ls-lang-btn" onclick="selectAppLang('en')">
+        <div class="ls-lang-flag">🇬🇧</div>
+        <div class="ls-lang-name">English</div>
+        <div class="ls-lang-sub">All features in English</div>
+      </button>
+      <button class="ls-lang-btn" onclick="selectAppLang('od')">
+        <div class="ls-lang-flag">🏛️</div>
+        <div class="ls-lang-name">ଓଡ଼ିଆ</div>
+        <div class="ls-lang-sub">ସମ୍ପୂର୍ଣ ଓଡ଼ିଆ ଭାଷା</div>
+      </button>
+    </div>
+
+    <div class="ls-footer">
+      Powered by VSOP87 · Lahiri Ayanamsa · Claude AI<br/>
+      <span style="color:#403020">You can change language anytime in Profile</span>
+    </div>
+
   </div>
 </div>
 
+
+
 <div class="pg on" id="pg-landing">
   <div class="wrap">
-    <div class="hero">
-      <svg width="80" height="80" viewBox="0 0 80 80" style="margin:0 auto 18px;display:block">
-        <circle cx="40" cy="40" r="37" stroke="#3D2710" stroke-width="1" fill="none"/>
-        <circle cx="40" cy="40" r="33" stroke="#B8870A" stroke-width=".5" stroke-dasharray="4 5" fill="none" style="animation:tw 8s linear infinite;transform-origin:40px 40px;animation-name:rotateRing">
-          <animateTransform attributeName="transform" type="rotate" from="0 40 40" to="360 40 40" dur="20s" repeatCount="indefinite"/>
+
+    <!-- HERO SECTION -->
+    <div style="text-align:center;padding:24px 0 20px">
+      <svg width="72" height="72" viewBox="0 0 72 72" style="margin:0 auto 14px;display:block">
+        <circle cx="36" cy="36" r="34" fill="#1A0A02" stroke="#B8870A" stroke-width="1"/>
+        <circle cx="36" cy="36" r="29" stroke="#B8870A" stroke-width="0.5" stroke-dasharray="3 4" fill="none">
+          <animateTransform attributeName="transform" type="rotate" from="0 36 36" to="360 36 36" dur="20s" repeatCount="indefinite"/>
         </circle>
-        <polygon points="40,6 44,26 62,26 47,38 53,58 40,47 27,58 33,38 18,26 36,26" fill="#C8520A" opacity=".15"/>
-        <polygon points="40,6 44,26 62,26 47,38 53,58 40,47 27,58 33,38 18,26 36,26" fill="none" stroke="#B8870A" stroke-width="1.2"/>
-        <circle cx="40" cy="40" r="10" fill="#1E110A" stroke="#B8870A" stroke-width=".7"/>
-        <text x="40" y="44" text-anchor="middle" font-size="11" fill="#B8870A" font-family="serif">ॐ</text>
+        <polygon points="36,10 39,24 52,24 42,32 46,46 36,39 26,46 30,32 20,24 33,24" fill="#C8520A" opacity="0.2"/>
+        <polygon points="36,10 39,24 52,24 42,32 46,46 36,39 26,46 30,32 20,24 33,24" fill="none" stroke="#B8870A" stroke-width="1.2"/>
+        <circle cx="36" cy="36" r="9" fill="#1A0A02" stroke="#B8870A" stroke-width="0.7"/>
+        <text x="36" y="40" text-anchor="middle" font-size="11" fill="#D4A020" font-family="serif">ॐ</text>
       </svg>
-      <h1>Jyotish <em>AI</em></h1>
-      <p class="hero-sub">Accurate Vedic Kundli · VSOP87 Planetary Engine</p>
-      <p class="hero-sub od" style="margin-top:4px">ଭାରତର ଅଗ୍ରଣୀ AI ଜ୍ୟୋତିଷ ସେବା</p>
+      <h1 style="font-family:'Cinzel',serif;font-size:28px;font-weight:700;background:linear-gradient(135deg,#F0D080,#B8870A,#F0D080);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px">Jyotish AI</h1>
+      <p style="font-size:12px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Vedic Astrology · AI Powered</p>
+      <p style="font-size:13px;color:#C8A070" class="od">ଭାରତର ଅଗ୍ରଣୀ AI ଜ୍ୟୋତିଷ ସେବା</p>
     </div>
-    <div style="display:flex;justify-content:center;gap:28px;padding:0 0 28px;flex-wrap:wrap">
-      <div style="text-align:center"><div style="font-family:'Cinzel',serif;font-size:20px;color:var(--gold-lt);font-weight:700">VSOP87</div><div style="font-size:10px;color:var(--muted)">Planetary Engine</div></div>
-      <div style="text-align:center"><div style="font-family:'Cinzel',serif;font-size:20px;color:var(--gold-lt);font-weight:700">Lahiri</div><div style="font-size:10px;color:var(--muted)">Ayanamsa</div></div>
-      <div style="text-align:center"><div style="font-family:'Cinzel',serif;font-size:20px;color:var(--gold-lt);font-weight:700">27</div><div style="font-size:10px;color:var(--muted)">Nakshatras</div></div>
-      <div style="text-align:center"><div style="font-family:'Cinzel',serif;font-size:20px;color:var(--gold-lt);font-weight:700">EN+OD</div><div style="font-size:10px;color:var(--muted)">Bilingual</div></div>
+
+    <!-- STATS ROW -->
+    <div style="display:flex;justify-content:center;gap:0;background:rgba(184,135,10,.06);border:1px solid rgba(184,135,10,.15);border-radius:12px;padding:14px;margin-bottom:20px">
+      <div style="flex:1;text-align:center;border-right:1px solid rgba(184,135,10,.15)">
+        <div style="font-family:'Cinzel',serif;font-size:16px;color:var(--gold-lt);font-weight:700">VSOP87</div>
+        <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Planetary Engine</div>
+      </div>
+      <div style="flex:1;text-align:center;border-right:1px solid rgba(184,135,10,.15)">
+        <div style="font-family:'Cinzel',serif;font-size:16px;color:var(--gold-lt);font-weight:700">27</div>
+        <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Nakshatras</div>
+      </div>
+      <div style="flex:1;text-align:center;border-right:1px solid rgba(184,135,10,.15)">
+        <div style="font-family:'Cinzel',serif;font-size:16px;color:var(--gold-lt);font-weight:700">12+</div>
+        <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Services</div>
+      </div>
+      <div style="flex:1;text-align:center">
+        <div style="font-family:'Cinzel',serif;font-size:16px;color:var(--gold-lt);font-weight:700">Free</div>
+        <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Currently</div>
+      </div>
     </div>
+
+    <!-- FEATURES LIST -->
+    <div style="margin-bottom:20px">
+      <div style="font-family:'Cinzel',serif;font-size:13px;color:var(--gold-lt);margin-bottom:12px;text-align:center">✦ What You Get ✦</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div style="background:rgba(184,135,10,.05);border:1px solid rgba(184,135,10,.12);border-radius:9px;padding:10px;display:flex;align-items:center;gap:8px"><span style="font-size:18px">☀️</span><div><div style="font-size:11px;color:var(--cream);font-weight:700">Accurate Kundli</div><div style="font-size:10px;color:var(--muted)">ଜନ୍ମ ଚକ୍ର</div></div></div>
+        <div style="background:rgba(184,135,10,.05);border:1px solid rgba(184,135,10,.12);border-radius:9px;padding:10px;display:flex;align-items:center;gap:8px"><span style="font-size:18px">🔮</span><div><div style="font-size:11px;color:var(--cream);font-weight:700">Past Life Analysis</div><div style="font-size:10px;color:var(--muted)">ପୂର୍ବ ଜନ୍ମ</div></div></div>
+        <div style="background:rgba(184,135,10,.05);border:1px solid rgba(184,135,10,.12);border-radius:9px;padding:10px;display:flex;align-items:center;gap:8px"><span style="font-size:18px">💑</span><div><div style="font-size:11px;color:var(--cream);font-weight:700">Guna Milan</div><div style="font-size:10px;color:var(--muted)">ଗୁଣ ମିଳାନ</div></div></div>
+        <div style="background:rgba(184,135,10,.05);border:1px solid rgba(184,135,10,.12);border-radius:9px;padding:10px;display:flex;align-items:center;gap:8px"><span style="font-size:18px">👶</span><div><div style="font-size:11px;color:var(--cream);font-weight:700">Namakarana</div><div style="font-size:10px;color:var(--muted)">ନାମକରଣ</div></div></div>
+        <div style="background:rgba(184,135,10,.05);border:1px solid rgba(184,135,10,.12);border-radius:9px;padding:10px;display:flex;align-items:center;gap:8px"><span style="font-size:18px">📅</span><div><div style="font-size:11px;color:var(--cream);font-weight:700">Daily Panchang</div><div style="font-size:10px;color:var(--muted)">ଦୈନିକ ପଞ୍ଚାଙ୍ଗ</div></div></div>
+        <div style="background:rgba(184,135,10,.05);border:1px solid rgba(184,135,10,.12);border-radius:9px;padding:10px;display:flex;align-items:center;gap:8px"><span style="font-size:18px">🕐</span><div><div style="font-size:11px;color:var(--cream);font-weight:700">Muhurta Finder</div><div style="font-size:10px;color:var(--muted)">ଶୁଭ ମୁହୂର୍ତ</div></div></div>
+        <div style="background:rgba(184,135,10,.05);border:1px solid rgba(184,135,10,.12);border-radius:9px;padding:10px;display:flex;align-items:center;gap:8px"><span style="font-size:18px">💼</span><div><div style="font-size:11px;color:var(--cream);font-weight:700">Career Timing</div><div style="font-size:10px;color:var(--muted)">କ୍ୟାରିୟର</div></div></div>
+        <div style="background:rgba(184,135,10,.05);border:1px solid rgba(184,135,10,.12);border-radius:9px;padding:10px;display:flex;align-items:center;gap:8px"><span style="font-size:18px">🌙</span><div><div style="font-size:11px;color:var(--cream);font-weight:700">Daily Horoscope</div><div style="font-size:10px;color:var(--muted)">ରାଶି ଫଳ</div></div></div>
+        <div style="background:rgba(184,135,10,.05);border:1px solid rgba(184,135,10,.12);border-radius:9px;padding:10px;display:flex;align-items:center;gap:8px"><span style="font-size:18px">🕉️</span><div><div style="font-size:11px;color:var(--cream);font-weight:700">Seven Chakra</div><div style="font-size:10px;color:var(--muted)">ସାତ ଚକ୍ର</div></div></div>
+        <div style="background:rgba(184,135,10,.05);border:1px solid rgba(184,135,10,.12);border-radius:9px;padding:10px;display:flex;align-items:center;gap:8px"><span style="font-size:18px">💚</span><div><div style="font-size:11px;color:var(--cream);font-weight:700">Health Report</div><div style="font-size:10px;color:var(--muted)">ସ୍ୱାସ୍ଥ୍ୟ</div></div></div>
+        <div style="background:rgba(184,135,10,.05);border:1px solid rgba(184,135,10,.12);border-radius:9px;padding:10px;display:flex;align-items:center;gap:8px"><span style="font-size:18px">🔢</span><div><div style="font-size:11px;color:var(--cream);font-weight:700">Anka Shastra</div><div style="font-size:10px;color:var(--muted)">ଅଙ୍କ ଶାସ୍ତ୍ର</div></div></div>
+        <div style="background:rgba(184,135,10,.05);border:1px solid rgba(184,135,10,.12);border-radius:9px;padding:10px;display:flex;align-items:center;gap:8px"><span style="font-size:18px">💬</span><div><div style="font-size:11px;color:var(--cream);font-weight:700">AI Astro Chat</div><div style="font-size:10px;color:var(--muted)">AI ଚାଟ</div></div></div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -4811,6 +4969,20 @@ function renderUserDetailsBar(container){
     </div>
   </div>`;
 }
+/* ─── STAR BACKGROUND ───*/
+function initStars(){
+  const container=document.getElementById('ls-stars');
+  if(!container)return;
+  for(let i=0;i<60;i++){
+    const s=document.createElement('div');
+    s.className='ls-star';
+    const size=Math.random()*2+1;
+    s.style.cssText='left:'+Math.random()*100+'%;top:'+Math.random()*100+'%;width:'+size+'px;height:'+size+'px;--dur:'+(Math.random()*3+2)+'s;--op:'+(Math.random()*0.6+0.2)+';animation-delay:'+Math.random()*4+'s;background:'+(Math.random()>0.5?'#B8870A':'#F0E0C0');
+    container.appendChild(s);
+  }
+}
+setTimeout(initStars,100);
+
 /* ─── INIT ──────────────────────────────────────────────*/
 (async function init(){
   // ── Check language preference ──
