@@ -429,6 +429,8 @@ select option{background:#0C0602}
 .cross-insight{background:linear-gradient(135deg,#1E0A00,var(--surface));border:1px solid var(--gold);border-radius:10px;padding:14px;margin-bottom:10px}
 .cross-title{font-family:'Cinzel',serif;font-size:12px;color:var(--gold-lt);margin-bottom:6px}
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body>
 
@@ -3010,59 +3012,253 @@ async function downloadPDF(){
 
   const isOd=APP_LANG==='od';
   const res=S.calcResult;
-
-  // Fix date objects before sending
-  const safeRes={
-    ...res,
-    lang:APP_LANG||'en',
-    dashas:(res.dashas||[]).map(d=>({
-      ...d,
-      start:d.start?new Date(d.start).toISOString():null,
-      end:d.end?new Date(d.end).toISOString():null,
-      startDate:d.startDate?new Date(d.startDate).toISOString():null,
-      endDate:d.endDate?new Date(d.endDate).toISOString():null,
-    })),
-    currDasha:res.currDasha?{
-      ...res.currDasha,
-      start:res.currDasha.start?new Date(res.currDasha.start).toISOString():null,
-      end:res.currDasha.end?new Date(res.currDasha.end).toISOString():null,
-    }:null,
-    antars:(res.antars||[]).map(d=>({
-      ...d,
-      start:d.start?new Date(d.start).toISOString():null,
-      end:d.end?new Date(d.end).toISOString():null,
-    })),
-  };
+  const r=res.reading||{};
+  const {planets,moonNak,ascendant,dashas,currDasha,yogas,input}=res;
 
   try{
-    const resp=await fetch('/.netlify/functions/generate-pdf',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify(safeRes)
-    });
-    if(!resp.ok){
-      const err=await resp.json().catch(()=>({}));
-      throw new Error(err.error||'PDF generation failed');
+    // Load jsPDF dynamically if not loaded
+    if(!window.jspdf){
+      await new Promise((resolve,reject)=>{
+        const s=document.createElement('script');
+        s.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+        s.onload=resolve;s.onerror=reject;
+        document.head.appendChild(s);
+      });
+      await new Promise((resolve,reject)=>{
+        const s=document.createElement('script');
+        s.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js';
+        s.onload=resolve;s.onerror=reject;
+        document.head.appendChild(s);
+      });
     }
-    const data=await resp.json();
-    if(!data.pdf) throw new Error('No PDF returned');
 
-    // Convert base64 to blob and download
-    const byteChars=atob(data.pdf);
-    const byteNums=new Array(byteChars.length);
-    for(let i=0;i<byteChars.length;i++) byteNums[i]=byteChars.charCodeAt(i);
-    const byteArr=new Uint8Array(byteNums);
-    const blob=new Blob([byteArr],{type:'application/pdf'});
-    const url=URL.createObjectURL(blob);
-    const a=document.createElement('a');
-    a.href=url;a.download=data.filename||'Kundli.pdf';
-    document.body.appendChild(a);a.click();
-    document.body.removeChild(a);URL.revokeObjectURL(url);
+    const {jsPDF}=window.jspdf;
+    const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+    const W=210,M=15,CW=W-M*2;
+    let y=M;
 
-    toast(isOd?'PDF ଡାଉନଲୋଡ ହୋଇଗଲା ✦':'PDF downloaded successfully ✦');
+    // Colors
+    const NAVY=[26,40,100],GOLD=[184,135,10],CREAM=[248,244,238];
+    const INK=[26,18,8],MUTED=[100,90,70],BORDER=[200,208,220];
+    const BGCARD=[240,238,232],GREEN=[30,100,50],RED=[160,40,40];
+
+    const checkPage=(n=25)=>{if(y+n>282){doc.addPage();y=M;}};
+    const fillRect=(x,ry,w,h,col)=>doc.setFillColor(...col).rect(x,ry,w,h,'F');
+    const txt=(t,x,ry,opts={})=>{
+      const{size=9,col=INK,bold=false,align='left',mw=CW}=opts;
+      doc.setFontSize(size).setFillColor(...col).setTextColor(...col)
+         .setFont('helvetica',bold?'bold':'normal')
+         .text(String(t||''),x,ry,{align,maxWidth:mw});
+    };
+    const sectionHdr=(label,ry)=>{
+      fillRect(M,ry,CW,7,NAVY);
+      txt(label,M+3,ry+5,{size:9,col:CREAM,bold:true});
+      return ry+10;
+    };
+
+    // ── HEADER ──
+    fillRect(0,0,W,42,NAVY);
+    fillRect(0,40,W,2,GOLD);
+    txt(isOd?'ଜ୍ୟୋତିଷ AI — ଜନ୍ମ କୁଣ୍ଡଳୀ':'Jyotish AI — Birth Kundli Report',W/2,16,{size:18,col:CREAM,bold:true,align:'center'});
+    txt('ॐ तत् सत् · Lahiri Ayanamsa · VSOP87',W/2,28,{size:9,col:GOLD,align:'center'});
+    txt(new Date().toLocaleDateString('en-IN'),W/2,36,{size:7,col:[160,180,220],align:'center'});
+    y=52;
+
+    // ── PERSONAL INFO ──
+    fillRect(M,y,CW,36,BGCARD);
+    doc.setDrawColor(...BORDER).rect(M,y,CW,36,'S');
+    fillRect(M,y,CW,10,NAVY);
+    txt(input.nm||'',W/2,y+8,{size:13,col:CREAM,bold:true,align:'center'});
+    txt(new Date(input.dStr).toDateString()+' · '+input.tStr+' IST · '+input.place,W/2,y+18,{size:8,col:MUTED,align:'center'});
+    txt((input.gotra?'Gotra: '+input.gotra+' · ':'')+' Ayanamsa: '+res.ayanamsa+'°',W/2,y+26,{size:7,col:MUTED,align:'center'});
+    y+=42;
+
+    // ── KEY CHIPS ──
+    const chips=[
+      ['Lagna',ascendant.rashiName+' '+ascendant.deg+'°'],
+      ['Moon Rashi',planets[1]?.rashiName||''],
+      ['Sun Sign',planets[0]?.rashiName||''],
+      ['Nakshatra',moonNak?.name||''],
+      ['Pada',String(moonNak?.pada||'')],
+      ['Mahadasha',currDasha?.planet||''],
+    ];
+    const cw=CW/3,ch=14;
+    chips.forEach((c,i)=>{
+      const cx=M+(i%3)*cw,cy=y+Math.floor(i/3)*ch;
+      fillRect(cx,cy,cw,ch,i%2===0?BGCARD:[235,232,225]);
+      doc.setDrawColor(...BORDER).rect(cx,cy,cw,ch,'S');
+      fillRect(cx,cy,cw,3,NAVY);
+      txt(c[0],cx+cw/2,cy+7,{size:6,col:MUTED,align:'center'});
+      txt(c[1],cx+cw/2,cy+12,{size:8,col:INK,bold:true,align:'center'});
+    });
+    y+=ch*2+8;
+
+    // ── BIRTH CHART (North Indian) ──
+    checkPage(100);
+    y=sectionHdr(isOd?'✦ ଜନ୍ମ ଚକ୍ର':'✦ Birth Chart — North Indian Style',y);
+    const cX=M,cY=y,cW=80,cH=80;
+    const cx2=cX+cW/2,cy2=cY+cH/2,q=cW/4,qh=cH/4;
+    fillRect(cX,cY,cW,cH,BGCARD);
+    doc.setDrawColor(...NAVY).setLineWidth(0.6).rect(cX,cY,cW,cH,'S');
+    doc.setDrawColor(...BORDER).setLineWidth(0.3);
+    [[cX+q,cY,cX+q,cY+cH],[cX+q*3,cY,cX+q*3,cY+cH],[cX,cY+qh,cX+cW,cY+qh],[cX,cY+qh*3,cX+cW,cY+qh*3]].forEach(([x1,y1,x2,y2])=>doc.line(x1,y1,x2,y2));
+    [[cX+q,cY+qh,cx2,cy2],[cX+q*3,cY+qh,cx2,cy2],[cX+q,cY+qh*3,cx2,cy2],[cX+q*3,cY+qh*3,cx2,cy2]].forEach(([x1,y1,x2,y2])=>doc.line(x1,y1,x2,y2));
+    doc.setFontSize(8).setTextColor(...GOLD).text('OM',cx2-4,cy2+1);
+    const hPos=[[0,1],[0,0],[1,0],[2,0],[3,0],[3,1],[3,2],[3,3],[2,3],[1,3],[0,3],[0,2]];
+    const houseContents=Array(12).fill('').map(()=>[]);
+    planets.forEach(p=>{const h=p.house-1;if(h>=0&&h<12)houseContents[h].push(p.name.substring(0,3));});
+    houseContents[0].unshift('Asc');
+    hPos.forEach(([r,c],i)=>{
+      const hx=cX+c*q,hy=cY+r*qh,hcx=hx+q/2,hcy=hy+qh/2;
+      doc.setFontSize(5).setTextColor(...BORDER).text(String(i+1),hx+q-4,hy+3);
+      houseContents[i].forEach((item,idx)=>{
+        const col=item==='Asc'?GOLD:item==='Rah'||item==='Ket'?RED:NAVY;
+        doc.setFontSize(6).setTextColor(...col).text(item,hcx-6,hcy-2+(idx*7));
+      });
+    });
+    // Legend
+    const lx=cX+cW+8;let ly=cY;
+    doc.setFontSize(7).setTextColor(...NAVY).setFont('helvetica','bold').text('Planets',lx,ly+4);
+    ly+=8;
+    planets.forEach(p=>{
+      const col=p.dignity==='Exalted'?GREEN:p.dignity==='Debilitated'?RED:INK;
+      doc.setFontSize(6).setTextColor(...col).setFont('helvetica','normal').text(p.name.substring(0,3)+' '+p.rashiName.substring(0,3)+' H'+p.house,lx,ly);
+      ly+=5.5;
+    });
+    y+=cH+10;
+
+    // ── PLANETS TABLE ──
+    checkPage(80);
+    y=sectionHdr(isOd?'✦ ଗ୍ରହ ସ୍ଥିତି':'✦ Planetary Positions (Sidereal · Lahiri)',y);
+    const cols=[38,52,24,22,50,20,44];
+    const hdrs=['Planet','Rashi','Deg','H','Nakshatra','Pd','Dignity'];
+    fillRect(M,y,CW,11,NAVY);
+    let cx3=M+2;
+    hdrs.forEach((h,i)=>{doc.setFontSize(7).setTextColor(...CREAM).setFont('helvetica','bold').text(h,cx3,y+7,{maxWidth:cols[i]});cx3+=cols[i];});
+    y+=11;
+    planets.forEach((p,idx)=>{
+      checkPage(10);
+      fillRect(M,y,CW,10,idx%2===0?CREAM:BGCARD);
+      const dc=p.dignity==='Exalted'?GREEN:p.dignity==='Debilitated'?RED:p.dignity==='Own Sign'?[26,60,140]:MUTED;
+      cx3=M+2;
+      [p.name,p.rashiName,p.degInRashi+'°','H'+p.house,(p.nakName||'').substring(0,12),String(p.pada||''),p.dignity].forEach((v,i)=>{
+        const col=i===6?dc:INK;
+        doc.setFontSize(7).setTextColor(...col).setFont('helvetica',i===0||i===6?'bold':'normal').text(String(v||''),cx3,y+7,{maxWidth:cols[i]});
+        cx3+=cols[i];
+      });
+      y+=10;
+    });
+    y+=6;
+
+    // ── YOGAS ──
+    checkPage(50);
+    y=sectionHdr(isOd?'✦ ଯୋଗ':'✦ Yogas & Special Combinations',y);
+    (yogas||[]).slice(0,4).forEach(yg=>{
+      checkPage(20);
+      fillRect(M,y,CW,18,BGCARD);
+      doc.setDrawColor(...BORDER).rect(M,y,CW,18,'S');
+      doc.setFontSize(8).setTextColor(...NAVY).setFont('helvetica','bold').text(yg.name||'',M+3,y+6);
+      doc.setFontSize(7).setTextColor(...MUTED).setFont('helvetica','normal').text((yg.desc||'').substring(0,100),M+3,y+13,{maxWidth:CW-6});
+      y+=21;
+    });
+    y+=4;
+
+    // ── DASHA TABLE ──
+    checkPage(60);
+    y=sectionHdr(isOd?'✦ ବିଂଶୋତ୍ତରୀ ଦଶା':'✦ Vimshottari Dasha Timeline',y);
+    const dc=[80,70,70,50];
+    const dh=['Mahadasha','Start','End','Years'];
+    fillRect(M,y,CW,11,NAVY);
+    cx3=M+2;
+    dh.forEach((h,i)=>{doc.setFontSize(7).setTextColor(...CREAM).setFont('helvetica','bold').text(h,cx3,y+7,{maxWidth:dc[i]});cx3+=dc[i];});
+    y+=11;
+    const now2=new Date();
+    (dashas||[]).forEach((d,idx)=>{
+      checkPage(10);
+      const isCurr=d.planet===currDasha?.planet;
+      fillRect(M,y,CW,10,isCurr?[220,225,245]:idx%2===0?CREAM:BGCARD);
+      if(isCurr)fillRect(M,y,3,10,NAVY);
+      cx3=M+(isCurr?5:2);
+      const st=new Date(d.start||d.startDate),en=new Date(d.end||d.endDate);
+      [d.planet+(isCurr?' ◀':''),st.toLocaleDateString('en-IN',{month:'short',year:'numeric'}),en.toLocaleDateString('en-IN',{month:'short',year:'numeric'}),(d.years||0).toFixed(1)+'y'].forEach((v,i)=>{
+        doc.setFontSize(7).setTextColor(...(isCurr?NAVY:INK)).setFont('helvetica',isCurr?'bold':'normal').text(String(v||''),cx3,y+7,{maxWidth:dc[i]});
+        cx3+=dc[i];
+      });
+      y+=10;
+    });
+    y+=6;
+
+    // ── PAGE 2: AI PREDICTIONS ──
+    doc.addPage();y=M;
+    fillRect(0,0,W,28,NAVY);
+    fillRect(0,27,W,1.5,GOLD);
+    doc.setFontSize(14).setTextColor(...CREAM).setFont('helvetica','bold').text(isOd?'AI ଭବିଷ୍ୟ ଓ ଜୀବନ ଫଳ':'AI Predictions & Life Reading',W/2,17,{align:'center'});
+    y=36;
+
+    const sections=[
+      {k:'overview',l:{en:'Overview & Personality',od:'ବ୍ୟକ୍ତିତ୍ୱ ଓ ସ୍ୱଭାବ'}},
+      {k:'career',l:{en:'Career & Finance',od:'କ୍ୟାରିୟର ଓ ଅର୍ଥ'}},
+      {k:'love',l:{en:'Love & Relationships',od:'ପ୍ରେମ ଓ ବିବାହ'}},
+      {k:'health',l:{en:'Health',od:'ସ୍ୱାସ୍ଥ୍ୟ'}},
+      {k:'dasha',l:{en:((currDasha?.planet)||'Current')+' Dasha Effect',od:'ଦଶା ଫଳ'}},
+    ];
+    sections.forEach(sec=>{
+      const txtp=r[sec.k+'_'+(isOd?'od':'en')]||'';
+      if(!txtp)return;
+      const lbl=isOd?sec.l.od:sec.l.en;
+      const lines=doc.splitTextToSize(txtp,CW-6);
+      const boxH=lines.length*5+16;
+      checkPage(boxH+4);
+      fillRect(M,y,CW,boxH,BGCARD);
+      doc.setDrawColor(...BORDER).rect(M,y,CW,boxH,'S');
+      fillRect(M,y,CW,10,NAVY);
+      doc.setFontSize(8).setTextColor(...CREAM).setFont('helvetica','bold').text(lbl,M+3,y+7);
+      doc.setFontSize(8.5).setTextColor(...INK).setFont('helvetica','normal').text(lines,M+3,y+15);
+      y+=boxH+5;
+    });
+
+    // ── REMEDIES ──
+    checkPage(40);
+    y=sectionHdr(isOd?'✦ ଉପଚାର':'✦ Remedies',y);
+    const rems=isOd?r.remedies_od:r.remedies||[];
+    (rems||[]).slice(0,5).forEach(rem=>{
+      checkPage(10);
+      fillRect(M,y,CW,9,BGCARD);
+      doc.setDrawColor(...BORDER).rect(M,y,CW,9,'S');
+      doc.setFontSize(7.5).setTextColor(...INK).text('✦ '+String(rem||''),M+3,y+6,{maxWidth:CW-6});
+      y+=10;
+    });
+    y+=4;
+
+    // ── LUCKY FACTORS ──
+    checkPage(35);
+    y=sectionHdr(isOd?'✦ ଭାଗ୍ୟ':'✦ Lucky Factors',y);
+    [[isOd?'ଶୁଭ ରଙ୍ଗ':'Lucky Color',isOd?r.luckyColor_od:r.luckyColor_en],
+     [isOd?'ଶୁଭ ସଂଖ୍ୟା':'Lucky Number',String(r.luckyNumber||'')],
+     [isOd?'ଶୁଭ ଦିନ':'Lucky Day',isOd?r.luckyDay_od:r.luckyDay_en],
+     ['Mantra',r.mantra||'']].forEach(([lbl,val])=>{
+      checkPage(10);
+      fillRect(M,y,CW,10,BGCARD);
+      doc.setDrawColor(...BORDER).rect(M,y,CW,10,'S');
+      doc.setFontSize(8).setTextColor(...NAVY).setFont('helvetica','bold').text(String(lbl),M+3,y+7,{maxWidth:CW/2});
+      doc.setFontSize(8).setTextColor(...INK).setFont('helvetica','normal').text(String(val||'—'),M+CW/2,y+7,{maxWidth:CW/2,align:'right'});
+      y+=11;
+    });
+
+    // ── FOOTER ──
+    const pc=doc.internal.getNumberOfPages();
+    for(let i=1;i<=pc;i++){
+      doc.setPage(i);
+      fillRect(0,287,W,10,NAVY);
+      doc.setFontSize(7).setTextColor(...[160,180,220]).text('Jyotish AI · jyotishaiodisha.netlify.app · Generated '+new Date().toLocaleDateString('en-IN')+' · Page '+i+'/'+pc,W/2,293,{align:'center'});
+    }
+
+    const fname=((input.nm||'Kundli').replace(/ /g,'_'))+'_Kundli_'+(isOd?'Odia':'English')+'.pdf';
+    doc.save(fname);
+    toast(isOd?'PDF ଡାଉନଲୋଡ ହୋଇଗଲା ✦':'PDF downloaded: '+fname+' ✦');
   }catch(e){
     console.error('PDF error:',e);
-    toast(isOd?'PDF ତିଆରି ହେଲା ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।':'PDF generation failed: '+e.message);
+    toast('PDF failed: '+e.message);
   }
   btn.textContent=isOd?'⬇ କୁଣ୍ଡଳୀ ରିପୋର୍ଟ ଡାଉନଲୋଡ':'⬇ Download Kundli Report';
   btn.disabled=false;
@@ -3144,34 +3340,9 @@ Yogas: ${(res.yogas||[]).map(y=>y.name).join(', ')}`;
   }
 
   const isOdia = APP_LANG === 'od';
-  const systemPrompt = isOdia ? `ତୁମେ ଜ୍ୟୋତିଷ AI — ଜଣେ ଅଭିଜ୍ଞ ଓଡ଼ିଆ ଜ୍ୟୋତିଷ। ସହଜ ଓଡ଼ିଆ ଭାଷାରେ ଉତ୍ତର ଦିଅ।
-
-${kundliContext}
-
-ଶୈଳୀ ଉଦାହରଣ:
-ପ୍ରଶ୍ନ: ମୋ କ୍ୟାରିୟର କେମିତି?
-ଉତ୍ତର: ତୁମର 10ମ ଭାବରେ ଗୁରୁ ଅଛନ୍ତି — ଏହା କ୍ୟାରିୟର ପାଇଁ ବହୁତ ଭଲ ଯୋଗ। ଶନି ମହାଦଶା ଚାଲୁଥିବାରୁ ଏବେ hard work କଲେ ପରେ ସ୍ଥାୟୀ ଫଳ ମିଳିବ। ସରକାରୀ କାମ, ମିଡିଆ, ଭିଡିଓ content ଭଳି ଲାଇନ୍ ଭଲ। ଶୁକ୍ରବାର ଲକ୍ଷ୍ମୀ ପୂଜା କଲେ ଅର୍ଥ ଯୋଗ ଭଲ ହୁଏ।
-
-ନିୟମ:
-- ସର୍ବଦା ଗ୍ରହ ଓ ଭାବ ନାମ ସ୍ପଷ୍ଟ ଭାବେ ଦିଅ (10ମ ଭାବ, ଶନି, ଗୁରୁ ଇତ୍ୟାଦି)
-- ସରଳ ଓ ସ୍ୱଭାବିକ ଓଡ଼ିଆ ବ୍ୟବହାର କର — ଭାରୀ ସଂସ୍କୃତ ନୁହେଁ
-- ୩-୫ ବାକ୍ୟରେ ଉତ୍ତର ଦିଅ
-- ଶେଷରେ ଗୋଟିଏ ସ୍ୱଭାବିକ ଉପଚାର ଦିଅ
-- ନିଶ୍ଚିତ ଭାବେ ଉତ୍ତର ଦିଅ — "ଜଣାଯାଏ ନାହିଁ" ବୋଲି ନ କୁହ` 
-  : `You are Jyotish AI — an expert Vedic astrologer. Give warm, specific, personalized answers.
-
-${kundliContext}
-
-Style example:
-Q: How is my career?
-A: Your Jupiter in the 10th house is excellent for career growth. With Saturn Mahadasha running, consistent hard work now will bring permanent success later. Media, video content, government work suit you well. Light a lamp on Fridays for financial growth.
-
-Rules:
-- Always mention specific planet and house numbers
-- Be direct and personal — use their actual chart data
-- 3-5 sentences per answer
-- End with one practical remedy
-- Never say you cannot predict`;
+  const langNote = isOdia ? 'IMPORTANT: Always respond in simple conversational Odia script only. Write like a friendly Odia astrologer talking to the person. Example: "ତୁମର 10ମ ଭାବରେ ଗୁରୁ ଅଛନ୍ତି — କ୍ୟାରିୟର ଭଲ।"' : 'Always respond in simple English. Example: "Your Jupiter in 10th house is great for career."';
+  const chartNote = kundliContext ? 'USER CHART: ' + kundliContext : '';
+  const systemPrompt = 'You are Jyotish AI, an expert Vedic astrologer. ' + langNote + ' Always mention specific planet names and house numbers. Give 3-5 sentences. End with one practical remedy. Never say you cannot predict. ' + chartNote;
 
   try{
     const messages=[...chatHistory.slice(-8)];
@@ -3203,7 +3374,7 @@ Rules:
     const thinkEl=document.getElementById(thinkId);
     if(thinkEl){
       thinkEl.classList.remove('thinking');
-      thinkEl.textContent=isOdia?'ଦୁଃଖିତ, ଉତ୍ତର ଦେଇ ପାରିଲି ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।':'Sorry, could not get a response. Please try again.';
+      thinkEl.textContent='Error: '+e.message+' — Please try again.';
     }
   }
   sendBtn.disabled=false;
