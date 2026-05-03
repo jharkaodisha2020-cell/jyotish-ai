@@ -2280,36 +2280,49 @@ const prompt = 'You are an expert Vedic astrologer. Write a COMPLETE, DETAILED p
 + '"yogaInsight_od":"2 Odia sentences about yogas"'
 + '}';
 
-    fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:3000,messages:[{role:'user',content:prompt}]})})
-    .then(r=>r.json())
-    .then(data=>{
-      const raw=data.content.map(c=>c.text||'').join('');
-      let reading;
-      try{reading=JSON.parse(raw.replace(/```json|```/g,'').trim());}
-      catch(e){reading=buildFallbackReading(result);}
+    // CALL 1: Basic reading (overview, career, health, dasha, remedies)
+    const baseInfo = 'Name='+nm+' DOB='+dob+' TOB='+tob+' Place='+pob+' Lagna='+ascN+' MoonRashi='+moonRashi+' Nakshatra='+moonN.name+' Pada '+moonN.pada+' | Planets: '+planetsStr+' | Dasha='+currD.planet+' ends '+currD.end.toLocaleDateString('en-IN')+' Antar='+currA.planet+' | Yogas='+yogasStr;
+
+    const prompt1 = 'Vedic astrologer. LANGUAGE: '+langInstr+'. DATA: '+baseInfo+'. Respond ONLY valid JSON no markdown: {"overview_en":"3 sentences Lagna '+ascN+' personality Moon '+moonRashi+' emotional nature","overview_od":"3 Odia sentences","nature_en":"2 sentences personality strengths","nature_od":"2 Odia","nakshatra_en":"2 sentences '+moonN.name+' nakshatra effect","nakshatra_od":"2 Odia","career_en":"3 sentences 10th house '+h10planet+' best profession career timing","career_od":"3 Odia","finance_en":"2 sentences wealth 2nd 11th house income period","finance_od":"2 Odia","health_en":"2 sentences 6th house weak areas prevention","health_od":"2 Odia","dasha_en":"3 sentences '+currD.planet+' Mahadasha full effect on all life areas until '+currD.end.toLocaleDateString('en-IN')+'","dasha_od":"3 Odia","dasha_remedy_en":"3 specific rituals for '+currD.planet+' dasha benefit","dasha_remedy_od":"3 Odia rituals","hidden_strength_en":"2 sentences yogas '+yogasStr+' and their benefit","hidden_strength_od":"2 Odia","strengths_en":"2 sentences natural talents","strengths_od":"2 Odia","yogaInsight_en":"2 sentences yogas effect","yogaInsight_od":"2 Odia","remedies":["remedy1 for '+lagnaLord+'","remedy2 dasha","remedy3 health","remedy4 wealth"],"remedies_od":["ଉ ୧","ଉ ୨","ଉ ୩","ଉ ୪"],"gemstones":["primary gem for '+lagnaLord+' how to wear","secondary gem"],"gemstones_od":["ପ୍ରଧାନ ରତ୍ନ","ଦ୍ୱିତୀୟ ରତ୍ନ"],"luckyColor_en":"color","luckyColor_od":"ରଙ୍ଗ","luckyNumber":3,"luckyDay_en":"day","luckyDay_od":"ଦିନ","mantra":"exact mantra for '+lagnaLord+'"}';
+
+    const prompt2 = 'Vedic astrologer. LANGUAGE: '+langInstr+'. DATA: '+baseInfo+'. Venus H'+venusHouse+' Saturn H'+saturnHouse+' Jupiter H'+jupiterHouse+' Mars H'+marsHouse+'. Respond ONLY valid JSON no markdown: {"marriage_en":"3 sentences 7th house '+h7planet+' Venus H'+venusHouse+' marriage nature delayed or early","marriage_od":"3 Odia sentences","marriage_timing_en":"Exact years most likely for marriage based on dasha transits - give specific period e.g. 2027-2029","marriage_timing_od":"ବିବାହ ନିର୍ଦ୍ଦିଷ୍ଟ ବର୍ଷ ଦିଅ","love_arrange_en":"Love or arranged marriage - clear answer with reasons from 7th house","love_arrange_od":"ପ୍ରେମ ନା ଘରର ବିବାହ ସ୍ପଷ୍ଟ ଉତ୍ତର","spouse_en":"Spouse nature profession direction they come from based on 7th lord","spouse_od":"ଜୀବନ ସାଥୀ ସ୍ୱଭାବ ଓ ଦିଗ","foreign_en":"Foreign travel settlement chances from 12th house Rahu specific timing","foreign_od":"ବିଦେଶ ଯୋଗ ଓ ସମୟ","property_en":"Home property own house timing from 4th house '+h4planet+'","property_od":"ଘ ଓ ସ ଯୋ","children_en":"Children timing number from 5th house '+h5planet+' Jupiter H'+jupiterHouse+'","children_od":"ସ ଯୋ","best_years_en":"Specific best years 2025-2035 for marriage career wealth - name exact years","best_years_od":"ଶ୍ର ବ ନ ଦ"}';
+
+    const doSave = (reading) => {
       result.reading=reading;
       S.calcResult=result;
-      // Save calcResult to localStorage so it survives refresh
       try{localStorage.setItem('jyotish_last_result',JSON.stringify({result,nm,dob,tob,pob,gotra,kG}));}catch(e){}
-      // Save to Supabase
       const kundliRow={user_id:S.user.id,name:nm,dob,tob,place:pob,gotra,gender:kG,
         rashi:result.planets[1].rashiName,lagna:result.ascendant.rashiName,result};
       supaFetch('/rest/v1/kundlis',{method:'POST',body:JSON.stringify(kundliRow)});
-      // Also keep local cache for dashboard history
       if(!S.user.kundlis)S.user.kundlis=[];
       S.user.kundlis.push({nm,date:new Date().toLocaleDateString('en-IN'),ascName:result.ascendant.rashiName,rashiName:result.planets[1].rashiName,result});
       saveU();
       renderResult(result);nav('result');
       g('k-gen-btn').disabled=false;
-    })
-    .catch(()=>{
-      result.reading=buildFallbackReading(result);
-      S.calcResult=result;
-      try{localStorage.setItem('jyotish_last_result',JSON.stringify({result,nm,dob,tob,pob,gotra,kG}));}catch(e){}
-      if(!S.user.kundlis)S.user.kundlis=[];
-      S.user.kundlis.push({nm,date:new Date().toLocaleDateString('en-IN'),ascName:result.ascendant.rashiName,rashiName:result.planets[1].rashiName,result});
-      saveU();renderResult(result);nav('result');
-      g('k-gen-btn').disabled=false;
+    };
+
+    const parseJSON = (raw) => {
+      try{
+        const cleaned=raw.replace(/```json|```/g,'').trim();
+        const js=cleaned.indexOf('{'), je=cleaned.lastIndexOf('}');
+        if(js>=0&&je>js) return JSON.parse(cleaned.substring(js,je+1));
+      }catch(e){}
+      return null;
+    };
+
+    // Fetch both prompts in parallel
+    Promise.all([
+      fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:2000,messages:[{role:'user',content:prompt1}]})})
+        .then(r=>r.json()).then(d=>parseJSON(d.content?.map(c=>c.text||'').join('')||'')).catch(()=>null),
+      fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1500,messages:[{role:'user',content:prompt2}]})})
+        .then(r=>r.json()).then(d=>parseJSON(d.content?.map(c=>c.text||'').join('')||'')).catch(()=>null)
+    ]).then(([r1,r2])=>{
+      const reading = Object.assign({},buildFallbackReading(result),r1||{},r2||{});
+      doSave(reading);
+    }).catch(()=>{
+      doSave(buildFallbackReading(result));
     });
   },400);
 }
