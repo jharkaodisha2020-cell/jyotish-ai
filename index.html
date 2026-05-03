@@ -3006,305 +3006,290 @@ function pyNumColor(n){
    PDF DOWNLOAD — English + Odia
 ═══════════════════════════════════════════════*/
 async function downloadPDF(){
-  if(!S.calcResult){toast('Please generate a Kundli first.');return;}
+  if(!S.calcResult){toast(APP_LANG==='od'?'ପ୍ରଥମ କୁଣ୍ଡଳୀ ତିଆରି କରନ୍ତୁ':'Please generate a Kundli first.');return;}
   const btn=document.querySelector('.pdf-btn');
-  btn.textContent='⏳ Generating PDF...';btn.disabled=true;
+  if(btn){btn.textContent='⏳ Generating...';btn.disabled=true;}
 
   const isOd=APP_LANG==='od';
   const res=S.calcResult;
   const r=res.reading||{};
   const {planets,moonNak,ascendant,dashas,currDasha,yogas,input}=res;
 
-  try{
-    // Load jsPDF dynamically if not loaded
-    if(!window.jspdf){
-      await new Promise((resolve,reject)=>{
-        const s=document.createElement('script');
-        s.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
-        s.onload=resolve;s.onerror=reject;
-        document.head.appendChild(s);
-      });
-      await new Promise((resolve,reject)=>{
-        const s=document.createElement('script');
-        s.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js';
-        s.onload=resolve;s.onerror=reject;
-        document.head.appendChild(s);
-      });
-    }
+  // Build chart HTML for North Indian style
+  const houseContents=Array(12).fill('').map(()=>[]);
+  planets.forEach(p=>{const h=p.house-1;if(h>=0&&h<12)houseContents[h].push(p.name.substring(0,3));});
+  houseContents[0].unshift('Asc');
+  const hPos=[[0,1],[0,0],[1,0],[2,0],[3,0],[3,1],[3,2],[3,3],[2,3],[1,3],[0,3],[0,2]];
+  const chartCells=Array(4).fill(null).map(()=>Array(4).fill(''));
+  hPos.forEach(([r2,c],i)=>{
+    const items=houseContents[i];
+    chartCells[r2][c]=`<div class="h-num">${i+1}</div><div class="h-planets">${items.map(p=>`<span class="${p==='Asc'?'asc':''}">${p}</span>`).join('')}</div>`;
+  });
+  // Center cell
+  chartCells[1][1]='<div class="center-cell" colspan="2" rowspan="2">ॐ</div>';
 
-    const {jsPDF}=window.jspdf;
-    const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
-    const W=210,M=15,CW=W-M*2;
-    let y=M;
+  const chartHTML=`
+  <table class="kundli-chart">
+    <tr><td>${chartCells[0][0]}</td><td>${chartCells[0][1]}</td><td>${chartCells[0][2]}</td><td>${chartCells[0][3]}</td></tr>
+    <tr><td>${chartCells[1][0]}</td><td colspan="2" rowspan="2" class="center-om">ॐ</td><td>${chartCells[1][3]}</td></tr>
+    <tr><td>${chartCells[2][0]}</td><td>${chartCells[2][3]}</td></tr>
+    <tr><td>${chartCells[3][0]}</td><td>${chartCells[3][1]}</td><td>${chartCells[3][2]}</td><td>${chartCells[3][3]}</td></tr>
+  </table>`;
 
-    // Colors
-    const NAVY=[26,40,100],GOLD=[184,135,10],CREAM=[248,244,238];
-    const INK=[26,18,8],MUTED=[100,90,70],BORDER=[200,208,220];
-    const BGCARD=[240,238,232],GREEN=[30,100,50],RED=[160,40,40];
+  // Planet table rows
+  const planetRows=planets.map(p=>`
+    <tr class="${p.dignity==='Exalted'?'exalted':p.dignity==='Debilitated'?'debilitated':''}">
+      <td><b>${p.name}</b></td>
+      <td>${isOd?p.rashiOd:p.rashiName}</td>
+      <td>${p.degInRashi}°</td>
+      <td>H${p.house}</td>
+      <td>${isOd?p.nakOd||p.nakName:p.nakName}</td>
+      <td>${p.pada}</td>
+      <td>${p.dignity}</td>
+    </tr>`).join('');
 
-    const checkPage=(n=25)=>{if(y+n>282){doc.addPage();y=M;}};
-    const fillRect=(x,ry,w,h,col)=>doc.setFillColor(...col).rect(x,ry,w,h,'F');
-    const txt=(t,x,ry,opts={})=>{
-      const{size=9,col=INK,bold=false,align='left',mw=CW}=opts;
-      doc.setFontSize(size).setFillColor(...col).setTextColor(...col)
-         .setFont('helvetica',bold?'bold':'normal')
-         .text(String(t||''),x,ry,{align,maxWidth:mw});
-    };
-    const sectionHdr=(label,ry)=>{
-      fillRect(M,ry,CW,7,NAVY);
-      txt(label,M+3,ry+5,{size:9,col:CREAM,bold:true});
-      return ry+10;
-    };
+  // Dasha rows
+  const dashRows=(dashas||[]).map(d=>{
+    const isCurr=d.planet===currDasha?.planet;
+    const st=new Date(d.start||d.startDate),en=new Date(d.end||d.endDate);
+    return`<tr class="${isCurr?'curr-dasha':''}">
+      <td><b>${d.planet}${isCurr?' ◀ NOW':''}</b></td>
+      <td>${st.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})}</td>
+      <td>${en.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})}</td>
+      <td>${(d.years||0).toFixed(1)} yrs</td>
+    </tr>`;}).join('');
 
-    // ── HEADER ──
-    fillRect(0,0,W,42,NAVY);
-    fillRect(0,40,W,2,GOLD);
-    txt(isOd?'ଜ୍ୟୋତିଷ AI — ଜନ୍ମ କୁଣ୍ଡଳୀ':'Jyotish AI — Birth Kundli Report',W/2,16,{size:18,col:CREAM,bold:true,align:'center'});
-    txt('ॐ तत् सत् · Lahiri Ayanamsa · VSOP87',W/2,28,{size:9,col:GOLD,align:'center'});
-    txt(new Date().toLocaleDateString('en-IN'),W/2,36,{size:7,col:[160,180,220],align:'center'});
-    y=52;
+  // Yogas
+  const yogaHTML=(yogas||[]).slice(0,6).map(y=>`
+    <div class="yoga-item">
+      <div class="yoga-name">${y.name} <span class="yoga-str">[${y.str||'Active'}]</span></div>
+      <div class="yoga-desc">${(y.desc||'').substring(0,120)}</div>
+    </div>`).join('');
 
-    // ── PERSONAL INFO ──
-    fillRect(M,y,CW,36,BGCARD);
-    doc.setDrawColor(...BORDER).rect(M,y,CW,36,'S');
-    fillRect(M,y,CW,10,NAVY);
-    txt(input.nm||'',W/2,y+8,{size:13,col:CREAM,bold:true,align:'center'});
-    txt(new Date(input.dStr).toDateString()+' · '+input.tStr+' IST · '+input.place,W/2,y+18,{size:8,col:MUTED,align:'center'});
-    txt((input.gotra?'Gotra: '+input.gotra+' · ':'')+' Ayanamsa: '+res.ayanamsa+'°',W/2,y+26,{size:7,col:MUTED,align:'center'});
-    y+=42;
+  // Prediction sections
+  const sections=[
+    {k:'overview',en:'Overview & Personality',od:'ବ୍ୟକ୍ତିତ୍ୱ ଓ ସ୍ୱଭାବ'},
+    {k:'career',en:'Career & Finance',od:'କ୍ୟାରିୟର ଓ ଅର୍ଥ'},
+    {k:'love',en:'Love & Relationships',od:'ପ୍ରେମ ଓ ବିବାହ'},
+    {k:'health',en:'Health',od:'ସ୍ୱାସ୍ଥ୍ୟ'},
+    {k:'dasha',en:(currDasha?.planet||'Current')+' Dasha Effect',od:'ଦଶା ଫଳ'},
+    {k:'strengths',en:'Strengths & Gifts',od:'ଶକ୍ତି ଓ ପ୍ରତିଭା'},
+  ];
+  const predHTML=sections.map(s=>{
+    const txt=r[s.k+'_'+(isOd?'od':'en')]||'';
+    if(!txt)return'';
+    return`<div class="pred-section">
+      <div class="section-hdr">${isOd?s.od:s.en}</div>
+      <div class="section-body">${txt}</div>
+    </div>`;}).join('');
 
-    // ── KEY CHIPS ──
-    const chips=[
-      ['Lagna',ascendant.rashiName+' '+ascendant.deg+'°'],
-      ['Moon Rashi',planets[1]?.rashiName||''],
-      ['Sun Sign',planets[0]?.rashiName||''],
-      ['Nakshatra',moonNak?.name||''],
-      ['Pada',String(moonNak?.pada||'')],
-      ['Mahadasha',currDasha?.planet||''],
-    ];
-    const cw=CW/3,ch=14;
-    chips.forEach((c,i)=>{
-      const cx=M+(i%3)*cw,cy=y+Math.floor(i/3)*ch;
-      fillRect(cx,cy,cw,ch,i%2===0?BGCARD:[235,232,225]);
-      doc.setDrawColor(...BORDER).rect(cx,cy,cw,ch,'S');
-      fillRect(cx,cy,cw,3,NAVY);
-      txt(c[0],cx+cw/2,cy+7,{size:6,col:MUTED,align:'center'});
-      txt(c[1],cx+cw/2,cy+12,{size:8,col:INK,bold:true,align:'center'});
-    });
-    y+=ch*2+8;
+  // Remedies
+  const rems=isOd?r.remedies_od:r.remedies||[];
+  const remHTML=(rems||[]).map(rem=>`<div class="remedy-item">✦ ${rem}</div>`).join('');
 
-    // ── BIRTH CHART (North Indian) ──
-    checkPage(100);
-    y=sectionHdr(isOd?'✦ ଜନ୍ମ ଚକ୍ର':'✦ Birth Chart — North Indian Style',y);
-    const cX=M,cY=y,cW=80,cH=80;
-    const cx2=cX+cW/2,cy2=cY+cH/2,q=cW/4,qh=cH/4;
-    fillRect(cX,cY,cW,cH,BGCARD);
-    doc.setDrawColor(...NAVY).setLineWidth(0.6).rect(cX,cY,cW,cH,'S');
-    doc.setDrawColor(...BORDER).setLineWidth(0.3);
-    [[cX+q,cY,cX+q,cY+cH],[cX+q*3,cY,cX+q*3,cY+cH],[cX,cY+qh,cX+cW,cY+qh],[cX,cY+qh*3,cX+cW,cY+qh*3]].forEach(([x1,y1,x2,y2])=>doc.line(x1,y1,x2,y2));
-    [[cX+q,cY+qh,cx2,cy2],[cX+q*3,cY+qh,cx2,cy2],[cX+q,cY+qh*3,cx2,cy2],[cX+q*3,cY+qh*3,cx2,cy2]].forEach(([x1,y1,x2,y2])=>doc.line(x1,y1,x2,y2));
-    doc.setFontSize(8).setTextColor(...GOLD).text('OM',cx2-4,cy2+1);
-    const hPos=[[0,1],[0,0],[1,0],[2,0],[3,0],[3,1],[3,2],[3,3],[2,3],[1,3],[0,3],[0,2]];
-    const houseContents=Array(12).fill('').map(()=>[]);
-    planets.forEach(p=>{const h=p.house-1;if(h>=0&&h<12)houseContents[h].push(p.name.substring(0,3));});
-    houseContents[0].unshift('Asc');
-    hPos.forEach(([r,c],i)=>{
-      const hx=cX+c*q,hy=cY+r*qh,hcx=hx+q/2,hcy=hy+qh/2;
-      doc.setFontSize(5).setTextColor(...BORDER).text(String(i+1),hx+q-4,hy+3);
-      houseContents[i].forEach((item,idx)=>{
-        const col=item==='Asc'?GOLD:item==='Rah'||item==='Ket'?RED:NAVY;
-        doc.setFontSize(6).setTextColor(...col).text(item,hcx-6,hcy-2+(idx*7));
-      });
-    });
-    // Legend
-    const lx=cX+cW+8;let ly=cY;
-    doc.setFontSize(7).setTextColor(...NAVY).setFont('helvetica','bold').text('Planets',lx,ly+4);
-    ly+=8;
-    planets.forEach(p=>{
-      const col=p.dignity==='Exalted'?GREEN:p.dignity==='Debilitated'?RED:INK;
-      doc.setFontSize(6).setTextColor(...col).setFont('helvetica','normal').text(p.name.substring(0,3)+' '+p.rashiName.substring(0,3)+' H'+p.house,lx,ly);
-      ly+=5.5;
-    });
-    y+=cH+10;
+  const luckyHTML=`
+    <table class="info-table">
+      <tr><td class="lbl">${isOd?'ଶୁଭ ରଙ୍ଗ':'Lucky Color'}</td><td>${isOd?r.luckyColor_od:r.luckyColor_en||'—'}</td></tr>
+      <tr><td class="lbl">${isOd?'ଶୁଭ ସଂଖ୍ୟା':'Lucky Number'}</td><td>${r.luckyNumber||'—'}</td></tr>
+      <tr><td class="lbl">${isOd?'ଶୁଭ ଦିନ':'Lucky Day'}</td><td>${isOd?r.luckyDay_od:r.luckyDay_en||'—'}</td></tr>
+      <tr><td class="lbl">Mantra</td><td>${r.mantra||'—'}</td></tr>
+    </table>`;
 
-    // ── PLANETS TABLE ──
-    checkPage(80);
-    y=sectionHdr(isOd?'✦ ଗ୍ରହ ସ୍ଥିତି':'✦ Planetary Positions (Sidereal · Lahiri)',y);
-    const cols=[38,52,24,22,50,20,44];
-    const hdrs=['Planet','Rashi','Deg','H','Nakshatra','Pd','Dignity'];
-    fillRect(M,y,CW,11,NAVY);
-    let cx3=M+2;
-    hdrs.forEach((h,i)=>{doc.setFontSize(7).setTextColor(...CREAM).setFont('helvetica','bold').text(h,cx3,y+7,{maxWidth:cols[i]});cx3+=cols[i];});
-    y+=11;
-    planets.forEach((p,idx)=>{
-      checkPage(10);
-      fillRect(M,y,CW,10,idx%2===0?CREAM:BGCARD);
-      const dc=p.dignity==='Exalted'?GREEN:p.dignity==='Debilitated'?RED:p.dignity==='Own Sign'?[26,60,140]:MUTED;
-      cx3=M+2;
-      [p.name,p.rashiName,p.degInRashi+'°','H'+p.house,(p.nakName||'').substring(0,12),String(p.pada||''),p.dignity].forEach((v,i)=>{
-        const col=i===6?dc:INK;
-        doc.setFontSize(7).setTextColor(...col).setFont('helvetica',i===0||i===6?'bold':'normal').text(String(v||''),cx3,y+7,{maxWidth:cols[i]});
-        cx3+=cols[i];
-      });
-      y+=10;
-    });
-    y+=6;
+  // Build full HTML
+  const html=`<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Oriya:wght@400;700&family=Cinzel:wght@600;700&family=Lato:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Lato','Noto Serif Oriya',serif;background:#fff;color:#1A1208;font-size:11px;line-height:1.6}
+  .page{width:210mm;margin:0 auto;padding:15mm}
+  .page-break{page-break-after:always}
 
-    // ── YOGAS ──
-    checkPage(50);
-    y=sectionHdr(isOd?'✦ ଯୋଗ':'✦ Yogas & Special Combinations',y);
-    (yogas||[]).slice(0,4).forEach(yg=>{
-      checkPage(20);
-      fillRect(M,y,CW,18,BGCARD);
-      doc.setDrawColor(...BORDER).rect(M,y,CW,18,'S');
-      doc.setFontSize(8).setTextColor(...NAVY).setFont('helvetica','bold').text(yg.name||'',M+3,y+6);
-      doc.setFontSize(7).setTextColor(...MUTED).setFont('helvetica','normal').text((yg.desc||'').substring(0,100),M+3,y+13,{maxWidth:CW-6});
-      y+=21;
-    });
-    y+=4;
+  /* HEADER */
+  .pdf-header{background:#1A2864;color:#fff;padding:14px 16px;margin-bottom:14px;text-align:center;border-bottom:3px solid #B8870A}
+  .pdf-header h1{font-family:'Cinzel',serif;font-size:22px;color:#F0E4CC;margin-bottom:4px}
+  .pdf-header .sub{font-size:10px;color:#B8C0D8;letter-spacing:1px}
+  .pdf-header .gold{color:#D4A020;font-size:11px;margin-top:4px}
 
-    // ── DASHA TABLE ──
-    checkPage(60);
-    y=sectionHdr(isOd?'✦ ବିଂଶୋତ୍ତରୀ ଦଶା':'✦ Vimshottari Dasha Timeline',y);
-    const dc=[80,70,70,50];
-    const dh=['Mahadasha','Start','End','Years'];
-    fillRect(M,y,CW,11,NAVY);
-    cx3=M+2;
-    dh.forEach((h,i)=>{doc.setFontSize(7).setTextColor(...CREAM).setFont('helvetica','bold').text(h,cx3,y+7,{maxWidth:dc[i]});cx3+=dc[i];});
-    y+=11;
-    const now2=new Date();
-    (dashas||[]).forEach((d,idx)=>{
-      checkPage(10);
-      const isCurr=d.planet===currDasha?.planet;
-      fillRect(M,y,CW,10,isCurr?[220,225,245]:idx%2===0?CREAM:BGCARD);
-      if(isCurr)fillRect(M,y,3,10,NAVY);
-      cx3=M+(isCurr?5:2);
-      const st=new Date(d.start||d.startDate),en=new Date(d.end||d.endDate);
-      [d.planet+(isCurr?' ◀':''),st.toLocaleDateString('en-IN',{month:'short',year:'numeric'}),en.toLocaleDateString('en-IN',{month:'short',year:'numeric'}),(d.years||0).toFixed(1)+'y'].forEach((v,i)=>{
-        doc.setFontSize(7).setTextColor(...(isCurr?NAVY:INK)).setFont('helvetica',isCurr?'bold':'normal').text(String(v||''),cx3,y+7,{maxWidth:dc[i]});
-        cx3+=dc[i];
-      });
-      y+=10;
-    });
-    y+=6;
+  /* PERSONAL INFO */
+  .info-box{border:1px solid #C8D0DC;border-radius:6px;overflow:hidden;margin-bottom:14px}
+  .info-box-header{background:#1A2864;color:#fff;padding:8px 12px;font-family:'Cinzel',serif;font-size:12px;font-weight:700}
+  .info-box-body{padding:10px 12px;background:#F0EEE8}
+  .info-row{display:flex;gap:20px;flex-wrap:wrap;margin-bottom:4px}
+  .info-item{flex:1;min-width:120px}
+  .info-lbl{font-size:9px;color:#806040;text-transform:uppercase;letter-spacing:.5px;font-weight:700}
+  .info-val{font-size:12px;color:#1A1208;font-weight:700;font-family:'Noto Serif Oriya',serif}
 
-    // ── PAGE 2: AI PREDICTIONS ──
-    doc.addPage();y=M;
-    fillRect(0,0,W,28,NAVY);
-    fillRect(0,27,W,1.5,GOLD);
-    doc.setFontSize(14).setTextColor(...CREAM).setFont('helvetica','bold').text(isOd?'AI ଭବିଷ୍ୟ ଓ ଜୀବନ ଫଳ':'AI Predictions & Life Reading',W/2,17,{align:'center'});
-    y=36;
+  /* CHIPS ROW */
+  .chips-row{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+  .chip{flex:1;min-width:80px;border:1px solid #C8D0DC;border-radius:6px;overflow:hidden;text-align:center}
+  .chip-top{background:#1A2864;color:#fff;font-size:8px;padding:3px;text-transform:uppercase;letter-spacing:.4px}
+  .chip-val{background:#F0EEE8;padding:5px 4px;font-size:12px;font-weight:700;color:#1A1208;font-family:'Noto Serif Oriya',serif}
 
-    const sections=[
-      {k:'overview',l:{en:'Overview & Personality',od:'ବ୍ୟକ୍ତିତ୍ୱ ଓ ସ୍ୱଭାବ'}},
-      {k:'career',l:{en:'Career & Finance',od:'କ୍ୟାରିୟର ଓ ଅର୍ଥ'}},
-      {k:'love',l:{en:'Love & Relationships',od:'ପ୍ରେମ ଓ ବିବାହ'}},
-      {k:'health',l:{en:'Health',od:'ସ୍ୱାସ୍ଥ୍ୟ'}},
-      {k:'dasha',l:{en:((currDasha?.planet)||'Current')+' Dasha Effect',od:'ଦଶା ଫଳ'}},
-    ];
-    sections.forEach(sec=>{
-      const txtp=r[sec.k+'_'+(isOd?'od':'en')]||'';
-      if(!txtp)return;
-      const lbl=isOd?sec.l.od:sec.l.en;
-      const lines=doc.splitTextToSize(txtp,CW-6);
-      const boxH=lines.length*5+16;
-      checkPage(boxH+4);
-      fillRect(M,y,CW,boxH,BGCARD);
-      doc.setDrawColor(...BORDER).rect(M,y,CW,boxH,'S');
-      fillRect(M,y,CW,10,NAVY);
-      doc.setFontSize(8).setTextColor(...CREAM).setFont('helvetica','bold').text(lbl,M+3,y+7);
-      doc.setFontSize(8.5).setTextColor(...INK).setFont('helvetica','normal').text(lines,M+3,y+15);
-      y+=boxH+5;
-    });
+  /* KUNDLI CHART */
+  .kundli-chart{width:100%;border-collapse:collapse;margin-bottom:14px}
+  .kundli-chart td{border:1px solid #1A2864;width:25%;height:28mm;vertical-align:top;padding:3px;position:relative;background:#F8F4EE}
+  .center-om{background:#1A2864 !important;color:#D4A020;font-size:24px;text-align:center;vertical-align:middle;font-family:serif}
+  .h-num{font-size:8px;color:#9090A0;position:absolute;top:2px;right:3px}
+  .h-planets{display:flex;flex-wrap:wrap;gap:2px;margin-top:8px}
+  .h-planets span{font-size:9px;color:#1A2864;font-weight:700;background:#E0E4F0;border-radius:2px;padding:1px 3px}
+  .h-planets .asc{background:#B8870A;color:#fff}
 
-    // ── REMEDIES ──
-    checkPage(40);
-    y=sectionHdr(isOd?'✦ ଉପଚାର':'✦ Remedies',y);
-    const rems=isOd?r.remedies_od:r.remedies||[];
-    (rems||[]).slice(0,5).forEach(rem=>{
-      checkPage(10);
-      fillRect(M,y,CW,9,BGCARD);
-      doc.setDrawColor(...BORDER).rect(M,y,CW,9,'S');
-      doc.setFontSize(7.5).setTextColor(...INK).text('✦ '+String(rem||''),M+3,y+6,{maxWidth:CW-6});
-      y+=10;
-    });
-    y+=4;
+  /* SECTION HEADERS */
+  .section-hdr{background:#1A2864;color:#fff;padding:7px 12px;font-family:'Cinzel',serif;font-size:11px;font-weight:700;margin-bottom:0}
+  .section-body{background:#F8F4EE;border:1px solid #C8D0DC;border-top:0;padding:10px 12px;margin-bottom:12px;font-family:'Noto Serif Oriya','Lato',serif;font-size:11px;line-height:1.8;color:#1A1208}
 
-    // ── LUCKY FACTORS ──
-    checkPage(35);
-    y=sectionHdr(isOd?'✦ ଭାଗ୍ୟ':'✦ Lucky Factors',y);
-    [[isOd?'ଶୁଭ ରଙ୍ଗ':'Lucky Color',isOd?r.luckyColor_od:r.luckyColor_en],
-     [isOd?'ଶୁଭ ସଂଖ୍ୟା':'Lucky Number',String(r.luckyNumber||'')],
-     [isOd?'ଶୁଭ ଦିନ':'Lucky Day',isOd?r.luckyDay_od:r.luckyDay_en],
-     ['Mantra',r.mantra||'']].forEach(([lbl,val])=>{
-      checkPage(10);
-      fillRect(M,y,CW,10,BGCARD);
-      doc.setDrawColor(...BORDER).rect(M,y,CW,10,'S');
-      doc.setFontSize(8).setTextColor(...NAVY).setFont('helvetica','bold').text(String(lbl),M+3,y+7,{maxWidth:CW/2});
-      doc.setFontSize(8).setTextColor(...INK).setFont('helvetica','normal').text(String(val||'—'),M+CW/2,y+7,{maxWidth:CW/2,align:'right'});
-      y+=11;
-    });
+  /* TABLES */
+  table.data-table{width:100%;border-collapse:collapse;margin-bottom:12px}
+  table.data-table th{background:#1A2864;color:#fff;padding:6px 8px;font-size:9px;text-align:left;text-transform:uppercase;letter-spacing:.4px}
+  table.data-table td{padding:5px 8px;border-bottom:1px solid #E0DDD8;font-size:10px}
+  table.data-table tr:nth-child(even){background:#F0EEE8}
+  .exalted td{color:#1E6432}
+  .debilitated td{color:#A02828}
+  .curr-dasha{background:#E0E5F5 !important;font-weight:700}
+  .curr-dasha td{color:#1A2864}
 
-    // ── FOOTER ──
-    const pc=doc.internal.getNumberOfPages();
-    for(let i=1;i<=pc;i++){
-      doc.setPage(i);
-      fillRect(0,287,W,10,NAVY);
-      doc.setFontSize(7).setTextColor(...[160,180,220]).text('Jyotish AI · jyotishaiodisha.netlify.app · Generated '+new Date().toLocaleDateString('en-IN')+' · Page '+i+'/'+pc,W/2,293,{align:'center'});
-    }
+  /* YOGAS */
+  .yoga-item{background:#F8F4EE;border:1px solid #C8D0DC;border-radius:4px;padding:8px 10px;margin-bottom:7px}
+  .yoga-name{font-family:'Cinzel',serif;font-size:11px;color:#1A2864;font-weight:700;margin-bottom:3px}
+  .yoga-str{font-size:9px;color:#B8870A;font-weight:normal}
+  .yoga-desc{font-size:10px;color:#504030;line-height:1.6}
 
-    const fname=((input.nm||'Kundli').replace(/ /g,'_'))+'_Kundli_'+(isOd?'Odia':'English')+'.pdf';
-    doc.save(fname);
-    toast(isOd?'PDF ଡାଉନଲୋଡ ହୋଇଗଲା ✦':'PDF downloaded: '+fname+' ✦');
-  }catch(e){
-    console.error('PDF error:',e);
-    toast('PDF failed: '+e.message);
+  /* REMEDIES */
+  .remedy-item{background:#F8F4EE;border:1px solid #C8D0DC;border-radius:4px;padding:7px 10px;margin-bottom:6px;font-family:'Noto Serif Oriya','Lato',serif;font-size:11px;color:#1A1208}
+
+  /* LUCKY TABLE */
+  table.info-table{width:100%;border-collapse:collapse;margin-bottom:12px}
+  table.info-table td{padding:6px 10px;border-bottom:1px solid #E0DDD8;font-family:'Noto Serif Oriya','Lato',serif}
+  table.info-table td.lbl{font-size:9px;color:#806040;font-weight:700;text-transform:uppercase;letter-spacing:.4px;width:120px}
+  table.info-table tr:nth-child(even){background:#F0EEE8}
+
+  /* PRED SECTION */
+  .pred-section{margin-bottom:10px}
+
+  /* FOOTER */
+  .pdf-footer{text-align:center;color:#9090A0;font-size:8px;padding:10px;border-top:1px solid #C8D0DC;margin-top:16px}
+
+  @media print{
+    body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .page{padding:10mm}
+    .no-print{display:none}
   }
-  btn.textContent=isOd?'⬇ କୁଣ୍ଡଳୀ ରିପୋର୍ଟ ଡାଉନଲୋଡ':'⬇ Download Kundli Report';
-  btn.disabled=false;
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="pdf-header">
+    <h1>${isOd?'ଜ୍ୟୋତିଷ AI — ଜନ୍ମ କୁଣ୍ଡଳୀ ରିପୋର୍ଟ':'Jyotish AI — Birth Kundli Report'}</h1>
+    <div class="sub">VSOP87 PLANETARY ENGINE · LAHIRI AYANAMSA · ${new Date().toLocaleDateString('en-IN')}</div>
+    <div class="gold">ॐ तत् सत् · Accurate Vedic Astrology</div>
+  </div>
+
+  <!-- PERSONAL INFO -->
+  <div class="info-box">
+    <div class="info-box-header">✦ ${isOd?'ବ୍ୟକ୍ତିଗତ ବିବରଣ':'Personal Information'}</div>
+    <div class="info-box-body">
+      <div class="info-row">
+        <div class="info-item"><div class="info-lbl">${isOd?'ନାମ':'Name'}</div><div class="info-val">${input.nm||'—'}</div></div>
+        <div class="info-item"><div class="info-lbl">${isOd?'ଜନ୍ମ ତାରିଖ':'Date of Birth'}</div><div class="info-val">${new Date(input.dStr).toDateString()}</div></div>
+        <div class="info-item"><div class="info-lbl">${isOd?'ସମୟ':'Time'}</div><div class="info-val">${input.tStr} IST</div></div>
+      </div>
+      <div class="info-row">
+        <div class="info-item"><div class="info-lbl">${isOd?'ସ୍ଥାନ':'Place'}</div><div class="info-val">${input.place||'—'}</div></div>
+        ${input.gotra?`<div class="info-item"><div class="info-lbl">Gotra</div><div class="info-val">${input.gotra}</div></div>`:''}
+        <div class="info-item"><div class="info-lbl">Ayanamsa</div><div class="info-val">${res.ayanamsa}°</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- KEY NUMBERS CHIPS -->
+  <div class="chips-row">
+    <div class="chip"><div class="chip-top">${isOd?'ଲଗ୍ନ':'Lagna'}</div><div class="chip-val">${isOd?ascendant.rashiOd||ascendant.rashiName:ascendant.rashiName} ${ascendant.deg}°</div></div>
+    <div class="chip"><div class="chip-top">${isOd?'ଜନ୍ମ ରାଶି':'Moon Rashi'}</div><div class="chip-val">${isOd?planets[1]?.rashiOd||planets[1]?.rashiName:planets[1]?.rashiName||'—'}</div></div>
+    <div class="chip"><div class="chip-top">${isOd?'ସୂର୍ଯ୍ୟ ରାଶି':'Sun Sign'}</div><div class="chip-val">${isOd?planets[0]?.rashiOd||planets[0]?.rashiName:planets[0]?.rashiName||'—'}</div></div>
+    <div class="chip"><div class="chip-top">${isOd?'ନକ୍ଷତ୍ର':'Nakshatra'}</div><div class="chip-val">${isOd?moonNak?.nameOd||moonNak?.name:moonNak?.name||'—'}</div></div>
+    <div class="chip"><div class="chip-top">Pada</div><div class="chip-val">${moonNak?.pada||'—'}</div></div>
+    <div class="chip"><div class="chip-top">${isOd?'ମହାଦଶା':'Mahadasha'}</div><div class="chip-val">${currDasha?.planet||'—'}</div></div>
+  </div>
+
+  <!-- BIRTH CHART -->
+  <div class="section-hdr">✦ ${isOd?'ଜନ୍ମ ଚକ୍ର (ଉତ୍ତର ଭାରତୀୟ)':'Birth Chart — North Indian Style'}</div>
+  <div style="background:#F8F4EE;border:1px solid #C8D0DC;border-top:0;padding:12px;margin-bottom:12px">
+    ${chartHTML}
+  </div>
+
+  <!-- PLANETS TABLE -->
+  <div class="section-hdr">✦ ${isOd?'ଗ୍ରହ ସ୍ଥିତି':'Planetary Positions (Sidereal · Lahiri)'}</div>
+  <table class="data-table">
+    <thead><tr>
+      <th>${isOd?'ଗ୍ରହ':'Planet'}</th><th>${isOd?'ରାଶି':'Rashi'}</th>
+      <th>${isOd?'ଡିଗ୍ରୀ':'Deg'}</th><th>${isOd?'ଭାବ':'House'}</th>
+      <th>${isOd?'ନକ୍ଷତ୍ର':'Nakshatra'}</th><th>Pada</th>
+      <th>${isOd?'ସ୍ଥିତି':'Dignity'}</th>
+    </tr></thead>
+    <tbody>${planetRows}</tbody>
+  </table>
+
+  <div class="page-break"></div>
+
+  <!-- YOGAS -->
+  <div class="section-hdr">✦ ${isOd?'ଯୋଗ':'Yogas & Special Combinations'}</div>
+  <div style="margin-bottom:12px;background:#F8F4EE;border:1px solid #C8D0DC;border-top:0;padding:10px">
+    ${yogaHTML||'<div style="color:#806040;font-size:10px">No major yogas detected</div>'}
+  </div>
+
+  <!-- DASHA TABLE -->
+  <div class="section-hdr">✦ ${isOd?'ବିଂଶୋତ୍ତରୀ ଦଶା':'Vimshottari Dasha Timeline'}</div>
+  <table class="data-table">
+    <thead><tr><th>Mahadasha</th><th>Start</th><th>End</th><th>Duration</th></tr></thead>
+    <tbody>${dashRows}</tbody>
+  </table>
+
+  <!-- AI PREDICTIONS -->
+  <div class="section-hdr" style="margin-top:14px">✦ ${isOd?'AI ଜ୍ୟୋତିଷ ବିଶ୍ଳେଷଣ':'AI Jyotish Analysis'}</div>
+  <div style="background:#F8F4EE;border:1px solid #C8D0DC;border-top:0;padding:4px 0 0;margin-bottom:12px">
+    ${predHTML||`<div style="padding:10px;color:#806040">Generate Kundli with AI reading enabled to see predictions.</div>`}
+  </div>
+
+  <!-- REMEDIES -->
+  ${remHTML?`<div class="section-hdr">✦ ${isOd?'ଉପଚାର':'Remedies & Gemstones'}</div>
+  <div style="background:#F8F4EE;border:1px solid #C8D0DC;border-top:0;padding:10px;margin-bottom:12px">${remHTML}</div>`:''}
+
+  <!-- LUCKY FACTORS -->
+  <div class="section-hdr">✦ ${isOd?'ଭାଗ୍ୟ ତଥ୍ୟ':'Lucky Factors'}</div>
+  <div style="background:#F8F4EE;border:1px solid #C8D0DC;border-top:0;margin-bottom:12px">
+    ${luckyHTML}
+  </div>
+
+  <!-- FOOTER -->
+  <div class="pdf-footer">
+    Jyotish AI · jyotishaiodisha.netlify.app · Generated: ${new Date().toLocaleDateString('en-IN')} · Powered by VSOP87 + Lahiri Ayanamsa
+  </div>
+
+</div>
+
+<div class="no-print" style="position:fixed;bottom:20px;right:20px;display:flex;gap:10px">
+  <button onclick="window.print()" style="background:#1A2864;color:#fff;border:none;padding:12px 24px;border-radius:8px;font-size:14px;cursor:pointer;font-weight:700">🖨 Print / Save PDF</button>
+  <button onclick="window.close()" style="background:#666;color:#fff;border:none;padding:12px 20px;border-radius:8px;font-size:14px;cursor:pointer">✕ Close</button>
+</div>
+
+</body></html>`;
+
+  // Open in new window and trigger print
+  const win=window.open('','_blank','width=900,height=700');
+  if(!win){toast('Please allow popups for this site to download PDF.');if(btn){btn.textContent=isOd?'⬇ କୁଣ୍ଡଳୀ ରିପୋର୍ଟ ଡାଉନଲୋଡ':'⬇ Download Kundli Report';btn.disabled=false;}return;}
+  win.document.write(html);
+  win.document.close();
+  // Auto-trigger print dialog after fonts load
+  win.onload=()=>{setTimeout(()=>win.print(),1500);};
+  toast(isOd?'PDF ୱିଣ୍ଡୋ ଖୋଲୁଛି — Print/Save PDF ଦାବନ୍ତୁ':'PDF opened — click Print/Save PDF button');
+  if(btn){btn.textContent=isOd?'⬇ କୁଣ୍ଡଳୀ ରିପୋର୍ଟ ଡାଉନଲୋଡ':'⬇ Download Kundli Report';btn.disabled=false;}
 }
 
-/* ═══════════════════════════════════════════════
-   AI ASTRO CHAT
-═══════════════════════════════════════════════*/
-const chatHistory=[];
-
-function openChat(){
-  document.getElementById('chat-page').classList.add('open');
-  // Update greeting in current language
-  const greet = document.getElementById('chat-greeting-bubble');
-  if(greet) greet.textContent = t('chat_greeting');
-  // Update suggestions
-  updateChatSuggestions(APP_LANG||'en');
-  // Update chat header
-  const chatLbl = document.querySelector('.chat-header-title');
-  if(chatLbl) chatLbl.textContent = APP_LANG==='od' ? 'ଜ୍ୟୋତିଷ AI — ଜ୍ୟୋତିଷ ଚାଟ' : 'Jyotish AI — Astro Chat';
-  // Update placeholder
-  const chatInput = document.getElementById('chat-input');
-  if(chatInput) chatInput.placeholder = APP_LANG==='od' ? 'ଆପଣଙ୍କ ଜ୍ୟୋତିଷ ପ୍ରଶ୍ନ ଲିଖନ୍ତୁ...' : 'Ask your astrology question...';
-  document.getElementById('chat-input').focus();
-}
-function closeChat(){
-  document.getElementById('chat-page').classList.remove('open');
-}
-function chatKey(e){
-  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChat();}
-}
-function chatSuggest(btn){
-  document.getElementById('chat-input').value=btn.textContent;
-  document.getElementById('chat-suggestions').style.display='none';
-  sendChat();
-}
-function addChatBubble(text,role,id){
-  const msgs=document.getElementById('chat-messages');
-  const div=document.createElement('div');
-  div.className='chat-bubble '+role;
-  if(id)div.id=id;
-  div.textContent=text;
-  msgs.appendChild(div);
-  msgs.scrollTop=msgs.scrollHeight;
-  return div;
-}
 
 async function sendChat(){
   const input=document.getElementById('chat-input');
