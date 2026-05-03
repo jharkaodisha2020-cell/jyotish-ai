@@ -902,7 +902,10 @@ select option{background:#0C0602}
 <!-- ═══ KUNDLI RESULT ═══ -->
 <div class="pg" id="pg-result">
   <div class="wrap">
-    <div class="back" onclick="dashGo('kundli')">← New Reading</div>
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+      <div class="back" onclick="dashGo('kundli')" style="flex:1">← New Reading</div>
+      <button onclick="clearKundliCache()" style="background:rgba(226,75,74,.15);border:1px solid rgba(226,75,74,.3);border-radius:7px;padding:6px 10px;font-size:10px;color:#E24B4A;cursor:pointer;font-family:'Lato',sans-serif">↺ Regenerate</button>
+    </div>
     <div class="pdf-lang-row">
       <button class="pdf-lang-btn on" id="pdfl-en" onclick="setPdfLang('en')">English PDF</button>
       <button class="pdf-lang-btn" id="pdfl-od" onclick="setPdfLang('od')">ଓଡ଼ିଆ PDF</button>
@@ -3177,7 +3180,7 @@ async function downloadPDF(){
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Oriya:wght@400;700&family=Cinzel:wght@600;700&family=Lato:wght@400;700&display=swap" rel="stylesheet"/>
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:'Lato','Noto Serif Oriya',serif;background:#fff;color:#1A1208;font-size:11px;line-height:1.6}
+  body{font-family:'Noto Serif Oriya','Lato',serif;background:#fff;color:#1A1208;font-size:11px;line-height:1.7}
   .page{width:210mm;margin:0 auto;padding:15mm}
   .page-break{page-break-after:always}
 
@@ -3359,7 +3362,14 @@ async function downloadPDF(){
   win.document.write(html);
   win.document.close();
   // Auto-trigger print dialog after fonts load
-  win.onload=()=>{setTimeout(()=>win.print(),1500);};
+  win.onload=()=>{
+    // Wait for Noto Serif Oriya to load before print
+    if(document.fonts){
+      win.document.fonts.ready.then(()=>setTimeout(()=>win.print(),800));
+    } else {
+      setTimeout(()=>win.print(),3000);
+    }
+  };
   toast(isOd?'PDF ୱିଣ୍ଡୋ ଖୋଲୁଛି — Print/Save PDF ଦାବନ୍ତୁ':'PDF opened — click Print/Save PDF button');
   if(btn){btn.textContent=isOd?'⬇ କୁଣ୍ଡଳୀ ରିପୋର୍ଟ ଡାଉନଲୋଡ':'⬇ Download Kundli Report';btn.disabled=false;}
 }
@@ -5256,6 +5266,13 @@ function initStars(){
   }
 }
 setTimeout(initStars,100);
+
+function clearKundliCache(){
+  localStorage.removeItem('jyotish_last_result');
+  S.calcResult=null;
+  toast('Cache cleared — please generate Kundli again');
+  dashGo('kundli');
+}
 
 /* ─── INIT ──────────────────────────────────────────────*/
 (async function init(){
