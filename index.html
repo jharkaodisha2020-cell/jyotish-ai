@@ -2199,8 +2199,15 @@ async function doKundli(){
     const currA=result.currAntar;
     const ascN=result.ascendant.rashiName;
 
-    const prompt=`You are a Jyotish grandmaster with 50 years of Vedic astrology experience. Generate a highly accurate, deeply personal kundli reading.
-LANGUAGE: ${APP_LANG==='od'?'Write ALL text fields in Odia script (ଓଡ଼ିଆ). Use simple conversational Odia that common people understand.':'Write ALL text fields in clear simple English.'}
+    const lang = APP_LANG==='od';
+const langInstr = lang ? `Write ENTIRELY in simple conversational Odia (ଓଡ଼ିଆ) like this style:
+- ମେଷ ଲଗ୍ନ ଥିବାରୁ ତୁମେ ସାହସୀ ଓ ଖୋଲାମନର ଲୋକ।
+- ଶନି 8ମ ଭାବରେ ଥିବାରୁ ଜୀବନରେ ଦେରି ହୁଏ, କିନ୍ତୁ ଶେଷରେ ସ୍ଥାୟୀ ସଫଳତା।
+- ଏବେ ଶନି ମହାଦଶା ଚାଲୁଛି — patience ଓ hard work ଫଳ ଦେବ।
+Use natural Odia words, not heavy Sanskrit. Write like a friendly Odia astrologer talking directly to the person.` : 
+`Write in simple conversational English like a friendly astrologer. Be specific about each planet's house and effect.`;
+const prompt=`You are an expert Vedic astrologer. Generate a deeply personal kundli reading.
+LANGUAGE STYLE: ${langInstr}
 
 CALCULATED BIRTH DATA (use these exact values):
 Name: ${nm}, DOB: ${dob}, TOB: ${tob}, POB: ${pob}, Gender: ${kG}
@@ -3137,27 +3144,40 @@ Yogas: ${(res.yogas||[]).map(y=>y.name).join(', ')}`;
   }
 
   const isOdia = APP_LANG === 'od';
-  const systemPrompt=`You are Jyotish AI — a highly knowledgeable Vedic astrologer and numerologist. You give warm, accurate, personalized answers.
+  const systemPrompt = isOdia ? `ତୁମେ ଜ୍ୟୋତିଷ AI — ଜଣେ ଅଭିଜ୍ଞ ଓଡ଼ିଆ ଜ୍ୟୋତିଷ। ସହଜ ଓଡ଼ିଆ ଭାଷାରେ ଉତ୍ତର ଦିଅ।
 
 ${kundliContext}
 
-LANGUAGE INSTRUCTION: ${isOdia ? 'ALWAYS respond in simple conversational Odia script (ଓଡ଼ିଆ). Use everyday Odia words that common people in Odisha understand. Mention actual planet names and house numbers in your answer like: ଆପଣଙ୍କ ଦଶମ ଭାବରେ ଗୁରୁ ଅଛନ୍ତି — କ୍ୟାରିୟର ଭଲ।' : 'ALWAYS respond in clear simple English. Mention actual planet names and house numbers like: Your Jupiter is in the 10th house — career is strong.'}
+ଶୈଳୀ ଉଦାହରଣ:
+ପ୍ରଶ୍ନ: ମୋ କ୍ୟାରିୟର କେମିତି?
+ଉତ୍ତର: ତୁମର 10ମ ଭାବରେ ଗୁରୁ ଅଛନ୍ତି — ଏହା କ୍ୟାରିୟର ପାଇଁ ବହୁତ ଭଲ ଯୋଗ। ଶନି ମହାଦଶା ଚାଲୁଥିବାରୁ ଏବେ hard work କଲେ ପରେ ସ୍ଥାୟୀ ଫଳ ମିଳିବ। ସରକାରୀ କାମ, ମିଡିଆ, ଭିଡିଓ content ଭଳି ଲାଇନ୍ ଭଲ। ଶୁକ୍ରବାର ଲକ୍ଷ୍ମୀ ପୂଜା କଲେ ଅର୍ଥ ଯୋଗ ଭଲ ହୁଏ।
 
-INSTRUCTIONS:
-- Always mention the specific planet, house, or nakshatra from the user chart
-- Be specific not generic — use their actual chart data
-- Keep answers concise (3-5 sentences)
+ନିୟମ:
+- ସର୍ବଦା ଗ୍ରହ ଓ ଭାବ ନାମ ସ୍ପଷ୍ଟ ଭାବେ ଦିଅ (10ମ ଭାବ, ଶନି, ଗୁରୁ ଇତ୍ୟାଦି)
+- ସରଳ ଓ ସ୍ୱଭାବିକ ଓଡ଼ିଆ ବ୍ୟବହାର କର — ଭାରୀ ସଂସ୍କୃତ ନୁହେଁ
+- ୩-୫ ବାକ୍ୟରେ ଉତ୍ତର ଦିଅ
+- ଶେଷରେ ଗୋଟିଏ ସ୍ୱଭାବିକ ଉପଚାର ଦିଅ
+- ନିଶ୍ଚିତ ଭାବେ ଉତ୍ତର ଦିଅ — "ଜଣାଯାଏ ନାହିଁ" ବୋଲି ନ କୁହ` 
+  : `You are Jyotish AI — an expert Vedic astrologer. Give warm, specific, personalized answers.
+
+${kundliContext}
+
+Style example:
+Q: How is my career?
+A: Your Jupiter in the 10th house is excellent for career growth. With Saturn Mahadasha running, consistent hard work now will bring permanent success later. Media, video content, government work suit you well. Light a lamp on Fridays for financial growth.
+
+Rules:
+- Always mention specific planet and house numbers
+- Be direct and personal — use their actual chart data
+- 3-5 sentences per answer
 - End with one practical remedy
 - Never say you cannot predict`;
 
   try{
-    const messages=[...chatHistory.slice(-8)]; // last 8 messages for context
+    const messages=[...chatHistory.slice(-8)];
     const resp=await fetch('/.netlify/functions/chat',{
       method:'POST',
-      headers:{
-        'Content-Type':'application/json',
-        'anthropic-dangerous-direct-browser-access':'true'
-      },
+      headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
         model:'claude-3-5-sonnet-20241022',
         max_tokens:600,
@@ -3165,23 +3185,26 @@ INSTRUCTIONS:
         messages
       })
     });
-    if(!resp.ok){
-      const errData=await resp.json().catch(()=>({}));
-      throw new Error(errData.error?.message||'API error '+resp.status);
-    }
     const data=await resp.json();
-    const reply=data.content?.[0]?.text||'I could not generate a response. Please try again.';
-
-    // Remove thinking bubble
+    // Handle API errors in response body
+    if(data.error){
+      throw new Error(data.error.message||'API error');
+    }
+    const reply=(data.content&&data.content[0]&&data.content[0].text)||'';
+    if(!reply){
+      throw new Error('Empty response from AI');
+    }
     const thinkEl=document.getElementById(thinkId);
     if(thinkEl)thinkEl.remove();
-
     addChatBubble(reply,'ai');
     chatHistory.push({role:'assistant',content:reply});
   }catch(e){
+    console.error('Chat error:',e.message);
     const thinkEl=document.getElementById(thinkId);
-    if(thinkEl){thinkEl.classList.remove('thinking');thinkEl.textContent='Sorry, I could not connect right now. Please check your internet and try again.';}
-    console.error('Chat error:',e);
+    if(thinkEl){
+      thinkEl.classList.remove('thinking');
+      thinkEl.textContent=isOdia?'ଦୁଃଖିତ, ଉତ୍ତର ଦେଇ ପାରିଲି ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।':'Sorry, could not get a response. Please try again.';
+    }
   }
   sendBtn.disabled=false;
   document.getElementById('chat-input').focus();
