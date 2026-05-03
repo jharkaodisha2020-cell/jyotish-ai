@@ -4220,19 +4220,40 @@ async function getHoroscope(btnEl){
   const tithiIdx=Math.floor(tithiAngle/12);
   const tithi=TITHIS[tithiIdx%15];
 
-  const prompt=`You are a Vedic astrologer writing a daily horoscope. Today: ${today}
-Current panchang: Moon in ${moonRashi}, Tithi: ${tithi}, Nakshatra: ${E.NAK_NAMES[nakIdx]}
-Write horoscope for ${rashi} (${rashiOd}) rashi.
-LANGUAGE: ${isOd?'Write ENTIRELY in simple conversational Odia script (ଓଡ଼ିଆ). Short sentences. Common words.':'Write in simple English.'}
-
-Respond ONLY with JSON (no markdown):
-{"overall":"2 sentences about today overall energy for ${rashi}","career":"1 sentence career/work","love":"1 sentence love/relationships","health":"1 sentence health","money":"1 sentence finance","lucky_color":"${isOd?'ରଙ୍ଗ':'color'}","lucky_number":7,"lucky_time":"time period","tip":"1 practical tip for today","rating":4}`;
+  const langInstr = isOd ? 'Write ENTIRELY in simple conversational Odia script. Short sentences.' : 'Write in simple English.';
+  const jsonTemplate = '{"overall":"2 sentences overall energy","career":"1 sentence career","love":"1 sentence love","health":"1 sentence health","money":"1 sentence finance","lucky_color":"color name","lucky_number":7,"lucky_time":"morning/afternoon/evening","tip":"1 practical tip","rating":4}';
+  const prompt = 'You are a Vedic astrologer. Today: '+today+'\nMoon in '+moonRashi+', Tithi: '+tithi+', Nakshatra: '+E.NAK_NAMES[nakIdx]+'\nWrite daily horoscope for '+rashi+' rashi.\nLANGUAGE: '+langInstr+'\nRespond ONLY with JSON (no markdown, no extra text):\n'+jsonTemplate;
 
   try{
     const resp=await fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-3-5-sonnet-20241022',max_tokens:500,messages:[{role:'user',content:prompt}]})});
     const data=await resp.json();
     const raw=data.content?.[0]?.text||'';
-    let r;try{r=JSON.parse(raw.replace(/```json|```/g,'').trim());}catch(e){r=null;}
+    console.log('Horoscope raw:',raw.substring(0,200));
+    let r=null;
+    try{
+      const cleaned=raw.replace(/```json|```/g,'').trim();
+      const jsonStart=cleaned.indexOf('{');
+      const jsonEnd=cleaned.lastIndexOf('}');
+      if(jsonStart>=0&&jsonEnd>jsonStart){
+        r=JSON.parse(cleaned.substring(jsonStart,jsonEnd+1));
+      }
+    }catch(e){console.log('Parse error:',e.message);}
+
+    // Fallback content if parse fails
+    if(!r||!r.overall){
+      r={
+        overall: isOd?'ଆଜ ଆପଣଙ୍କ ଦିନ ସୁଖଦ ରହିବ। ଶୁଭ ଶକ୍ତି ଆପଣଙ୍କ ସହ ଅଛି।':'Today brings positive energy for '+rashi+'. The planetary alignment supports your efforts.',
+        career: isOd?'କାମ ଭଲ ଚାଲିବ।':'Good day for career advancement.',
+        love: isOd?'ସମ୍ପର୍କ ମଧୁର ରହିବ।':'Relationships are harmonious today.',
+        health: isOd?'ସ୍ୱାସ୍ଥ୍ୟ ଠିକ ରହିବ।':'Health is stable. Stay active.',
+        money: isOd?'ଅର୍ଥ ଦିଗ ଭଲ।':'Financial matters look favorable.',
+        lucky_color: isOd?'ସୁନେଲି':'Golden',
+        lucky_number: (selectedHoroscopeRashi+1),
+        lucky_time: isOd?'ସକାଳ ୧୦-୧୨':'10AM - 12PM',
+        tip: isOd?'ଆଜ ଦୁର୍ଗା ଦେବୀଙ୍କୁ ସ୍ମରଣ କରନ୍ତୁ।':'Start your day with a short meditation for clarity.',
+        rating: 4
+      };
+    }
 
     const stars='★'.repeat(r?.rating||4)+'☆'.repeat(5-(r?.rating||4));
     g('horoscope-result').innerHTML=`
@@ -4298,21 +4319,21 @@ async function buildMuhurta(type){
     months.push(d.toLocaleString('en-IN',{month:'long',year:'numeric'}));
   }
 
-  const prompt=`You are a Vedic Muhurta expert. Find auspicious dates for: ${typeName.en}
-Current date: ${now.toLocaleDateString('en-IN')}
-Find 8 best muhurta dates for the next 3 months: ${months.join(', ')}
-LANGUAGE: ${isOd?'Write all descriptions in simple Odia script.':'Write in English.'}
-
-For ${type==='vivah'?'marriage: consider Shubha nakshatras (Rohini,Mrigashira,Magha,Uttara Phalguni,Hasta,Swati,Anuradha,Mula,Uttara Ashadha,Uttara Bhadrapada,Revati), avoid Rahu kaal, avoid Amavasya':type==='griha'?'house entry: consider Pushya, Rohini, Mrigashira, Uttara nakshatras, Shukla paksha, avoid Saturdays and inauspicious tithis':type==='farming'?'farming: consider lunar phases, Rohini for sowing, avoid Amavasya for major work':'business: consider Pushya nakshatra, Jupiter hora, avoid Rahu kaal, prefer Wednesday/Thursday/Friday'}
-
-Respond ONLY with JSON (no markdown):
-{"dates":[{"date":"DD Month YYYY","day":"weekday","nakshatra":"nakshatra name","tithi":"tithi name","quality":"Best/Good","time":"best time window","reason":"1 sentence why auspicious","reason_od":"1 sentence Odia reason"},...8 dates],"general_advice":"2 sentences general muhurta advice","general_advice_od":"2 sentences Odia"}`;
+  const muhurtaRules = type==='vivah'?'marriage: use Shubha nakshatras (Rohini,Mrigashira,Magha,Uttara Phalguni,Hasta,Swati,Anuradha,Uttara Ashadha,Revati), avoid Amavasya, Rahu kaal':type==='griha'?'house entry: use Pushya,Rohini,Mrigashira, Shukla paksha, avoid Saturdays':type==='farming'?'farming: use lunar phases, Rohini for sowing, avoid Amavasya':'business: use Pushya nakshatra, Jupiter hora, prefer Wednesday/Thursday/Friday';
+  const muhurtaLang = isOd ? 'Write reason fields in Odia script.' : 'Write in English.';
+  const prompt = 'You are a Vedic Muhurta expert. Find 8 auspicious dates for: '+typeName.en+'\nCurrent date: '+now.toLocaleDateString('en-IN')+'\nNext 3 months: '+months.join(', ')+'\nRules: '+muhurtaRules+'\nLanguage: '+muhurtaLang+'\nRespond ONLY with valid JSON (no markdown):\n{"dates":[{"date":"15 May 2026","day":"Friday","nakshatra":"Rohini","tithi":"Tritiya","quality":"Best","time":"7AM-10AM","reason":"Excellent for '+type+'","reason_od":"ଶୁଭ ଦିନ"}],"general_advice":"Choose morning hours for best results. Avoid Rahu Kaal timing.","general_advice_od":"ସକାଳ ସମୟ ଶ୍ରେଷ୍ଠ। ରାହୁ କାଳ ଏଡ଼ାନ୍ତୁ।"}';
 
   try{
     const resp=await fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-3-5-sonnet-20241022',max_tokens:800,messages:[{role:'user',content:prompt}]})});
     const data=await resp.json();
     const raw=data.content?.[0]?.text||'';
-    let r;try{r=JSON.parse(raw.replace(/```json|```/g,'').trim());}catch(e){r=null;}
+    console.log('Muhurta raw:',raw.substring(0,300));
+    let r=null;
+    try{
+      const cleaned=raw.replace(/```json|```/g,'').trim();
+      const js=cleaned.indexOf('{'), je=cleaned.lastIndexOf('}');
+      if(js>=0&&je>js) r=JSON.parse(cleaned.substring(js,je+1));
+    }catch(e){console.log('Muhurta parse error:',e.message);}
 
     const datesHTML=(r?.dates||[]).map(d=>`
       <div class="muhurta-item">
@@ -4336,7 +4357,7 @@ Respond ONLY with JSON (no markdown):
     </div>
     <div class="card">
       <div class="sh">✦ ${isOd?'ସାଧାରଣ ପରାମର୍ଶ':'General Advice'}</div>
-      <div class="rtxt">${r?.general_advice||r?.general_advice_od||'Choose an auspicious day with good nakshatra, avoid Rahu Kaal, and perform the ceremony in the morning hours for best results.'}</div>
+      <div class="rtxt">${(r&&(r.general_advice||r.general_advice_od))||(isOd?'ସକାଳ ୬-୧୦ ଶ୍ରେଷ୍ଠ। ରାହୁ କାଳ ଏଡ଼ାନ୍ତୁ। ଶୁଭ ନକ୍ଷତ୍ରରେ ଶୁଭ କାର୍ଯ୍ୟ କରନ୍ତୁ।':'Choose morning hours 6AM-10AM for best results. Avoid Rahu Kaal. Perform a puja before starting any auspicious activity.')}</div>
     </div>
     <button class="wa-btn" onclick="shareWAMuhurta('${typeName.en}')">
       <div class="wa-btn-ic">📱</div>
