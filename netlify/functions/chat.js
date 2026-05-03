@@ -20,8 +20,8 @@ exports.handler = async function(event) {
 
   try{
     const body = JSON.parse(event.body);
-    // Always use correct stable model
-    body.model = 'claude-3-5-sonnet-20241022';
+    // Always use correct current model
+    body.model = 'claude-sonnet-4-6';
 
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -34,9 +34,11 @@ exports.handler = async function(event) {
     });
 
     const data = await response.json();
+    console.log('API response status:', response.status, 'error:', data.error?.type);
     return { statusCode: 200, headers, body: JSON.stringify(data) };
 
   }catch(e){
+    console.error('Function error:', e.message);
     return {
       statusCode: 500, headers,
       body: JSON.stringify({error:{message:e.message}})
