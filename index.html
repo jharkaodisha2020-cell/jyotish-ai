@@ -2231,7 +2231,7 @@ Based on these ACTUAL calculated positions, provide a precise, person-specific r
 Respond ONLY with this exact JSON (no markdown, no extra text):
 {"overview_en":"3 detailed sentences referencing actual Lagna ${ascN} and key planet positions","overview_od":"3 sentences in Odia script","strengths_en":"2 sentences mentioning specific planet dignities like ${p.filter(x=>x.dignity==='Exalted').map(x=>x.name).join(',') || 'strong planets'}","strengths_od":"2 sentences Odia","career_en":"2 sentences referencing 10th house lord ${PLANS[S.plan]?p.find(x=>x.house===10)?.name||'':''}  and career indicators","career_od":"2 sentences Odia","love_en":"2 sentences about 7th house and Venus","love_od":"2 Odia sentences","health_en":"2 sentences about 6th house, ascendant lord health indicators","health_od":"2 Odia sentences","dasha_en":"2 sentences specifically about ${currD.planet} Mahadasha and ${currA.planet} Antardasha combined effect","dasha_od":"2 Odia sentences","remedies":["specific remedy for ${p.find(x=>x.dignity==='Debilitated')?.name||'Sun'} weakness","remedy 2","remedy 3","remedy 4"],"remedies_od":["ଉପଚାର ୧","ଉପଚାର ୨","ଉପଚାର ୩","ଉପଚାର ୪"],"gemstones":["primary gemstone based on Lagna lord ${RASHI_LRD[result.ascendant.rashi]||'Moon'} — benefit","secondary gem — benefit"],"gemstones_od":["ପ୍ରଧାନ ରତ୍ନ — ଲାଭ","ଦ୍ୱିତୀୟ ରତ୍ନ — ଲାଭ"],"luckyColor_en":"color","luckyColor_od":"ରଙ୍ଗ ନାମ ଓଡ଼ିଆ","luckyNumber":7,"luckyDay_en":"day","luckyDay_od":"ଦିନ","mantra":"exact Sanskrit mantra for Lagna lord ${RASHI_LRD[result.ascendant.rashi]||'Moon'}","yogaInsight_en":"2 sentences explaining how the detected yogas affect this specific person's life","yogaInsight_od":"2 Odia sentences"}`;
 
-    fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-3-5-sonnet-20241022',max_tokens:1400,messages:[{role:'user',content:prompt}]})})
+    fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1400,messages:[{role:'user',content:prompt}]})})
     .then(r=>r.json())
     .then(data=>{
       const raw=data.content.map(c=>c.text||'').join('');
@@ -3350,7 +3350,7 @@ Yogas: ${(res.yogas||[]).map(y=>y.name).join(', ')}`;
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
-        model:'claude-3-5-sonnet-20241022',
+        model:'claude-sonnet-4-6',
         max_tokens:600,
         system:systemPrompt,
         messages
@@ -3449,7 +3449,7 @@ Provide analysis in this EXACT JSON (no markdown):
 {"overall":"2 sentences about the overall vibration of this specific number","career":"2 sentences about career and business effects","relationships":"2 sentences about relationships and social effects","luck":"2 sentences about luck periods and timing","warning":"1 sentence about any caution for this number","bestUseFor":"4 professions or purposes this number is best suited for","avoid":"2 things to avoid with this number","remedy":"1 specific mantra or remedy to balance the number energy","alternatives":"3 alternative last-3-digit endings that would be more favorable","od_overall":"2 sentences in Odia script about overall vibration"}`;
 
   try{
-    const resp=await fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-3-5-sonnet-20241022',max_tokens:800,messages:[{role:'user',content:prompt}]})});
+    const resp=await fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:800,messages:[{role:'user',content:prompt}]})});
     const data=await resp.json();
     const raw=data.content?.[0]?.text||'';
     let r;try{r=JSON.parse(raw.replace(/```json|```/g,'').trim());}catch(e){r=null;}
@@ -3540,7 +3540,7 @@ Provide a complete name correction report in EXACT JSON (no markdown):
 {"compatibility_score":75,"compatibility_analysis":"2 sentences about how current name aligns with birth numbers","vibration_analysis":"2 sentences about what the current name number ${namank} brings to this person","strengths_of_current":"2 strengths the current name provides","weaknesses":"2 weaknesses or blocks the current name causes","correction_needed":${compatible?'false':'true'},"suggested_names":["Alternate spelling 1 with brief reason","Alternate spelling 2 with brief reason","Alternate spelling 3 with brief reason"],"letters_to_add":"Specific letters or sounds to add to strengthen the name","letters_to_avoid":"Letters or sounds to avoid","ideal_namank":${mulank},"remedy_if_no_change":"Mantra or remedy if person cannot change name","career_impact":"1 sentence on career impact of current name","marriage_impact":"1 sentence on relationship impact","od_summary":"2 sentences in Odia script about the name analysis"}`;
 
   try{
-    const resp=await fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-3-5-sonnet-20241022',max_tokens:900,messages:[{role:'user',content:prompt}]})});
+    const resp=await fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:900,messages:[{role:'user',content:prompt}]})});
     const data=await resp.json();
     const raw=data.content?.[0]?.text||'';
     let r;try{r=JSON.parse(raw.replace(/```json|```/g,'').trim());}catch(e){r=null;}
@@ -3662,7 +3662,7 @@ Generate a complete chakra report in EXACT JSON (no markdown):
 {"chakras":[{"name":"Muladhara","status":"Open/Partially Open/Blocked","score":75,"effect":"1 sentence about how this chakra is manifesting in life","healing":"1 specific healing practice","od_effect":"1 sentence in Odia"},...for all 7 chakras in order],"most_blocked":"name of most blocked chakra","most_open":"name of most open chakra","overall_energy":"2 sentences about overall chakra energy and kundalini state","meditation":"specific meditation technique for this person","pranayama":"specific breathing exercise","daily_practice":"3 daily practices to balance all chakras","urgent_focus":"which chakra needs most attention and why","od_overall":"2 sentences in Odia about overall chakra state"}`;
 
   try{
-    const resp=await fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-3-5-sonnet-20241022',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
+    const resp=await fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
     const data=await resp.json();
     const raw=data.content?.[0]?.text||'';
     let r;try{r=JSON.parse(raw.replace(/```json|```/g,'').trim());}catch(e){r=null;}
@@ -3774,7 +3774,7 @@ Generate complete health report in EXACT JSON (no markdown):
 {"constitution":"Vata/Pitta/Kapha constitution in 2 sentences","strong_areas":["body system 1","body system 2","body system 3"],"vulnerable_areas":["vulnerable area 1 with planet causing it","vulnerable area 2","vulnerable area 3"],"current_risks":"2 sentences about current health risks based on planetary positions","digestive_health":"1 sentence about digestive constitution","mental_health":"1 sentence about mental/emotional health tendencies","longevity":"1 sentence about general vitality and longevity indicators","diet_advice":"3 specific dietary recommendations for this chart","yoga_asanas":["asana 1 — benefit","asana 2 — benefit","asana 3 — benefit"],"herbs":["Ayurvedic herb 1 — use","herb 2 — use"],"avoid":["food or habit to avoid 1","avoid 2"],"favourable_periods":"1 sentence about health-favourable time periods","cautious_periods":"1 sentence about periods requiring health caution","mantra":"health mantra suitable for this chart","od_summary":"2 sentences in Odia about overall health picture"}`;
 
   try{
-    const resp=await fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-3-5-sonnet-20241022',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
+    const resp=await fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
     const data=await resp.json();
     const raw=data.content?.[0]?.text||'';
     let r;try{r=JSON.parse(raw.replace(/```json|```/g,'').trim());}catch(e){r=null;}
@@ -3936,7 +3936,7 @@ Generate 12 auspicious names. Respond ONLY with valid JSON (no markdown):
 ],"best_name":"which name is most auspicious and why","muhurta":"best time of day for naming ceremony","ceremony_tips":"2 sentences about Namakarana ceremony in Odia tradition","od_blessing":"Odia blessing sentence for the child"}`;
 
   try{
-    const resp = await fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-3-5-sonnet-20241022',max_tokens:1500,messages:[{role:'user',content:prompt}]})});
+    const resp = await fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1500,messages:[{role:'user',content:prompt}]})});
     const data = await resp.json();
     const raw = data.content?.[0]?.text||'';
     let r; try{r=JSON.parse(raw.replace(/```json|```/g,'').trim());}catch(e){r=null;}
@@ -4116,7 +4116,7 @@ Provide complete matching analysis in EXACT JSON (no markdown):
 {"overall":"3 sentences about overall compatibility of this specific couple","strengths":["compatibility strength 1","strength 2","strength 3"],"challenges":["challenge 1","challenge 2"],"nadi_analysis":"2 sentences about Nadi compatibility — critical for health and children","bhakoot_analysis":"2 sentences about Bhakoot — emotional and financial life together","children":"2 sentences about prospects for children based on this match","financial":"2 sentences about financial compatibility","manglik_check":"1 sentence on whether Manglik dosha check is needed","remedies":["remedy 1 if any dosha","remedy 2","remedy 3"],"muhurta_advice":"best season or month for marriage","verdict_detailed":"2 sentences giving final clear verdict on this match","od_summary":"3 sentences in Odia script about the match","od_blessing":"Odia blessing for the couple"}`;
 
   try{
-    const resp = await fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-3-5-sonnet-20241022',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
+    const resp = await fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
     const data = await resp.json();
     const raw = data.content?.[0]?.text||'';
     let r; try{r=JSON.parse(raw.replace(/```json|```/g,'').trim());}catch(e){r=null;}
@@ -4419,7 +4419,7 @@ async function getHoroscope(btnEl){
   const prompt = 'You are a Vedic astrologer. Today: '+today+'\nMoon in '+moonRashi+', Tithi: '+tithi+', Nakshatra: '+E.NAK_NAMES[nakIdx]+'\nWrite daily horoscope for '+rashi+' rashi.\nLANGUAGE: '+langInstr+'\nRespond ONLY with JSON (no markdown, no extra text):\n'+jsonTemplate;
 
   try{
-    const resp=await fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-3-5-sonnet-20241022',max_tokens:500,messages:[{role:'user',content:prompt}]})});
+    const resp=await fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:500,messages:[{role:'user',content:prompt}]})});
     const data=await resp.json();
     const raw=data.content?.[0]?.text||'';
     console.log('Horoscope raw:',raw.substring(0,200));
@@ -4518,7 +4518,7 @@ async function buildMuhurta(type){
   const prompt = 'You are a Vedic Muhurta expert. Find 8 auspicious dates for: '+typeName.en+'\nCurrent date: '+now.toLocaleDateString('en-IN')+'\nNext 3 months: '+months.join(', ')+'\nRules: '+muhurtaRules+'\nLanguage: '+muhurtaLang+'\nRespond ONLY with valid JSON (no markdown):\n{"dates":[{"date":"15 May 2026","day":"Friday","nakshatra":"Rohini","tithi":"Tritiya","quality":"Best","time":"7AM-10AM","reason":"Excellent for '+type+'","reason_od":"ଶୁଭ ଦିନ"}],"general_advice":"Choose morning hours for best results. Avoid Rahu Kaal timing.","general_advice_od":"ସକାଳ ସମୟ ଶ୍ରେଷ୍ଠ। ରାହୁ କାଳ ଏଡ଼ାନ୍ତୁ।"}';
 
   try{
-    const resp=await fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-3-5-sonnet-20241022',max_tokens:800,messages:[{role:'user',content:prompt}]})});
+    const resp=await fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:800,messages:[{role:'user',content:prompt}]})});
     const data=await resp.json();
     const raw=data.content?.[0]?.text||'';
     console.log('Muhurta raw:',raw.substring(0,300));
@@ -4609,7 +4609,7 @@ async function doPastLife(btnEl){
     const resp=await fetch('/.netlify/functions/chat',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-3-5-sonnet-20241022',max_tokens:700,messages:[{role:'user',content:prompt}]})
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:700,messages:[{role:'user',content:prompt}]})
     });
     const data=await resp.json();
     const raw=(data.content&&data.content[0]&&data.content[0].text)||'';
@@ -4664,7 +4664,7 @@ Respond ONLY with JSON (no markdown):
 {"best_profession":"top 3 professions suited for this chart","10th_analysis":"2 sentences about 10th house career indicators","current_dasha_career":"2 sentences about how current ${currDasha?.planet} dasha affects career","yearly_forecast":[{"year":${currYear},"phase":"growth/stable/challenge","prediction":"1 sentence","rating":4},{"year":${currYear+1},"phase":"","prediction":"","rating":3},{"year":${currYear+2},"phase":"","prediction":"","rating":4},{"year":${currYear+3},"phase":"","prediction":"","rating":4}],"best_years":"which years in next 5 are best for career leap","foreign_prospects":"1 sentence about foreign work/settlement","business_timing":"best time to start business if applicable","government_prospects":"1 sentence about government job prospects","remedy":"career remedy","remedy_od":"ଓଡ଼ିଆ ଉପଚାର"}`;
 
   try{
-    const resp=await fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-3-5-sonnet-20241022',max_tokens:800,messages:[{role:'user',content:prompt}]})});
+    const resp=await fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:800,messages:[{role:'user',content:prompt}]})});
     const data=await resp.json();
     const raw=data.content?.[0]?.text||'';
     let r;try{r=JSON.parse(raw.replace(/```json|```/g,'').trim());}catch(e){r=null;}
@@ -4737,7 +4737,7 @@ Respond ONLY with JSON (no markdown):
 {"santaan_yoga":"Strong/Moderate/Delayed/Challenging with 2 sentence explanation","5th_house_analysis":"2 sentences about 5th house for children","jupiter_analysis":"2 sentences about Jupiter's role","best_years_for_child":"which years in next 5 are best for conception/childbirth","gender_indication":"boy/girl/both indication based on chart with disclaimer this is not scientific","delays":"any delays or challenges and why","remedies":["remedy1","remedy2","remedy3"],"remedies_od":["ଉପଚାର1","ଉପଚାର2","ଉପଚାର3"],"mantra":"specific mantra for santaan","combined_analysis":"${calc2?'2 sentences about combined couple chart':'N/A'}","blessing":"closing blessing","blessing_od":"ଓଡ଼ିଆ ଆଶୀର୍ବାଦ"}`;
 
   try{
-    const resp=await fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-3-5-sonnet-20241022',max_tokens:700,messages:[{role:'user',content:prompt}]})});
+    const resp=await fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:700,messages:[{role:'user',content:prompt}]})});
     const data=await resp.json();
     const raw=data.content?.[0]?.text||'';
     let r;try{r=JSON.parse(raw.replace(/```json|```/g,'').trim());}catch(e){r=null;}
