@@ -236,6 +236,25 @@ select option{background:#0C0602}
 .score-ring{width:80px;height:80px;border-radius:50%;border:3px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 10px;position:relative}
 .score-n{font-family:'Cinzel',serif;font-size:22px;font-weight:700;color:var(--gold-lt)}
 .score-l{font-size:8px;color:var(--muted);text-transform:uppercase}
+/* auto-chat reveal */
+.chat-fab{position:fixed;bottom:80px;right:18px;width:52px;height:52px;border-radius:50%;background:var(--gold);border:none;cursor:pointer;display:none;align-items:center;justify-content:center;font-size:22px;z-index:300;box-shadow:0 4px 16px rgba(0,0,0,.4);transition:transform .15s}
+.chat-fab.show{display:flex}
+.chat-fab.pulse{animation:chatPulse 1.5s ease-in-out infinite}
+@keyframes chatPulse{0%,100%{transform:scale(1);box-shadow:0 4px 16px rgba(184,135,10,.4)}50%{transform:scale(1.12);box-shadow:0 6px 28px rgba(184,135,10,.8)}}
+.chat-fab-badge{position:absolute;top:-4px;right:-4px;background:#E24B4A;color:#fff;border-radius:50%;width:18px;height:18px;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;font-family:'Lato',sans-serif}
+.chat-read-banner{background:linear-gradient(135deg,#1A0E06,#2A1408);border:1px solid var(--gold);border-radius:12px;padding:14px 16px;margin-bottom:12px;cursor:pointer;display:flex;align-items:center;gap:12px;transition:all .2s}
+.chat-read-banner:hover{border-color:var(--gold-lt);transform:translateY(-2px)}
+.chat-read-banner-ic{font-size:28px;flex-shrink:0;animation:chatPulse 2s ease-in-out infinite}
+.chat-read-banner-txt{flex:1}
+.chat-read-banner-title{font-family:'Cinzel',serif;font-size:14px;color:var(--gold-lt);margin-bottom:3px}
+.chat-read-banner-sub{font-size:11px;color:var(--muted)}
+.chat-topic-btn{background:rgba(184,135,10,.1);border:1px solid rgba(184,135,10,.3);border-radius:20px;padding:6px 14px;font-size:12px;color:var(--gold-lt);cursor:pointer;font-family:'Lato',sans-serif;margin:3px;transition:all .15s;display:inline-block}
+.chat-topic-btn:hover{background:rgba(184,135,10,.25);border-color:var(--gold)}
+.typing-indicator{display:flex;gap:4px;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:12px;border-bottom-left-radius:3px;align-self:flex-start;margin-bottom:8px}
+.typing-dot{width:6px;height:6px;border-radius:50%;background:var(--muted);animation:typingBounce .8s ease-in-out infinite}
+.typing-dot:nth-child(2){animation-delay:.15s}
+.typing-dot:nth-child(3){animation-delay:.3s}
+@keyframes typingBounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
 /* global user details */
 .user-details-bar{background:linear-gradient(135deg,var(--surface),#1E0800);border:1px solid var(--gold);border-radius:12px;padding:14px;margin-bottom:14px}
 .ud-title{font-family:'Cinzel',serif;font-size:13px;color:var(--gold-lt);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
@@ -905,6 +924,14 @@ select option{background:#0C0602}
     <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
       <div class="back" onclick="dashGo('kundli')" style="flex:1">← New Reading</div>
       <button onclick="clearKundliCache()" style="background:rgba(226,75,74,.15);border:1px solid rgba(226,75,74,.3);border-radius:7px;padding:6px 10px;font-size:10px;color:#E24B4A;cursor:pointer;font-family:'Lato',sans-serif">↺ Regenerate</button>
+    </div>
+    <div class="chat-read-banner" id="read-kundli-banner" onclick="startAstrologerChat()">
+      <div class="chat-read-banner-ic">🔮</div>
+      <div class="chat-read-banner-txt">
+        <div class="chat-read-banner-title" id="read-banner-title">Read My Kundli — Astrologer Speaks</div>
+        <div class="chat-read-banner-sub" id="read-banner-sub">Tap to reveal your marriage, career, dasha & more...</div>
+      </div>
+      <div style="color:var(--gold-lt);font-size:18px">→</div>
     </div>
     <div class="pdf-lang-row">
       <button class="pdf-lang-btn on" id="pdfl-en" onclick="setPdfLang('en')">English PDF</button>
@@ -2283,50 +2310,118 @@ const prompt = 'You are an expert Vedic astrologer. Write a COMPLETE, DETAILED p
 + '"yogaInsight_od":"2 Odia sentences about yogas"'
 + '}';
 
-    // CALL 1: Basic reading (overview, career, health, dasha, remedies)
-    const baseInfo = 'Name='+nm+' DOB='+dob+' TOB='+tob+' Place='+pob+' Lagna='+ascN+' MoonRashi='+moonRashi+' Nakshatra='+moonN.name+' Pada '+moonN.pada+' | Planets: '+planetsStr+' | Dasha='+currD.planet+' ends '+currD.end.toLocaleDateString('en-IN')+' Antar='+currA.planet+' | Yogas='+yogasStr;
+    // ── Build short base context ──
+    const ctx = ascN+' Lagna, Moon '+moonRashi+', Nakshatra '+moonN.name+' Pada '+moonN.pada
+      +', Dasha '+currD.planet+' till '+currD.end.getFullYear()+', Antardasha '+currA.planet
+      +'. Key houses: H7='+h7planet+' H10='+h10planet+' H5='+h5planet+' H4='+h4planet
+      +'. Venus H'+venusHouse+' Saturn H'+saturnHouse+' Jupiter H'+jupiterHouse
+      +'. Yogas: '+yogasStr+'. Lagna Lord: '+lagnaLord;
 
-    const prompt1 = 'Vedic astrologer. LANGUAGE: '+langInstr+'. DATA: '+baseInfo+'. Respond ONLY valid JSON no markdown: {"overview_en":"3 sentences Lagna '+ascN+' personality Moon '+moonRashi+' emotional nature","overview_od":"3 Odia sentences","nature_en":"2 sentences personality strengths","nature_od":"2 Odia","nakshatra_en":"2 sentences '+moonN.name+' nakshatra effect","nakshatra_od":"2 Odia","career_en":"3 sentences 10th house '+h10planet+' best profession career timing","career_od":"3 Odia","finance_en":"2 sentences wealth 2nd 11th house income period","finance_od":"2 Odia","health_en":"2 sentences 6th house weak areas prevention","health_od":"2 Odia","dasha_en":"3 sentences '+currD.planet+' Mahadasha full effect on all life areas until '+currD.end.toLocaleDateString('en-IN')+'","dasha_od":"3 Odia","dasha_remedy_en":"3 specific rituals for '+currD.planet+' dasha benefit","dasha_remedy_od":"3 Odia rituals","hidden_strength_en":"2 sentences yogas '+yogasStr+' and their benefit","hidden_strength_od":"2 Odia","strengths_en":"2 sentences natural talents","strengths_od":"2 Odia","yogaInsight_en":"2 sentences yogas effect","yogaInsight_od":"2 Odia","remedies":["remedy1 for '+lagnaLord+'","remedy2 dasha","remedy3 health","remedy4 wealth"],"remedies_od":["ଉ ୧","ଉ ୨","ଉ ୩","ଉ ୪"],"gemstones":["primary gem for '+lagnaLord+' how to wear","secondary gem"],"gemstones_od":["ପ୍ରଧାନ ରତ୍ନ","ଦ୍ୱିତୀୟ ରତ୍ନ"],"luckyColor_en":"color","luckyColor_od":"ରଙ୍ଗ","luckyNumber":3,"luckyDay_en":"day","luckyDay_od":"ଦିନ","mantra":"exact mantra for '+lagnaLord+'"}';
+    const isOd = APP_LANG==='od';
+    const odNote = isOd
+      ? 'Write ALL text values in detailed, warm, conversational Odia script (ଓଡ଼ିଆ). Each field should be 3-5 sentences minimum. Write like a real Odia astrologer giving a personal reading. Be specific about planets and houses.'
+      : 'Write ALL text values in detailed, warm, conversational English. Each field should be 3-5 sentences minimum. Be specific about the actual planetary positions and their effects on this person.';
 
-    const prompt2 = 'Vedic astrologer. LANGUAGE: '+langInstr+'. DATA: '+baseInfo+'. Venus H'+venusHouse+' Saturn H'+saturnHouse+' Jupiter H'+jupiterHouse+' Mars H'+marsHouse+'. Respond ONLY valid JSON no markdown: {"marriage_en":"3 sentences 7th house '+h7planet+' Venus H'+venusHouse+' marriage nature delayed or early","marriage_od":"3 Odia sentences","marriage_timing_en":"Exact years most likely for marriage based on dasha transits - give specific period e.g. 2027-2029","marriage_timing_od":"ବିବାହ ନିର୍ଦ୍ଦିଷ୍ଟ ବର୍ଷ ଦିଅ","love_arrange_en":"Love or arranged marriage - clear answer with reasons from 7th house","love_arrange_od":"ପ୍ରେମ ନା ଘରର ବିବାହ ସ୍ପଷ୍ଟ ଉତ୍ତର","spouse_en":"Spouse nature profession direction they come from based on 7th lord","spouse_od":"ଜୀବନ ସାଥୀ ସ୍ୱଭାବ ଓ ଦିଗ","foreign_en":"Foreign travel settlement chances from 12th house Rahu specific timing","foreign_od":"ବିଦେଶ ଯୋଗ ଓ ସମୟ","property_en":"Home property own house timing from 4th house '+h4planet+'","property_od":"ଘ ଓ ସ ଯୋ","children_en":"Children timing number from 5th house '+h5planet+' Jupiter H'+jupiterHouse+'","children_od":"ସ ଯୋ","best_years_en":"Specific best years 2025-2035 for marriage career wealth - name exact years","best_years_od":"ଶ୍ର ବ ନ ଦ"}';
+    // ── PROMPT A: Personality + Career + Health + Dasha + Lucky ──
+    const pA = 'Vedic astrologer. '+odNote+' Chart: '+ctx
+      +'. Return ONLY JSON: {"overview_en":"3 sentences personality from '+ascN+' Lagna and Scorpio Moon"'
+      +',"overview_od":"3 Odia"'
+      +',"nature_en":"2 sentences hidden talents and nature"'
+      +',"nature_od":"2 Odia"'
+      +',"nakshatra_en":"2 sentences '+moonN.name+' nakshatra destiny effect"'
+      +',"nakshatra_od":"2 Odia"'
+      +',"career_en":"3 sentences 10th house '+h10planet+' best career options and timing with '+currD.planet+' dasha"'
+      +',"career_od":"3 Odia"'
+      +',"finance_en":"2 sentences wealth income 2nd 11th house best period"'
+      +',"finance_od":"2 Odia"'
+      +',"health_en":"2 sentences health weak areas 6th house prevention"'
+      +',"health_od":"2 Odia"'
+      +',"dasha_en":"3 sentences '+currD.planet+' Mahadasha full effect on career love wealth until '+currD.end.toLocaleDateString('en-IN')+'"'
+      +',"dasha_od":"3 Odia"'
+      +',"dasha_remedy_en":"3 specific rituals for '+currD.planet+' dasha"'
+      +',"dasha_remedy_od":"3 Odia rituals"'
+      +',"strengths_en":"2 sentences strengths from yogas '+yogasStr+'"'
+      +',"strengths_od":"2 Odia"'
+      +',"hidden_strength_en":"2 sentences special gifts"'
+      +',"hidden_strength_od":"2 Odia"'
+      +',"remedies":["remedy for '+lagnaLord+'","remedy for '+currD.planet+' dasha","remedy for health","remedy for wealth"]'
+      +',"remedies_od":["ଉ ୧","ଉ ୨","ଉ ୩","ଉ ୪"]'
+      +',"gemstones":["primary gem for '+lagnaLord+' how to wear on which finger","secondary gem"]'
+      +',"gemstones_od":["ପ୍ରଧାନ ରତ୍ନ ଓ ପିନ୍ଧିବା","ଦ୍ୱିତୀୟ ରତ୍ନ"]'
+      +',"luckyColor_en":"color","luckyColor_od":"ରଙ୍ଗ"'
+      +',"luckyNumber":3,"luckyDay_en":"day","luckyDay_od":"ଦିନ"'
+      +',"mantra":"full Sanskrit mantra for '+lagnaLord+'"'
+      +',"yogaInsight_en":"2 sentences yogas '+yogasStr+' specific benefit"'
+      +',"yogaInsight_od":"2 Odia"'
+      +'}';
+
+    // ── PROMPT B: Marriage + Life Events (hot topics) ──
+    const pB = 'Vedic astrologer. '+odNote+' Chart: '+ctx
+      +'. Return ONLY JSON: {"marriage_en":"3 sentences 7th house '+h7planet+' Venus H'+venusHouse+' Saturn H'+saturnHouse+' — marriage nature and timing"'
+      +',"marriage_od":"3 Odia"'
+      +',"marriage_timing_en":"Give SPECIFIC years 2025-2032 when marriage is most likely. Example: 2027-2028 strongest window because Jupiter transits 7th. Be specific."'
+      +',"marriage_timing_od":"ନିର୍ଦ୍ଦିଷ୍ଟ ବର୍ଷ ଦିଅ — ଉଦା: 2027-2028 ଶ୍ରେଷ୍ଠ"'
+      +',"love_arrange_en":"Clear answer: love or arranged marriage? Give reason from 7th house."'
+      +',"love_arrange_od":"ସ୍ପଷ୍ଟ ଉତ୍ତର: ପ୍ରେମ ବିବାହ ନା ଘରର"'
+      +',"spouse_en":"Describe future spouse: nature, profession, which direction they come from based on 7th lord."'
+      +',"spouse_od":"ଜୀବନ ସାଥୀ ସ୍ୱଭାବ, ବୃତ୍ତି ଓ ଦିଗ"'
+      +',"foreign_en":"Foreign travel or settlement chances from 12th house and Rahu H'+String(p.find(x=>x.name==='Rahu')?.house||10)+'. Timing?"'
+      +',"foreign_od":"ବିଦେଶ ଯୋଗ ଓ ସମୟ"'
+      +',"property_en":"Own home timing from 4th house '+h4planet+'. Which years best?"'
+      +',"property_od":"ଘ ଓ ସ ସ ।"'
+      +',"children_en":"Children from 5th house '+h5planet+' Jupiter H'+jupiterHouse+'. When and how many indicated?"'
+      +',"children_od":"ସ ଯୋ ।"'
+      +',"best_years_en":"Name 3-4 SPECIFIC best years from 2025-2035 for marriage, career, wealth. Example: 2026 career, 2027-2028 marriage, 2029 wealth."'
+      +',"best_years_od":"2025-2035 ଭିତରେ ଶ୍ରେଷ୍ଠ ବର୍ଷ: ନିର୍ଦ୍ଦିଷ୍ଟ ଲିଖ"'
+      +'}';
+
+    // ── Execute both prompts in parallel ──
+    const parseJ = (raw) => {
+      try{
+        const c=raw.replace(/```json|```/g,'').trim();
+        const s=c.indexOf('{'),e=c.lastIndexOf('}');
+        if(s>=0&&e>s) return JSON.parse(c.substring(s,e+1));
+      }catch(ex){}
+      return null;
+    };
 
     const doSave = (reading) => {
-      result.reading=reading;
-      S.calcResult=result;
+      result.reading = reading;
+      S.calcResult = result;
       try{localStorage.setItem('jyotish_last_result',JSON.stringify({result,nm,dob,tob,pob,gotra,kG}));}catch(e){}
-      const kundliRow={user_id:S.user.id,name:nm,dob,tob,place:pob,gotra,gender:kG,
-        rashi:result.planets[1].rashiName,lagna:result.ascendant.rashiName,result};
-      supaFetch('/rest/v1/kundlis',{method:'POST',body:JSON.stringify(kundliRow)});
+      supaFetch('/rest/v1/kundlis',{method:'POST',body:JSON.stringify({
+        user_id:S.user.id,name:nm,dob,tob,place:pob,gotra,gender:kG,
+        rashi:result.planets[1].rashiName,lagna:result.ascendant.rashiName,result
+      })});
       if(!S.user.kundlis)S.user.kundlis=[];
       S.user.kundlis.push({nm,date:new Date().toLocaleDateString('en-IN'),ascName:result.ascendant.rashiName,rashiName:result.planets[1].rashiName,result});
       saveU();
       renderResult(result);nav('result');
       g('k-gen-btn').disabled=false;
+      // Show pulsing banner on result page
+      setTimeout(()=>{
+        const banner = document.getElementById('read-kundli-banner');
+        if(banner){
+          banner.style.display='flex';
+          const isOd = APP_LANG==='od';
+          const title = document.getElementById('read-banner-title');
+          const sub = document.getElementById('read-banner-sub');
+          if(title) title.textContent = isOd?'ଜ୍ୟୋତିଷ ତୁମ ଚାର୍ଟ ପଢ଼ୁଛି — ଟାପ କର':'Astrologer is Reading Your Chart — Tap Now';
+          if(sub) sub.textContent = isOd?'ବିବାହ, କ୍ୟାରିୟର, ଦଶା ଓ ଆଉ ଅନେକ...':'Marriage, Career, Dasha & more revealed...';
+        }
+      }, 800);
     };
 
-    const parseJSON = (raw) => {
-      try{
-        const cleaned=raw.replace(/```json|```/g,'').trim();
-        const js=cleaned.indexOf('{'), je=cleaned.lastIndexOf('}');
-        if(js>=0&&je>js) return JSON.parse(cleaned.substring(js,je+1));
-      }catch(e){}
-      return null;
-    };
+    const callAI = (p, mt) => fetch('/.netlify/functions/chat',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:mt,messages:[{role:'user',content:p}]})
+    }).then(r=>r.json()).then(d=>parseJ((d.content||[]).map(c=>c.text||'').join(''))).catch(()=>null);
 
-    // Fetch both prompts in parallel
-    Promise.all([
-      fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:2000,messages:[{role:'user',content:prompt1}]})})
-        .then(r=>r.json()).then(d=>parseJSON(d.content?.map(c=>c.text||'').join('')||'')).catch(()=>null),
-      fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1500,messages:[{role:'user',content:prompt2}]})})
-        .then(r=>r.json()).then(d=>parseJSON(d.content?.map(c=>c.text||'').join('')||'')).catch(()=>null)
-    ]).then(([r1,r2])=>{
-      const reading = Object.assign({},buildFallbackReading(result),r1||{},r2||{});
-      doSave(reading);
-    }).catch(()=>{
-      doSave(buildFallbackReading(result));
-    });
+    Promise.all([callAI(pA,2000), callAI(pB,1500)])
+    .then(([r1,r2])=>{
+      doSave(Object.assign({},buildFallbackReading(result),r1||{},r2||{}));
+    }).catch(()=>doSave(buildFallbackReading(result)));
+
   },400);
 }
 
@@ -3409,9 +3504,40 @@ Yogas: ${(res.yogas||[]).map(y=>y.name).join(', ')}`;
   }
 
   const isOdia = APP_LANG === 'od';
-  const langNote = isOdia ? 'IMPORTANT: Always respond in simple conversational Odia script only. Write like a friendly Odia astrologer talking to the person. Example: "ତୁମର 10ମ ଭାବରେ ଗୁରୁ ଅଛନ୍ତି — କ୍ୟାରିୟର ଭଲ।"' : 'Always respond in simple English. Example: "Your Jupiter in 10th house is great for career."';
-  const chartNote = kundliContext ? 'USER CHART: ' + kundliContext : '';
-  const systemPrompt = 'You are Jyotish AI, an expert Vedic astrologer. ' + langNote + ' Always mention specific planet names and house numbers. Give 3-5 sentences. End with one practical remedy. Never say you cannot predict. ' + chartNote;
+  const langNote = isOdia
+    ? `LANGUAGE: Always write in simple conversational Odia script (ଓଡ଼ିଆ). Write exactly like the style below — natural, warm, direct Odia that common people in Odisha understand easily.
+
+STYLE EXAMPLE:
+ତୁମର 10ମ ଭାବରେ ସୂର୍ଯ୍ୟ ଓ ରାହୁ ଅଛନ୍ତି — ଏହା କ୍ୟାରିୟର ପାଇଁ ଏକ ବହୁତ ଶକ୍ତିଶାଳୀ ଯୋଗ। ଲୋକଙ୍କ ସାମ୍ନାରେ ଆସି କାମ କଲେ — YouTube, vlog, social media, public interaction — ଏଥିରେ ତୁମ ନାମ ହେବ।
+ଶନି 8ମ ଭାବରେ ଥିବାରୁ ଜୀବନ ଆରମ୍ଭରେ ସଂଘର୍ଷ ଥିଲା। କିନ୍ତୁ ଶନି delay ଦେଇ permanent success ଦେଇଥାଏ — ଏ ଗ୍ରହ ତୁମ ଜୀବନ ବରଦ।
+Venus ମହାଦଶା 2028 ପର୍ଯ୍ୟନ୍ତ ଚାଲିବ। ଏହି ସମୟ ଭଲ ଅର୍ଥ, ସୁଯୋଗ ଓ ଜୀବନ ସ୍ଥିରତା ଆଣିବ।
+ଉପଚାର: ଶୁକ୍ରବାର ଦିନ ଶୁକ୍ର ଦେବୀ ଲକ୍ଷ୍ମୀଙ୍କ ପୂଜା ଓ ଧଳା ଫୁଲ ଅର୍ପଣ କଲେ Venus ଶକ୍ତି ବଢ଼ିବ।`
+    : `LANGUAGE: Always respond in warm, detailed, conversational English. Write like a knowledgeable astrologer who genuinely cares about the person.
+
+STYLE EXAMPLE:
+Your 10th house has Sun and Rahu together — this is an extremely powerful combination for public recognition and career. You are meant to work in front of people — media, YouTube, public roles, government, or management. The more visible you become, the more successful you get.
+Saturn in the 8th house explains why life has had delays and struggles early on. But Saturn never denies — it only postpones, and when it gives, it gives permanently. Your struggles are actually building an unshakeable foundation.
+Venus Mahadasha runs until 2028 — this entire period brings financial growth, recognition, and life stability. Use these years wisely.
+Remedy: Offer white flowers to Goddess Lakshmi every Friday and chant "Om Shukraya Namah" 108 times for stronger Venus energy.`;
+
+  const chartNote = kundliContext ? 'USER CHART DATA:\n' + kundliContext : '';
+  const systemPrompt = `You are Jyotish AI — a deeply experienced Vedic astrologer. You give rich, detailed, personal readings that feel like a real astrologer is talking directly to the person.
+
+${chartNote}
+
+CRITICAL RULES:
+1. ALWAYS write minimum 8-12 sentences for any answer
+2. ALWAYS mention specific planets, house numbers, and their exact effects
+3. For marriage questions — give exact year windows, spouse direction, love/arranged analysis
+4. For career questions — name specific professions, best years, current dasha effect
+5. For dasha questions — explain the mahadasha AND antardasha combined effect in detail
+6. For health questions — name specific body parts/systems, give 3 remedies
+7. End EVERY answer with 2-3 specific actionable remedies (mantra + ritual + lifestyle)
+8. Never give vague answers — always be specific to THEIR chart
+9. Never say "I cannot predict" — always give a confident detailed answer
+10. Make the person feel the astrologer truly understands their life
+
+${langNote}`;
 
   try{
     const messages=[...chatHistory.slice(-8)];
@@ -3420,7 +3546,7 @@ Yogas: ${(res.yogas||[]).map(y=>y.name).join(', ')}`;
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
         model:'claude-sonnet-4-6',
-        max_tokens:600,
+        max_tokens:1200,
         system:systemPrompt,
         messages
       })
@@ -5272,6 +5398,347 @@ function clearKundliCache(){
   S.calcResult=null;
   toast('Cache cleared — please generate Kundli again');
   dashGo('kundli');
+}
+
+/* ═══════════════════════════════════════════════════════
+   ASTROLOGER SPEAKS — Auto-chat after Kundli generation
+═══════════════════════════════════════════════════════*/
+
+let astroMsgTimer = null;
+let astroTopicIndex = 0;
+let astroStarted = false;
+
+function startAstrologerChat(){
+  if(!S.calcResult){toast('Please generate a Kundli first.');return;}
+  astroStarted = true;
+  astroTopicIndex = 0;
+
+  // Hide banner
+  const banner = document.getElementById('read-kundli-banner');
+  if(banner) banner.style.display = 'none';
+
+  // Navigate to chat
+  dashGo('chat');
+
+  setTimeout(()=>{
+    // Clear existing chat
+    chatHistory = [];
+    const chatBody = document.getElementById('chat-body');
+    if(chatBody) chatBody.innerHTML = '';
+    const sugs = document.getElementById('chat-suggestions');
+    if(sugs) sugs.style.display = 'none';
+
+    // Start the auto reveal sequence
+    runAstrologerSequence();
+  }, 400);
+}
+
+function runAstrologerSequence(){
+  const res = S.calcResult;
+  if(!res) return;
+  const r = res.reading || {};
+  const isOd = APP_LANG === 'od';
+  const p = res.planets || [];
+  const asc = res.ascendant?.rashiName || '';
+  const moonRashi = p[1]?.rashiName || '';
+  const dasha = res.currDasha?.planet || 'Venus';
+  const dashaEnd = res.currDasha?.end ? new Date(res.currDasha.end).getFullYear() : '';
+  const nak = res.moonNak?.name || '';
+  const nm = res.input?.nm || '';
+
+  // Build topic sequence from actual reading data
+  const topics = isOd ? [
+    {
+      delay: 600,
+      msg: `🔮 ${nm} ଙ୍କ ଜନ୍ମ ଚକ୍ର ଦେଖିଲି...
+
+**${asc} ଲଗ୍ନ · ${moonRashi} ରାଶି · ${nak} ନକ୍ଷତ୍ର**
+
+ତୁମ ଜୀବନ ବିଷୟରେ ବହୁ ଗୁରୁତ୍ୱପୂର୍ଣ ବାର୍ତ୍ତା ଅଛି। ଗୋଟିଏ ଗୋଟିଏ ଭାବେ ଜଣାଉଛି...`,
+      delay_after: 2500
+    },
+    {
+      delay: 2500,
+      msg: `💑 **ବିବାହ ବିଷୟରେ ଏକ ଗୁରୁତ୍ୱପୂର୍ଣ ବାର୍ତ୍ତା ଅଛି...**
+
+${r.marriage_timing_od || '2027-2028 ଭିତରେ ବିବାହ ଯୋଗ ଶ୍ରେଷ୍ଠ।'}
+
+${r.love_arrange_od || 'ପ୍ରେମ ଓ ଘରର ଉଭୟ ଯୋଗ ଅଛି।'}`,
+      followup: isOd ? 'ବିବାହ ବିଷୟରେ ଆଉ ଜଣାଅ' : 'Tell me more about marriage',
+      delay_after: 3500
+    },
+    {
+      delay: 3500,
+      msg: `👫 **ତୁମ ଜୀବନ ସାଥୀ...**
+
+${r.spouse_od || 'ତୁମ ଜୀବନ ସାଥୀ ବ୍ୟବହାରିକ ଓ ବୁଝଦାର ହେବେ। ଜୀବନରେ ସ୍ଥିରତା ଆଣିବେ।'}`,
+      followup: 'ଜୀବନ ସାଥୀ ସ୍ୱଭାବ ବିଷୟରେ ଆଉ ଜଣାଅ',
+      delay_after: 3000
+    },
+    {
+      delay: 3000,
+      msg: `💼 **କ୍ୟାରିୟର ଓ ଅର୍ଥ ବିଷୟରେ...**
+
+${r.career_od || 'ଦଶମ ଭାବ ଶକ୍ତିଶାଳୀ। '+dasha+' ମହାଦଶା '+dashaEnd+' ପର୍ଯ୍ୟନ୍ତ ଚାଲିବ।'}
+
+${r.best_years_od || 'ଆଗାମୀ ବର୍ଷ ଭଲ।'}`,
+      followup: 'ଆମ କ୍ୟାରିୟର ବିଷୟରେ ଆଉ ଜଣାଅ',
+      delay_after: 3500
+    },
+    {
+      delay: 3500,
+      msg: `🪐 **${dasha} ମହାଦଶା ଫଳ...**
+
+${r.dasha_od || dasha+' ମହାଦଶା '+dashaEnd+' ପର୍ଯ୍ୟନ୍ତ ଚାଲିବ। ଏହି ସମୟ ଜୀବନ ଗଠନ ପାଇଁ ଗୁରୁତ୍ୱପୂର୍ଣ।'}
+
+**ଉପଚାର:** ${r.dasha_remedy_od || 'ଶନିବାର ଶିବ ମନ୍ଦିରରେ ତେଲ ଦୀପ ଜଳାଅ।'}`,
+      followup: 'ଦଶା ଓ ଉପଚାର ବିଷୟରେ ଆଉ ଜଣାଅ',
+      delay_after: 3500
+    },
+    {
+      delay: 3500,
+      msg: `✈️ **ବିଦେଶ ଯୋଗ...**
+
+${r.foreign_od || 'ୱିଦ ୱ ଭ ଯୋ ଦ ଖ ଯ ।'}`,
+      followup: 'ବିଦେଶ ଯୋଗ ବିଷୟରେ ଆଉ ଜଣାଅ',
+      delay_after: 3000
+    },
+    {
+      delay: 3000,
+      msg: `🏠 **ଘର ଓ ସ୍ଥାୟୀ ସମ୍ପତ୍ତି...**
+
+${r.property_od || 'ଘ ଓ ସ ।'}
+
+**ସ୍ୱାସ୍ଥ୍ୟ:** ${r.health_od || 'ନିୟମିତ ଦିନଚର୍ଯ୍ୟ ଗୁରୁତ୍ୱପୂର୍ଣ।'}`,
+      followup: 'ସ୍ୱାସ୍ଥ୍ୟ ଓ ଘର ବିଷୟରେ ଆଉ ଜଣାଅ',
+      delay_after: 3000
+    },
+    {
+      delay: 3000,
+      msg: `✨ **ବିଶେଷ ଯୋଗ ଓ ଲୁକ୍କାୟିତ ଶକ୍ତି...**
+
+${r.hidden_strength_od || 'ଆ ।'}
+
+💎 **ରତ୍ନ:** ${(r.gemstones_od||['ରତ୍ନ ପ୍ରଭାବ'])[0]}
+
+🕉️ **ମନ୍ତ୍ର:** ${r.mantra || 'ॐ ग्रां ग्रीं ग्रौं सः गुरवे नमः'}`,
+      followup: 'ଆଉ ଜଣାଅ',
+      delay_after: 2000
+    },
+    {
+      delay: 2000,
+      msg: `🙏 ଆଶା କରୁଛି ଏହି ବିଶ୍ଳେଷଣ ତୁମ ଜୀବନରେ ସହାୟ ହେବ।
+
+**ଯଦି ଆଉ କୌଣସି ବିଷୟ ଜାଣିବାକୁ ଚାହୁଁଛ — ସିଧା ପ୍ରଶ୍ନ କର।**
+
+_ଉଦାହରଣ: "ମୋ ବ୍ୟବସାୟ ଆରମ୍ଭ ପାଇଁ ଭଲ ସମୟ କ'ଣ?" ବା "ମୋ ସ୍ୱାସ୍ଥ୍ୟ ଉପଚାର କ'ଣ?"_`,
+      final: true,
+      delay_after: 0
+    }
+  ] : [
+    {
+      delay: 600,
+      msg: `🔮 I've analyzed ${nm}'s birth chart...
+
+**${asc} Lagna · ${moonRashi} Moon · ${nak} Nakshatra**
+
+There are important insights about your life. Let me reveal them one by one...`,
+      delay_after: 2500
+    },
+    {
+      delay: 2500,
+      msg: `💑 **About your Marriage...**
+
+${r.marriage_timing_en || 'Your strongest marriage window appears in 2027-2028.'}
+
+${r.love_arrange_en || 'Your chart shows a blend of love and arranged elements.'}`,
+      followup: 'Tell me more about my marriage',
+      delay_after: 3500
+    },
+    {
+      delay: 3500,
+      msg: `👫 **Your Future Spouse...**
+
+${r.spouse_en || 'Your future partner will be practical, understanding and bring stability to your life.'}`,
+      followup: 'What will my spouse be like?',
+      delay_after: 3000
+    },
+    {
+      delay: 3000,
+      msg: `💼 **Career & Best Years...**
+
+${r.career_en || '10th house shows strong career potential. '+dasha+' Mahadasha runs until '+dashaEnd+'.'}
+
+${r.best_years_en || 'Strong years ahead for major life events.'}`,
+      followup: 'Tell me more about my career',
+      delay_after: 3500
+    },
+    {
+      delay: 3500,
+      msg: `🪐 **${dasha} Mahadasha Effect...**
+
+${r.dasha_en || dasha+' Mahadasha runs until '+dashaEnd+'. This is a transformative period for your life.'}
+
+**Remedy:** ${r.dasha_remedy_en || 'Light a sesame oil lamp at Shiva temple every Saturday.'}`,
+      followup: 'Tell me about my Dasha in detail',
+      delay_after: 3500
+    },
+    {
+      delay: 3500,
+      msg: `✈️ **Foreign Travel & Settlement...**
+
+${r.foreign_en || 'Your 12th house and Rahu placement indicate foreign opportunities.'}`,
+      followup: 'Tell me about foreign prospects',
+      delay_after: 3000
+    },
+    {
+      delay: 3000,
+      msg: `🏠 **Home & Property...**
+
+${r.property_en || 'Property acquisition is indicated in your chart.'}
+
+**Health:** ${r.health_en || 'Maintain consistent routine and preventive care.'}`,
+      followup: 'Tell me about health and property',
+      delay_after: 3000
+    },
+    {
+      delay: 3000,
+      msg: `✨ **Special Yogas & Hidden Strength...**
+
+${r.hidden_strength_en || 'Your chart contains special combinations that will bring unexpected opportunities.'}
+
+💎 **Gemstone:** ${(r.gemstones||['Primary gemstone strengthens your Lagna lord'])[0]}
+
+🕉️ **Mantra:** ${r.mantra || 'ॐ ग्रां ग्रीं ग्रौं सः गुरवे नमः'}`,
+      followup: 'Tell me about my special yogas',
+      delay_after: 2000
+    },
+    {
+      delay: 2000,
+      msg: `🙏 I hope this reading brings clarity to your journey.
+
+**Feel free to ask me anything specific about your chart.**
+
+_Example: "What's the best time to start a business?" or "What remedies for my health?"_`,
+      final: true,
+      delay_after: 0
+    }
+  ];
+
+  // Show topics sequentially
+  showNextAstroTopic(topics, 0);
+}
+
+function showNextAstroTopic(topics, index){
+  if(index >= topics.length) return;
+  const topic = topics[index];
+
+  // Show typing indicator
+  const typingId = 'typing-' + Date.now();
+  addChatBubble('', 'typing', typingId);
+
+  setTimeout(()=>{
+    // Remove typing indicator
+    const typingEl = document.getElementById(typingId);
+    if(typingEl) typingEl.remove();
+
+    // Format message
+    let formatted = topic.msg;
+    while(formatted.includes('**')){
+      const s=formatted.indexOf('**'), e=formatted.indexOf('**',s+2);
+      if(e<0)break;
+      formatted=formatted.substring(0,s)+'<strong style="color:var(--gold-lt)">'+formatted.substring(s+2,e)+'</strong>'+formatted.substring(e+2);
+    }
+    formatted = formatted.split('\n').join('<br/>');
+
+    // Add message
+    addChatBubble(formatted, 'ai-html');
+    chatHistory.push({role:'assistant', content: topic.msg});
+
+    // Add topic follow-up button if exists
+    if(topic.followup && !topic.final){
+      const btnDiv = document.createElement('div');
+      btnDiv.style.cssText = 'display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 12px;padding-left:4px';
+      btnDiv.innerHTML = `<button class="chat-topic-btn" onclick="chatTopicTap(this,'${topic.followup.replace(/'/g,"\'")}')">
+        ${topic.followup} →
+      </button>`;
+      const chatBody = document.getElementById('chat-body');
+      if(chatBody) chatBody.appendChild(btnDiv);
+      chatBody.scrollTop = chatBody.scrollHeight;
+    }
+
+    // Schedule next topic
+    if(!topic.final && index + 1 < topics.length){
+      astroMsgTimer = setTimeout(()=>{
+        showNextAstroTopic(topics, index + 1);
+      }, topic.delay_after || 3000);
+    }
+
+    // Show final suggestions
+    if(topic.final){
+      setTimeout(()=>{
+        const chatBody = document.getElementById('chat-body');
+        if(!chatBody) return;
+        const isOd = APP_LANG === 'od';
+        const sugs = isOd ? [
+          'ବିବାହ ଦେରି କାହିଁକି?',
+          'ମୋ ବ୍ୟବସାୟ ଭଲ ହେବ?',
+          'ୱିଦ ବ ସ ଯୋ?',
+          'ସ୍ୱାସ୍ଥ୍ୟ ଉପଚାର ଦିଅ',
+          'ମୋ ଶ୍ରେଷ୍ଠ ବର୍ଷ କଣ?'
+        ] : [
+          'Why is marriage delayed?',
+          'Will my business succeed?',
+          'Foreign settlement chances?',
+          'Best remedies for me',
+          'My luckiest years ahead'
+        ];
+        const btnDiv = document.createElement('div');
+        btnDiv.style.cssText = 'display:flex;flex-wrap:wrap;gap:6px;margin:8px 0;padding-left:4px';
+        btnDiv.innerHTML = sugs.map(s=>`<button class="chat-topic-btn" onclick="chatTopicTap(this,'${s.replace(/'/g,"\'")}')">💬 ${s}</button>`).join('');
+        chatBody.appendChild(btnDiv);
+        chatBody.scrollTop = chatBody.scrollHeight;
+      }, 500);
+    }
+  }, topic.delay || 1500);
+}
+
+function chatTopicTap(btn, topic){
+  // Remove button row
+  btn.parentElement.remove();
+  // Put the topic in input and send
+  const input = document.getElementById('chat-input');
+  if(input){
+    input.value = topic;
+    sendChat();
+  }
+}
+
+function addChatBubble(text, type, id){
+  const chatBody = document.getElementById('chat-body');
+  if(!chatBody) return;
+  const div = document.createElement('div');
+  if(id) div.id = id;
+
+  if(type === 'typing'){
+    div.className = 'typing-indicator';
+    div.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+  } else if(type === 'user'){
+    div.className = 'chat-bubble user-bubble';
+    div.textContent = text;
+  } else if(type === 'ai-html'){
+    div.className = 'chat-bubble ai-bubble';
+    div.innerHTML = text;
+  } else if(type === 'ai'){
+    div.className = 'chat-bubble ai-bubble';
+    div.textContent = text;
+  } else if(type === 'ai thinking'){
+    div.className = 'chat-bubble ai-bubble thinking';
+    div.textContent = text;
+  }
+
+  chatBody.appendChild(div);
+  chatBody.scrollTop = chatBody.scrollHeight;
 }
 
 /* ─── INIT ──────────────────────────────────────────────*/
