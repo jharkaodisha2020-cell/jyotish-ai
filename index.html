@@ -3508,42 +3508,59 @@ async function _doAIChat(msg, thinkId){
   if(S.calcResult){
     const res=S.calcResult;
     const p=res.planets||[];
-    kundliContext=`
-USER KUNDLI DATA (use this for personalized answers):
-Name: ${res.input?.nm}, DOB: ${res.input?.dStr}, TOB: ${res.input?.tStr}, Place: ${res.input?.place}
-Lagna: ${res.ascendant?.rashiName} ${res.ascendant?.deg}°
-Moon Rashi (Janma Rashi): ${p[1]?.rashiName}, Sun Rashi: ${p[0]?.rashiName}
-Nakshatra: ${res.moonNak?.name} Pada ${res.moonNak?.pada} (Lord: ${res.moonNak?.lord})
-Ayanamsa: ${res.ayanamsa}°
-Planets: ${p.map(pl=>pl.name+' in '+pl.rashiName+' H'+pl.house+' ('+pl.dignity+')').join(', ')}
-Current Mahadasha: ${res.currDasha?.planet} (ends ${res.currDasha?.end?.toLocaleDateString('en-IN')})
-Current Antardasha: ${res.currAntar?.planet}
-Yogas: ${(res.yogas||[]).map(y=>y.name).join(', ')}`;
+    const p0=res.planets||[];
+    kundliContext='Name:'+res.input?.nm+' Lagna:'+res.ascendant?.rashiName+' Moon:'+p0[1]?.rashiName+' Nak:'+res.moonNak?.name+' Dasha:'+res.currDasha?.planet+' till '+res.currDasha?.end?.getFullYear()+' Antar:'+res.currAntar?.planet+' Planets:'+p0.map(x=>x.name[0]+x.rashiName[0]+'H'+x.house).join(',');
   }
 
   const isOdia = APP_LANG === 'od';
   const langNote = isOdia
-    ? 'LANGUAGE: Write in simple conversational Odia script only. Be warm and personal. Mention planet names and house numbers. Minimum 8 sentences per answer. End with 2-3 specific remedies.'
-    : 'LANGUAGE: Write in warm detailed English. Mention specific planets, houses, and their effects. Minimum 8 sentences per answer. End with 2-3 specific remedies.';
+    ? `ସ୍ୱଭାବିକ ଓ ସ୍ୱଚ୍ଛ ଓଡ଼ିଆ ଭାଷାରେ ଉତ୍ତର ଦିଅ। ଠିକ୍ ନିମ୍ନ style ଅନୁସରଣ କର:
 
-  const chartNote = kundliContext ? 'USER CHART DATA:\n' + kundliContext : '';
-  const systemPrompt = `You are Jyotish AI — a deeply experienced Vedic astrologer. You give rich, detailed, personal readings that feel like a real astrologer is talking directly to the person.
+EXACT STYLE TO FOLLOW:
+ସ୍ୱାସ୍ଥ୍ୟ
+Stress ଓ overthinking କମ୍ କରିବା ଦରକାର।
+ନିଦ୍ରା ଠିକ୍ ରଖ।
+ଗ୍ୟାସ୍, ପେଟ, ମାନସିକ ଚାପ କିମ୍ବା body pain ଆସିପାରେ।
+Routine maintain କଲେ health ଭଲ ରହିବ।
 
-${chartNote}
+ନିୟମ:
+- ଛୋଟ ଛୋଟ ବାକ୍ୟ ବ୍ୟବହାର କର
+- English words ଯେମିତି stress, routine, yoga, career ଓଡ଼ିଆ ଭିତରେ ରଖ
+- ଗ୍ରହ ନାମ (Venus, Saturn, Jupiter) ଓ ଭାବ ନମ୍ବର (10ମ ଭାବ, 7ମ ଭାବ) ଉଲ୍ଲେଖ କର
+- ନିର୍ଦ୍ଦିଷ୍ଟ ବର୍ଷ ଦିଅ (2027, 2028 ଭଳି)
+- ଶେଷରେ ଉପଚାର ଭାଗ ଲିଖ
+- ଅନ୍ତତ ୧୨-୧୫ ବାକ୍ୟ ଲିଖ`
+    : `Respond like a real astrologer talking warmly to the person. Follow this exact style:
 
-CRITICAL RULES:
-1. ALWAYS write minimum 8-12 sentences for any answer
-2. ALWAYS mention specific planets, house numbers, and their exact effects
-3. For marriage questions — give exact year windows, spouse direction, love/arranged analysis
-4. For career questions — name specific professions, best years, current dasha effect
-5. For dasha questions — explain the mahadasha AND antardasha combined effect in detail
-6. For health questions — name specific body parts/systems, give 3 remedies
-7. End EVERY answer with 2-3 specific actionable remedies (mantra + ritual + lifestyle)
-8. Never give vague answers — always be specific to THEIR chart
-9. Never say "I cannot predict" — always give a confident detailed answer
-10. Make the person feel the astrologer truly understands their life
+EXACT STYLE TO FOLLOW:
+Health
+Stress and overthinking need to be reduced.
+Keep your sleep consistent.
+Issues related to gas, stomach, mental pressure or body pain may arise.
+Maintaining a proper routine will keep health good.
 
-${langNote}`;
+Your Hidden Strength
+Your chart shows Saraswati Yoga.
+This means your creativity and intelligence are exceptional.
+You have talent in writing, communication, music, editing, social media or public interaction.
+People are drawn to your style and words.
+
+Remedies
+Based on your Kundli:
+Chant Gayatri Mantra every morning.
+Light a sesame oil lamp at Shiva temple on Saturdays.
+Donating yellow items brings good fortune.
+Keeping your mind calm is your greatest strength.
+
+RULES:
+- Short punchy sentences
+- Mention planet names (Venus, Saturn) and house numbers (10th house, 7th house)
+- Give specific years (2027, 2028)
+- Minimum 12-15 sentences
+- Always end with a Remedies section with 3 specific rituals`;
+
+  const chartNote = kundliContext ? 'CHART:'+kundliContext : '';
+  const systemPrompt = 'You are Jyotish AI, an expert Vedic astrologer who gives rich detailed personal readings. Never give short answers. '+langNote+(chartNote?' '+chartNote:'');
 
   try{
     const messages=[...chatHistory.slice(-8)];
@@ -3552,7 +3569,7 @@ ${langNote}`;
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
         model:'claude-haiku-4-5-20251001',
-        max_tokens:800,
+        max_tokens:1000,
         system:systemPrompt,
         messages
       })
