@@ -923,7 +923,7 @@ select option{background:#0C0602}
   <div class="wrap">
     <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
       <div class="back" onclick="dashGo('kundli')" style="flex:1">← New Reading</div>
-      <button onclick="clearKundliCache()" style="background:rgba(226,75,74,.15);border:1px solid rgba(226,75,74,.3);border-radius:7px;padding:6px 10px;font-size:10px;color:#E24B4A;cursor:pointer;font-family:'Lato',sans-serif">↺ Regenerate</button>
+      <button onclick="shareKundli()" style="background:rgba(184,135,10,.15);border:1px solid rgba(184,135,10,.3);border-radius:7px;padding:6px 12px;font-size:11px;color:var(--gold-lt);cursor:pointer;font-family:'Lato',sans-serif">📤 Share</button>
     </div>
     <div class="chat-read-banner" id="read-kundli-banner" onclick="startAstrologerChat()">
       <div class="chat-read-banner-ic">🔮</div>
@@ -3470,13 +3470,27 @@ async function downloadPDF(){
 }
 
 
+async function sendChatMsg(msg){
+  // Called directly with message (from topic buttons or astrologer chat)
+  if(!msg) return;
+  const sendBtn = document.getElementById('chat-send-btn');
+  if(sendBtn) sendBtn.disabled = true;
+  const thinkId = 'think-'+Date.now();
+  addChatBubble('Consulting the stars...', 'ai thinking', thinkId);
+  await _doAIChat(msg, thinkId);
+  if(sendBtn) sendBtn.disabled = false;
+  const input = document.getElementById('chat-input');
+  if(input) input.focus();
+}
+
 async function sendChat(){
   const input=document.getElementById('chat-input');
   const sendBtn=document.getElementById('chat-send-btn');
   const msg=input.value.trim();
   if(!msg)return;
   input.value='';
-  document.getElementById('chat-suggestions').style.display='none';
+  const sugsEl = document.getElementById('chat-suggestions');
+  if(sugsEl) sugsEl.style.display='none';
 
   addChatBubble(msg,'user');
   chatHistory.push({role:'user',content:msg});
@@ -3484,7 +3498,12 @@ async function sendChat(){
   sendBtn.disabled=true;
   const thinkId='think-'+Date.now();
   addChatBubble('Consulting the stars...','ai thinking',thinkId);
+  await _doAIChat(msg, thinkId);
+  sendBtn.disabled=false;
+  document.getElementById('chat-input').focus();
+}
 
+async function _doAIChat(msg, thinkId){
   // Build context from current Kundli
   let kundliContext='';
   if(S.calcResult){
@@ -5393,6 +5412,26 @@ function initStars(){
 }
 setTimeout(initStars,100);
 
+function shareKundli(){
+  const res = S.calcResult;
+  if(!res) return;
+  const isOd = APP_LANG === 'od';
+  const nm = res.input?.nm || '';
+  const asc = res.ascendant?.rashiName || '';
+  const moon = res.planets?.[1]?.rashiName || '';
+  const nak = res.moonNak?.name || '';
+  const dasha = res.currDasha?.planet || '';
+  const text = isOd
+    ? `🔮 ${nm} ଙ୍କ ଜ୍ୟୋତିଷ AI କୁଣ୍ଡଳୀ\n\nଲଗ୍ନ: ${asc} | ରାଶି: ${moon} | ନକ୍ଷତ୍ର: ${nak}\nଦଶା: ${dasha} ମହାଦଶା\n\nJyotish AI ରେ ତୁମ କୁଣ୍ଡଳୀ ଦେଖ:\nhttps://jyotishaiodisha.netlify.app`
+    : `🔮 ${nm}'s Vedic Kundli by Jyotish AI\n\nLagna: ${asc} | Moon: ${moon} | Nakshatra: ${nak}\nMahadasha: ${dasha}\n\nGet your Kundli at:\nhttps://jyotishaiodisha.netlify.app`;
+  if(navigator.share){
+    navigator.share({title:'Jyotish AI Kundli', text, url:'https://jyotishaiodisha.netlify.app'}).catch(()=>{});
+  } else {
+    navigator.clipboard?.writeText(text);
+    toast(isOd?'ଲିଙ୍କ କପି ହୋଇଗଲା':'Link copied to clipboard');
+  }
+}
+
 function clearKundliCache(){
   localStorage.removeItem('jyotish_last_result');
   S.calcResult=null;
@@ -5704,14 +5743,16 @@ function showNextAstroTopic(topics, index){
 }
 
 function chatTopicTap(btn, topic){
-  // Remove button row
-  btn.parentElement.remove();
-  // Put the topic in input and send
+  // Remove the button row that was tapped
+  if(btn && btn.parentElement) btn.parentElement.remove();
+  // Add as user bubble immediately
+  addChatBubble(topic, 'user');
+  chatHistory.push({role:'user', content: topic});
+  // Clear input just in case
   const input = document.getElementById('chat-input');
-  if(input){
-    input.value = topic;
-    sendChat();
-  }
+  if(input) input.value = '';
+  // Trigger AI response directly (bypass input check in sendChat)
+  sendChatMsg(topic);
 }
 
 function addChatBubble(text, type, id){
@@ -5724,16 +5765,22 @@ function addChatBubble(text, type, id){
     div.className = 'typing-indicator';
     div.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
   } else if(type === 'user'){
-    div.className = 'chat-bubble user-bubble';
+    div.className = 'chat-bubble user';
     div.textContent = text;
   } else if(type === 'ai-html'){
-    div.className = 'chat-bubble ai-bubble';
+    div.className = 'chat-bubble ai';
+    div.style.fontFamily = APP_LANG==='od' ? "'Noto Serif Oriya','Lato',serif" : "'Lato',sans-serif";
+    div.style.lineHeight = '1.85';
+    div.style.fontSize = '13px';
     div.innerHTML = text;
   } else if(type === 'ai'){
-    div.className = 'chat-bubble ai-bubble';
+    div.className = 'chat-bubble ai';
+    div.style.fontFamily = APP_LANG==='od' ? "'Noto Serif Oriya','Lato',serif" : "'Lato',sans-serif";
+    div.style.lineHeight = '1.85';
+    div.style.fontSize = '13px';
     div.textContent = text;
   } else if(type === 'ai thinking'){
-    div.className = 'chat-bubble ai-bubble thinking';
+    div.className = 'chat-bubble ai thinking';
     div.textContent = text;
   }
 
