@@ -1860,12 +1860,52 @@ const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsI
 
 /* ── SUPABASE HELPERS ── */
 async function supaFetch(path, opts={}){
-  const res = await fetch(SUPA_URL+path, {
-    headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+(S.token||SUPA_KEY),'Content-Type':'application/json','Prefer':'return=representation',...(opts.headers||{})},
-    ...opts
-  });
-  const data = await res.json().catch(()=>({}));
-  return {data, ok: res.ok, status: res.status};
+  const token = S.token || SUPA_KEY;
+  try{
+    const res = await fetch(SUPA_URL+path, {
+      headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+token,'Content-Type':'application/json','Prefer':'return=representation',...(opts.headers||{})},
+      ...opts
+    });
+    // If 401, try to refresh session
+    if(res.status===401){
+      const refreshed = await tryRefreshSession();
+      if(refreshed){
+        const res2 = await fetch(SUPA_URL+path, {
+          headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+S.token,'Content-Type':'application/json','Prefer':'return=representation',...(opts.headers||{})},
+          ...opts
+        });
+        const data2 = await res2.json().catch(()=>({}));
+        return {data:data2, ok:res2.ok, status:res2.status};
+      }
+    }
+    const data = await res.json().catch(()=>({}));
+    return {data, ok: res.ok, status: res.status};
+  }catch(e){
+    console.error('supaFetch error:',e.message);
+    return {data:{}, ok:false, status:0};
+  }
+}
+
+async function tryRefreshSession(){
+  try{
+    const stored = localStorage.getItem('sb-session');
+    if(!stored) return false;
+    const sess = JSON.parse(stored);
+    if(!sess.refresh_token) return false;
+    const res = await fetch(SUPA_URL+'/auth/v1/token?grant_type=refresh_token',{
+      method:'POST',
+      headers:{'apikey':SUPA_KEY,'Content-Type':'application/json'},
+      body:JSON.stringify({refresh_token:sess.refresh_token})
+    });
+    if(!res.ok) return false;
+    const data = await res.json();
+    if(data.access_token){
+      S.token = data.access_token;
+      localStorage.setItem('sb-session', JSON.stringify(data));
+      return true;
+    }
+  }catch(e){}
+  return false;
 }
 async function supaAuth(path, body, method='POST'){
   const res = await fetch(SUPA_URL+'/auth/v1'+path, {
@@ -3565,7 +3605,7 @@ ${langNote}`;
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
         model:'claude-sonnet-4-6',
-        max_tokens:1200,
+        max_tokens:800,
         system:systemPrompt,
         messages
       })
@@ -3588,7 +3628,16 @@ ${langNote}`;
     const thinkEl=document.getElementById(thinkId);
     if(thinkEl){
       thinkEl.classList.remove('thinking');
-      thinkEl.textContent='Error: '+e.message+' — Please try again.';
+      const isOd = APP_LANG==='od';
+      if(e.message.includes('504')||e.message.includes('timeout')){
+        thinkEl.textContent = isOd
+          ? 'ସର୍ଭର ବ୍ୟସ୍ତ ଅଛି। ଦୟାକରି ୩୦ ସେକେଣ୍ଡ ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।'
+          : 'Server is busy. Please wait 30 seconds and try again.';
+      } else {
+        thinkEl.textContent = isOd
+          ? 'ଉତ୍ତର ଦେଇ ପାରିଲୁ ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।'
+          : 'Could not get response. Please try again.';
+      }
     }
   }
   sendBtn.disabled=false;
@@ -5432,6 +5481,10 @@ function shareKundli(){
   }
 }
 
+function openChat(){
+  dashGo('chat');
+}
+
 function clearKundliCache(){
   localStorage.removeItem('jyotish_last_result');
   S.calcResult=null;
@@ -5785,7 +5838,7 @@ function addChatBubble(text, type, id){
   }
 
   chatBody.appendChild(div);
-  chatBody.scrollTop = chatBody.scrollHeight;
+  try{chatBody.scrollTop = chatBody.scrollHeight;}catch(e){}
 }
 
 /* ─── INIT ──────────────────────────────────────────────*/
