@@ -14,14 +14,20 @@ exports.handler = async function(event) {
   if(!apiKey){
     return {
       statusCode: 200, headers,
-      body: JSON.stringify({content:[{type:'text',text:'ANTHROPIC_API_KEY not set in Netlify environment variables.'}]})
+      body: JSON.stringify({
+        content:[{type:'text',text:'ANTHROPIC_API_KEY not set in Netlify environment variables.'}]
+      })
     };
   }
 
   try{
     const body = JSON.parse(event.body);
-    // Always use correct current model
+    // Force correct model + cap tokens to avoid timeout
     body.model = 'claude-sonnet-4-6';
+    if(!body.max_tokens || body.max_tokens > 1500) body.max_tokens = 1000;
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 24000); // 24s timeout
 
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -30,18 +36,25 @@ exports.handler = async function(event) {
         'x-api-key': apiKey,
         'anthropic-version': '2023-06-01'
       },
-      body: JSON.stringify(body)
+      body: JSON.stringify(body),
+      signal: controller.signal
     });
 
+    clearTimeout(timeout);
     const data = await response.json();
-    console.log('API response status:', response.status, 'error:', data.error?.type);
+
     return { statusCode: 200, headers, body: JSON.stringify(data) };
 
   }catch(e){
-    console.error('Function error:', e.message);
+    const isTimeout = e.name === 'AbortError';
     return {
-      statusCode: 500, headers,
-      body: JSON.stringify({error:{message:e.message}})
+      statusCode: isTimeout ? 504 : 500,
+      headers,
+      body: JSON.stringify({
+        error: {
+          message: isTimeout ? 'Request timed out. Please try again.' : e.message
+        }
+      })
     };
   }
 };
