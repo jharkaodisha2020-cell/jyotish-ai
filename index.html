@@ -4630,7 +4630,8 @@ async function getHoroscope(btnEl){
       };
     }
 
-    const stars='★'.repeat(r?.rating||4)+'☆'.repeat(5-(r?.rating||4));
+    const rating=Math.max(1,Math.min(5,parseInt(r?.rating)||4));
+const stars='★'.repeat(rating)+'☆'.repeat(5-rating);
     if(horoResult)horoResult.innerHTML=`
     <div class="result-hero">
       <div style="font-size:36px;margin-bottom:6px">${RASHI_SYMBOLS[selectedHoroscopeRashi]}</div>
