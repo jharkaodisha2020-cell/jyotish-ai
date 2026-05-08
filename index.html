@@ -1063,7 +1063,7 @@ select option{background:#0C0602}
         <div class="fg"><label>Your Name (optional)</label><input id="mob-name" placeholder="For personalized reading"/></div>
         <div class="fg"><label>Your Mulank / Birth Number (optional)</label><input id="mob-mulank" type="number" placeholder="1-9" min="1" max="9"/></div>
         <div id="mob-err" class="err"></div>
-        <button class="btn" onclick="analyzeMobile()">✦ Analyze My Number</button>
+        <button class="btn" onclick="analyzeMobile(this)">✦ Analyze My Number</button>
       </div>
       <div id="mob-result" style="display:none"></div>
     </div>
@@ -1085,7 +1085,7 @@ select option{background:#0C0602}
           </select>
         </div>
         <div id="nc-err" class="err"></div>
-        <button class="btn" onclick="analyzeNameCorrection()">✦ Generate Name Report</button>
+        <button class="btn" onclick="analyzeNameCorrection(this)">✦ Generate Name Report</button>
       </div>
       <div id="nc-result" style="display:none"></div>
     </div>
@@ -1122,7 +1122,7 @@ select option{background:#0C0602}
           </div>
         </div>
         <div id="ch-err" class="err"></div>
-        <button class="btn" onclick="analyzeChakra()">✦ Generate Chakra Report</button>
+        <button class="btn" onclick="analyzeChakra(this)">✦ Generate Chakra Report</button>
       </div>
       <div id="ch-result" style="display:none"></div>
     </div>
@@ -1158,7 +1158,7 @@ select option{background:#0C0602}
           </div>
         </div>
         <div id="hr-err" class="err"></div>
-        <button class="btn" onclick="analyzeHealth()">✦ Generate Health Report</button>
+        <button class="btn" onclick="analyzeHealth(this)">✦ Generate Health Report</button>
       </div>
       <div id="hr-result" style="display:none"></div>
     </div>
@@ -3666,7 +3666,8 @@ async function analyzeMobile(btnEl){
   const isCompatible=mulank?Math.abs(mobileNum-mulank)<=2||(mobileNum+mulank)%9<=1:true;
 
   // AI reading
-  const prompt='Mobile numerology expert. Number:'+num+' Name:'+nm+'. JSON only:{"mobile_energy":"3 sentences energy of this number","lucky":"Yes/No with reason","strength":"2 sentences","weakness":"2 sentences","best_use":"when to use this number","remedy":"change last digit to X if needed","overall_score":75,"od_summary":"3 Odia sentences"}';
+  const nm2=g('mob-name')?.value?.trim()||'Unknown';
+  const prompt='Mobile numerology expert. Number:'+num+' Name:'+nm2+'. JSON only:{"mobile_energy":"3 sentences energy of this number","lucky":"Yes/No with reason","strength":"2 sentences","weakness":"2 sentences","best_use":"when to use this number","remedy":"change last digit to X if needed","overall_score":75,"od_summary":"3 Odia sentences"}';
 
   try{
     const resp=await fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:800,messages:[{role:'user',content:prompt}]})});
