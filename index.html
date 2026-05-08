@@ -3970,7 +3970,7 @@ async function analyzeHealth(btnEl){
   const eighth=calcData?calcData.planets.find(p=>p.house===8):'none';
   const ascLord=calcData?['Mars','Venus','Mercury','Moon','Sun','Mercury','Venus','Mars','Jupiter','Saturn','Saturn','Jupiter'][calcData.ascendant.rashi]:'Unknown';
 
-  const weakP=planets.filter(p=>p.dignity==='Debilitated'||[6,8,12].includes(p.house)).map(p=>p.name).join(',');
+  const weakP=(calcData?.planets||[]).filter(p=>p.dignity==='Debilitated'||[6,8,12].includes(p.house)).map(p=>p.name).join(',');
   const prompt='Ayurvedic astrologer. DOB:'+dob+' Gender:'+hrG+' Concern:'+concern+' WeakPlanets:'+weakP+'. JSON only:{"constitution":"2 sentences body type","strengths":"2 sentences","vulnerabilities":["issue1","issue2","issue3"],"ayurvedic_remedies":["remedy1","remedy2","remedy3"],"yoga_poses":["pose1","pose2","pose3"],"diet_advice":"2 sentences","herbs":["herb1","herb2"],"daily_routine":"2 sentences","mantra":"health mantra","warning":"1 sentence","od_summary":"3 Odia sentences"}';
 
   try{
