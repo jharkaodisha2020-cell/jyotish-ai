@@ -3649,7 +3649,7 @@ async function analyzeMobile(btnEl){
   const err=g('mob-err');err.textContent='';
   if(!num||num.length<10){err.textContent='Please enter a valid 10-digit mobile number.';return;}
 
-  const btn=btnEl||g('mob-btn');if(btn){btn.disabled=true;}btn.textContent='Analyzing...';
+  const btn=btnEl||g('mob-btn');if(btn){btn.disabled=true;btn.textContent='Analyzing...';};
 
   // Calculate digit values
   const digits=[...num].map(Number);
@@ -3716,8 +3716,8 @@ async function analyzeMobile(btnEl){
       <div class="rlbl">Balancing Remedy</div><div class="rtxt">${r.remedy||''}</div>
       ${r.alternatives?`<div class="rlbl">Better alternative endings</div><div>${(r.alternatives||[]).map(a=>`<span class="pill pill-b">${a}</span>`).join('')}</div>`:''}
     </div>`:''}`;
-  }catch(e){g('mob-err').textContent='Analysis failed. Please try again.';}
-  btn.disabled=false;btn.textContent='✦ Analyze My Number';
+  }catch(e){console.error('analyzeMobile error:',e);g('mob-err').textContent='Error: '+e.message+' (check console)';}
+  if(btn){btn.disabled=false;btn.textContent='✦ Analyze My Number';}
 }
 
 /* ─────────────────────────────────────
@@ -3731,7 +3731,7 @@ async function analyzeNameCorrection(btnEl){
   if(!name){err.textContent='Please enter your full name.';return;}
   if(!dob){err.textContent='Please enter your date of birth.';return;}
 
-  const btn=btnEl||g('nc-btn');if(btn){btn.disabled=true;}btn.textContent='Generating Report...';
+  const btn=btnEl||g('nc-btn');if(btn){btn.disabled=true;btn.textContent='Generating Report...';};
 
   // Calculate current name numbers
   const clean=name.toUpperCase().replace(/[^A-Z]/g,'');
@@ -3811,8 +3811,8 @@ async function analyzeNameCorrection(btnEl){
       <div class="rlbl">Letters to Avoid</div><div class="rtxt">${r.letters_to_avoid||''}</div>`:'<div class="rtxt" style="color:var(--green-l)">Your current name vibrates harmoniously with your birth numbers. Continue using it confidently.</div>'}
       <div class="rlbl">Remedy if No Name Change</div><div class="rtxt">${r.remedy_if_no_change||''}</div>
     </div>`:''}`;
-  }catch(e){g('nc-err').textContent='Report generation failed. Please try again.';}
-  btn.disabled=false;btn.textContent='✦ Generate Name Report';
+  }catch(e){console.error('analyzeNameCorrection error:',e);g('nc-err').textContent='Error: '+e.message+' (check console)';}
+  if(btn){btn.disabled=false;btn.textContent='✦ Generate Name Report';}
 }
 
 /* ─────────────────────────────────────
@@ -3930,7 +3930,7 @@ async function analyzeChakra(btnEl){
       <div class="rlbl">Urgent Focus</div><div class="rtxt" style="color:#E8A870">${r.urgent_focus||''}</div>
       <div class="rlbl od">ଓଡ଼ିଆ ସାରାଂଶ</div><div class="rtxt od">${r.od_overall||''}</div>
     </div>`:''}`;
-  }catch(e){g('ch-err').textContent='Report generation failed. Please try again.';}
+  }catch(e){console.error('analyzeChakra error:',e);g('ch-err').textContent='Error: '+e.message+' (check console)';}
   if(btn){btn.disabled=false;btn.textContent='✦ Generate Chakra Report';}
 }
 
@@ -3958,7 +3958,7 @@ async function analyzeHealth(btnEl){
   const err=g('hr-err');err.textContent='';
   if(!dob||!tob||!pob){err.textContent='Please fill date, time, and place of birth.';return;}
 
-  const btn=btnEl||g('hr-btn');if(btn){btn.disabled=true;}btn.textContent='Generating Report...';
+  const btn=btnEl||g('hr-btn');if(btn){btn.disabled=true;btn.textContent='Generating Report...';};
 
   let calcData=null;
   try{calcData=E.calc('Patient',dob,tob,pob,'',hrG);}catch(e){}
@@ -4032,8 +4032,8 @@ async function analyzeHealth(btnEl){
       <div class="rlbl">Cautious Periods</div><div class="rtxt" style="color:#E8A870">${r.cautious_periods||''}</div>
       <div class="rlbl">Health Mantra</div><div class="rtxt" style="font-family:serif;font-size:15px;color:var(--gold-lt)">${r.mantra||''}</div>
     </div>`:''}`;
-  }catch(e){g('hr-err').textContent='Report generation failed. Please try again.';}
-  btn.disabled=false;btn.textContent='✦ Generate Health Report';
+  }catch(e){console.error('analyzeHealth error:',e);g('hr-err').textContent='Error: '+e.message+' (check console)';}
+  if(btn){btn.disabled=false;btn.textContent='✦ Generate Health Report';}
 }
 
 
@@ -4577,7 +4577,9 @@ async function getHoroscope(btnEl){
   const btn=btnEl||g('horo-get-btn');
   if(btn){btn.disabled=true;btn.textContent=isOd?'ଦେଖୁଛୁ...':'Loading...';}
 
-  g('horoscope-result').innerHTML=`<div class="loader"><div class="spin"></div>${isOd?'ଭବିଷ୍ୟ ଦେଖୁଛୁ...':'Generating horoscope...'}</div>`;
+  const horoResult = g('horoscope-result');
+  if(!horoResult){buildHoroscope();setTimeout(()=>getHoroscope(btnEl),300);return;}
+  horoResult.innerHTML=`<div class="loader"><div class="spin"></div>${isOd?'ଭବିଷ୍ୟ ଦେଖୁଛୁ...':'Generating horoscope...'}</div>`;
 
   // Panchang data for context
   const now=new Date();
@@ -4629,7 +4631,7 @@ async function getHoroscope(btnEl){
     }
 
     const stars='★'.repeat(r?.rating||4)+'☆'.repeat(5-(r?.rating||4));
-    g('horoscope-result').innerHTML=`
+    if(horoResult)horoResult.innerHTML=`
     <div class="result-hero">
       <div style="font-size:36px;margin-bottom:6px">${RASHI_SYMBOLS[selectedHoroscopeRashi]}</div>
       <div class="rname">${rashi} / ${rashiOd}</div>
@@ -4658,7 +4660,7 @@ async function getHoroscope(btnEl){
       <div><div class="wa-btn-txt">${isOd?'WhatsApp ରେ ଭାଗ':'Share on WhatsApp'}</div>
       <div class="wa-btn-sub">${isOd?'ବନ୍ଧୁଙ୍କ ସହ ଭାଗ କରନ୍ତୁ':'Share with friends'}</div></div>
     </button>`;
-  }catch(e){g('horoscope-result').innerHTML=`<div class="err">Could not load horoscope. Please try again.</div>`;}
+  }catch(e){console.error('Horo error:',e);if(horoResult)horoResult.innerHTML=`<div class="err">Error: ${e.message} — Please try again.</div>`;}
   if(btn){btn.disabled=false;btn.textContent=isOd?'✦ ଆଜର ରାଶି ଫଳ ଦେଖନ୍ତୁ':'✦ Get Today Horoscope';}
 }
 
