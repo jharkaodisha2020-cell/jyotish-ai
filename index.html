@@ -3670,7 +3670,9 @@ async function analyzeMobile(btnEl){
 
   try{
     const resp=await fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:800,messages:[{role:'user',content:prompt}]})});
+    if(!resp.ok){throw new Error('Server '+resp.status);}
     const data=await resp.json();
+    if(data.error){throw new Error(data.error.message||'API error');}
     const raw=data.content?.[0]?.text||'';
     let r;try{r=JSON.parse(raw.replace(/```json|```/g,'').trim());}catch(e){r=null;}
 
@@ -3751,7 +3753,9 @@ async function analyzeNameCorrection(btnEl){
 
   try{
     const resp=await fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:900,messages:[{role:'user',content:prompt}]})});
+    if(!resp.ok){throw new Error('Server '+resp.status);}
     const data=await resp.json();
+    if(data.error){throw new Error(data.error.message||'API error');}
     const raw=data.content?.[0]?.text||'';
     let r;try{r=JSON.parse(raw.replace(/```json|```/g,'').trim());}catch(e){r=null;}
 
@@ -3866,7 +3870,9 @@ async function analyzeChakra(btnEl){
 
   try{
     const resp=await fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
+    if(!resp.ok){throw new Error('Server '+resp.status);}
     const data=await resp.json();
+    if(data.error){throw new Error(data.error.message||'API error');}
     const raw=data.content?.[0]?.text||'';
     let r;try{r=JSON.parse(raw.replace(/```json|```/g,'').trim());}catch(e){r=null;}
 
@@ -3968,7 +3974,9 @@ async function analyzeHealth(btnEl){
 
   try{
     const resp=await fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
+    if(!resp.ok){throw new Error('Server '+resp.status);}
     const data=await resp.json();
+    if(data.error){throw new Error(data.error.message||'API error');}
     const raw=data.content?.[0]?.text||'';
     let r;try{r=JSON.parse(raw.replace(/```json|```/g,'').trim());}catch(e){r=null;}
 
@@ -4551,7 +4559,7 @@ function buildHoroscope(){
     <div class="card">
       <div class="sh">✦ ${isOd?'ଆପଣଙ୍କ ରାଶି ବାଛନ୍ତୁ':'Select Your Rashi (Moon Sign)'}</div>
       <div class="rashi-horoscope-grid">${rashiButtons}</div>
-      <button class="btn" onclick="getHoroscope(this)" class="horoscope-get-btn">✦ ${isOd?'ଆଜର ରାଶି ଫଳ ଦେଖନ୍ତୁ':'Get Today Horoscope'}</button>
+      <button class="btn" onclick="getHoroscope(this)" id="horo-get-btn">✦ ${isOd?'ଆଜର ରାଶି ଫଳ ଦେଖନ୍ତୁ':'Get Today Horoscope'}</button>
     </div>
     <div id="horoscope-result"></div>`;
 }
@@ -4566,7 +4574,7 @@ async function getHoroscope(btnEl){
   const rashi=E.RASHI_N[selectedHoroscopeRashi];
   const rashiOd=E.RASHI_OD[selectedHoroscopeRashi];
   const today=new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-  const btn=btnEl||document.querySelector('.horoscope-get-btn');
+  const btn=btnEl||g('horo-get-btn');
   if(btn){btn.disabled=true;btn.textContent=isOd?'ଦେଖୁଛୁ...':'Loading...';}
 
   g('horoscope-result').innerHTML=`<div class="loader"><div class="spin"></div>${isOd?'ଭବିଷ୍ୟ ଦେଖୁଛୁ...':'Generating horoscope...'}</div>`;
@@ -4589,8 +4597,10 @@ async function getHoroscope(btnEl){
 
   try{
     const resp=await fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:500,messages:[{role:'user',content:prompt}]})});
+    if(!resp.ok){throw new Error('Server error: '+resp.status);}
     const data=await resp.json();
-    const raw=data.content?.[0]?.text||'';
+    if(data.error){throw new Error(data.error.message||'API error');}
+    const raw=(data.content||[]).map(c=>c.text||'').join('');
     console.log('Horoscope raw:',raw.substring(0,200));
     let r=null;
     try{
@@ -4780,7 +4790,9 @@ async function doPastLife(btnEl){
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:700,messages:[{role:'user',content:prompt}]})
     });
+    if(!resp.ok){throw new Error('Server '+resp.status);}
     const data=await resp.json();
+    if(data.error){throw new Error(data.error.message||'API error');}
     const raw=(data.content&&data.content[0]&&data.content[0].text)||'';
     let r=null;
     try{r=JSON.parse(raw.replace(/```json|```/g,'').trim());}catch(e){r=null;}
@@ -4820,12 +4832,14 @@ async function doCareerTiming(btnEl){
   const currAntar=calcData?.currAntar;
   const currYear=new Date().getFullYear();
 
-  const ctPlanets=calcData.planets.map(p=>p.name[0]+p.rashiName[0]+'H'+p.house).join(',');
+  const ctPlanets=(calcData?.planets||[]).map(p=>p.name[0]+p.rashiName[0]+'H'+p.house).join(',');
   const prompt='Career astrologer. DOB:'+dob+' Place:'+pob+' Profession:'+prof+' Planets:'+ctPlanets+' Dasha:'+currDasha.planet+'. JSON only:{"current_phase":"3 sentences","best_careers":["career1","career2","career3"],"year_forecast":[{"year":2025,"rating":7,"prediction":"2 sentences"},{"year":2026,"rating":8,"prediction":"2 sentences"},{"year":2027,"rating":9,"prediction":"2 sentences"},{"year":2028,"rating":8,"prediction":"2 sentences"},{"year":2029,"rating":7,"prediction":"2 sentences"}],"best_years":"2-3 best years","business_vs_job":"recommendation","foreign_career":"2 sentences","dasha_career":"3 sentences","remedies":["remedy1","remedy2","remedy3"],"od_summary":"3 Odia sentences"}';
 
   try{
     const resp=await fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:800,messages:[{role:'user',content:prompt}]})});
+    if(!resp.ok){throw new Error('Server '+resp.status);}
     const data=await resp.json();
+    if(data.error){throw new Error(data.error.message||'API error');}
     const raw=data.content?.[0]?.text||'';
     let r;try{r=JSON.parse(raw.replace(/```json|```/g,'').trim());}catch(e){r=null;}
 
@@ -4887,13 +4901,15 @@ async function doSantaan(btnEl){
   const fifth2=calc2?.planets.find(p=>p.house===5);
   const jupiter2=calc2?.planets.find(p=>p.name==='Jupiter');
 
-  const stH5p=calcData1.planets.find(p=>p.house===5)?.name||'empty';
+  const stH5p=(calcData1?.planets||[]).find(p=>p.house===5)?.name||'empty';
   const stJup=calcData1.planets.find(p=>p.name==='Jupiter')?.rashiName||'';
   const prompt='Santaan yoga expert. P1:'+nm1+' DOB:'+dob1+' H5:'+stH5p+' Jupiter:'+stJup+'. P2:'+nm2+' DOB:'+dob2+'. JSON only:{"santaan_yoga":"Strong/Moderate/Weak with 3 sentences","children_count":"number indicated","first_child_timing":"specific years for first child","boy_girl":"prediction with reasoning","challenges":"2 sentences any obstacles","remedies":["remedy1","remedy2","remedy3"],"puja":"specific puja for children","best_period":"which dasha/year best for children","od_summary":"3 Odia sentences"}';
 
   try{
     const resp=await fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:700,messages:[{role:'user',content:prompt}]})});
+    if(!resp.ok){throw new Error('Server '+resp.status);}
     const data=await resp.json();
+    if(data.error){throw new Error(data.error.message||'API error');}
     const raw=data.content?.[0]?.text||'';
     let r;try{r=JSON.parse(raw.replace(/```json|```/g,'').trim());}catch(e){r=null;}
 
