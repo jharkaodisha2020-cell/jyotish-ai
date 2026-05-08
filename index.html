@@ -3666,14 +3666,7 @@ async function analyzeMobile(btnEl){
   const isCompatible=mulank?Math.abs(mobileNum-mulank)<=2||(mobileNum+mulank)%9<=1:true;
 
   // AI reading
-  const prompt=`You are a Mobile Numerology expert. Analyze this mobile number: ${num}
-Total digit sum: ${total} → Mobile Number: ${mobileNum} (${mData.vibe}, ruled by ${mData.planet})
-Last digit: ${lastDigit} — First digit: ${firstDigit} — Dominant pattern number: ${dominantNum}
-${name?'Person name: '+name:''}${mulank?'Birth number (Mulank): '+mulank:''}
-${mulank?'Compatibility: '+(isCompatible?'COMPATIBLE':'TENSION — suggest alternatives'):''}
-
-Provide analysis in this EXACT JSON (no markdown):
-{"overall":"2 sentences about the overall vibration of this specific number","career":"2 sentences about career and business effects","relationships":"2 sentences about relationships and social effects","luck":"2 sentences about luck periods and timing","warning":"1 sentence about any caution for this number","bestUseFor":"4 professions or purposes this number is best suited for","avoid":"2 things to avoid with this number","remedy":"1 specific mantra or remedy to balance the number energy","alternatives":"3 alternative last-3-digit endings that would be more favorable","od_overall":"2 sentences in Odia script about overall vibration"}`;
+  const prompt='Mobile numerology expert. Number:'+mobile+' Name:'+nm+'. JSON only:{"mobile_energy":"3 sentences energy of this number","lucky":"Yes/No with reason","strength":"2 sentences","weakness":"2 sentences","best_use":"when to use this number","remedy":"change last digit to X if needed","overall_score":75,"od_summary":"3 Odia sentences"}';
 
   try{
     const resp=await fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:800,messages:[{role:'user',content:prompt}]})});
@@ -3754,17 +3747,7 @@ async function analyzeNameCorrection(btnEl){
 
   const compatible=Math.abs(namank-mulank)<=2||(namank+mulank)%9<=1||(namank+bhagya)%9<=1||namank===mulank||namank===bhagya;
 
-  const prompt=`You are a Vedic numerology and name correction expert using Cheiro's system.
-
-Person: ${name}, DOB: ${dob}, Purpose: ${purpose}
-Current Name Number (Namank): ${namank}
-Mulank (Birth Number): ${mulank}
-Bhagyanka (Destiny Number): ${bhagya}
-Name-Birth Compatibility: ${compatible?'GOOD ALIGNMENT':'TENSION — correction needed'}
-Letter values: ${letters.map(l=>l.c+'='+l.v).join(', ')}
-
-Provide a complete name correction report in EXACT JSON (no markdown):
-{"compatibility_score":75,"compatibility_analysis":"2 sentences about how current name aligns with birth numbers","vibration_analysis":"2 sentences about what the current name number ${namank} brings to this person","strengths_of_current":"2 strengths the current name provides","weaknesses":"2 weaknesses or blocks the current name causes","correction_needed":${compatible?'false':'true'},"suggested_names":["Alternate spelling 1 with brief reason","Alternate spelling 2 with brief reason","Alternate spelling 3 with brief reason"],"letters_to_add":"Specific letters or sounds to add to strengthen the name","letters_to_avoid":"Letters or sounds to avoid","ideal_namank":${mulank},"remedy_if_no_change":"Mantra or remedy if person cannot change name","career_impact":"1 sentence on career impact of current name","marriage_impact":"1 sentence on relationship impact","od_summary":"2 sentences in Odia script about the name analysis"}`;
+  const prompt='Name correction expert. Name:'+nm+' DOB:'+dob+'. JSON only:{"current_name_analysis":"3 sentences current name energy","current_numbers":{"mulank":1,"bhagyank":5,"namank":3},"is_compatible":"Yes/No with reason","correction_needed":"Yes/No","suggested_spellings":["Spelling1","Spelling2","Spelling3"],"lucky_letters":"letters to add/avoid","overall_advice":"3 sentences","od_summary":"2 Odia sentences"}';
 
   try{
     const resp=await fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:900,messages:[{role:'user',content:prompt}]})});
@@ -3854,7 +3837,7 @@ async function analyzeChakra(btnEl){
   if(!dob||!tob){err.textContent='Please enter date and time of birth.';return;}
 
   const challenges=[...document.querySelectorAll('#chakra-challenges input:checked')].map(c=>c.value);
-  const btn=btnEl||g('ch-btn');if(btn){btn.disabled=true;}btn.textContent='Generating Report...';
+  const btn=btnEl||g('ch-btn');if(btn){btn.disabled=true;btn.textContent='Generating Report...';}
 
   // Calculate basic chakra states from planetary positions
   let planets=[];
@@ -3878,15 +3861,8 @@ async function analyzeChakra(btnEl){
     if(challengeMap[c]!==undefined)chakraScores[challengeMap[c]]=Math.max(20,chakraScores[challengeMap[c]]-20);
   });
 
-  const prompt=`You are a Kundalini and Chakra healing expert with deep knowledge of Vedic astrology's connection to the chakra system.
-
-DOB: ${dob}, TOB: ${tob}
-Reported challenges: ${challenges.join(', ')||'none specified'}
-Planetary analysis suggests these chakra openness levels:
-${CHAKRAS.map((c,i)=>c.name+': '+chakraScores[i]+'% ('+(chakraScores[i]>=75?'Open':chakraScores[i]>=50?'Partially open':'Blocked')+')').join('\n')}
-
-Generate a complete chakra report in EXACT JSON (no markdown):
-{"chakras":[{"name":"Muladhara","status":"Open/Partially Open/Blocked","score":75,"effect":"1 sentence about how this chakra is manifesting in life","healing":"1 specific healing practice","od_effect":"1 sentence in Odia"},...for all 7 chakras in order],"most_blocked":"name of most blocked chakra","most_open":"name of most open chakra","overall_energy":"2 sentences about overall chakra energy and kundalini state","meditation":"specific meditation technique for this person","pranayama":"specific breathing exercise","daily_practice":"3 daily practices to balance all chakras","urgent_focus":"which chakra needs most attention and why","od_overall":"2 sentences in Odia about overall chakra state"}`;
+  const chakraStr=CHAKRAS.map((c,i)=>c.name+':'+chakraScores[i]+'%').join(',');
+  const prompt='Chakra healer. DOB:'+dob+' Challenges:'+challenges.join(',')+' Chakra levels:'+chakraStr+'. JSON only no markdown:{"chakras":[{"name":"Muladhara","status":"Open","score":75,"effect":"2 sentences life effect","healing":"specific practice","od_effect":"Odia sentence"},{"name":"Swadhisthana","status":"Partially Open","score":60,"effect":"2 sentences","healing":"practice","od_effect":"Odia"},{"name":"Manipura","status":"Blocked","score":35,"effect":"2 sentences","healing":"practice","od_effect":"Odia"},{"name":"Anahata","status":"Open","score":70,"effect":"2 sentences","healing":"practice","od_effect":"Odia"},{"name":"Vishuddha","status":"Partially Open","score":55,"effect":"2 sentences","healing":"practice","od_effect":"Odia"},{"name":"Ajna","status":"Open","score":80,"effect":"2 sentences","healing":"practice","od_effect":"Odia"},{"name":"Sahasrara","status":"Partially Open","score":65,"effect":"2 sentences","healing":"practice","od_effect":"Odia"}],"most_blocked":"name","most_open":"name","overall_energy":"3 sentences","meditation":"specific technique","pranayama":"specific exercise","daily_practice":["practice1","practice2","practice3"],"urgent_focus":"which chakra and why","od_overall":"2 Odia sentences"}';
 
   try{
     const resp=await fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
@@ -3949,7 +3925,7 @@ Generate a complete chakra report in EXACT JSON (no markdown):
       <div class="rlbl od">ଓଡ଼ିଆ ସାରାଂଶ</div><div class="rtxt od">${r.od_overall||''}</div>
     </div>`:''}`;
   }catch(e){g('ch-err').textContent='Report generation failed. Please try again.';}
-  btn.disabled=false;btn.textContent='✦ Generate Chakra Report';
+  if(btn){btn.disabled=false;btn.textContent='✦ Generate Chakra Report';}
 }
 
 /* ─────────────────────────────────────
@@ -3987,18 +3963,8 @@ async function analyzeHealth(btnEl){
   const eighth=calcData?calcData.planets.find(p=>p.house===8):'none';
   const ascLord=calcData?['Mars','Venus','Mercury','Moon','Sun','Mercury','Venus','Mars','Jupiter','Saturn','Saturn','Jupiter'][calcData.ascendant.rashi]:'Unknown';
 
-  const prompt=`You are a Vedic medical astrology expert (Ayurvedic Jyotish). Generate a comprehensive health report.
-
-DOB: ${dob}, TOB: ${tob}, Place: ${pob}, Gender: ${hrG}
-Lagna (Ascendant): ${asc}
-Lagna Lord: ${ascLord}
-6th House (disease): ${sixth?sixth.name+' in '+sixth.rashiName:'empty'}
-8th House (chronic/surgery): ${eighth?eighth.name+' in '+eighth.rashiName:'empty'}
-All planets: ${planetsStr}
-Current concerns: ${concern||'none specified'}
-
-Generate complete health report in EXACT JSON (no markdown):
-{"constitution":"Vata/Pitta/Kapha constitution in 2 sentences","strong_areas":["body system 1","body system 2","body system 3"],"vulnerable_areas":["vulnerable area 1 with planet causing it","vulnerable area 2","vulnerable area 3"],"current_risks":"2 sentences about current health risks based on planetary positions","digestive_health":"1 sentence about digestive constitution","mental_health":"1 sentence about mental/emotional health tendencies","longevity":"1 sentence about general vitality and longevity indicators","diet_advice":"3 specific dietary recommendations for this chart","yoga_asanas":["asana 1 — benefit","asana 2 — benefit","asana 3 — benefit"],"herbs":["Ayurvedic herb 1 — use","herb 2 — use"],"avoid":["food or habit to avoid 1","avoid 2"],"favourable_periods":"1 sentence about health-favourable time periods","cautious_periods":"1 sentence about periods requiring health caution","mantra":"health mantra suitable for this chart","od_summary":"2 sentences in Odia about overall health picture"}`;
+  const weakP=planets.filter(p=>p.dignity==='Debilitated'||[6,8,12].includes(p.house)).map(p=>p.name).join(',');
+  const prompt='Ayurvedic astrologer. DOB:'+dob+' Gender:'+hrG+' Concern:'+concern+' WeakPlanets:'+weakP+'. JSON only:{"constitution":"2 sentences body type","strengths":"2 sentences","vulnerabilities":["issue1","issue2","issue3"],"ayurvedic_remedies":["remedy1","remedy2","remedy3"],"yoga_poses":["pose1","pose2","pose3"],"diet_advice":"2 sentences","herbs":["herb1","herb2"],"daily_routine":"2 sentences","mantra":"health mantra","warning":"1 sentence","od_summary":"3 Odia sentences"}';
 
   try{
     const resp=await fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
@@ -4117,7 +4083,7 @@ function nameNumber(name){
   return reduceNM([...name.toUpperCase().replace(/[^A-Z]/g,'')].reduce((a,c)=>a+(C[c]||0),0));
 }
 
-async function doNamakarana(){
+async function doNamakarana(btnEl){
   const dob = g('nm-dob').value;
   const tob = g('nm-tob').value;
   const pob = g('nm-pob').value.trim();
@@ -4146,21 +4112,7 @@ async function doNamakarana(){
   const nakLord = NAK_LORDS_NM[nakIdx];
   const suggestedSyllable = prefLetter || NAK_SYLLABLES[nakIdx][pada-1];
 
-  const prompt = `You are a Vedic Jyotish naming expert specializing in Odia Hindu tradition and Namakarana. LANGUAGE: ${APP_LANG==='od'?'Write ALL explanations and descriptions in simple Odia script. Name meanings in Odia.':'Write explanations in clear English.'}
-
-Child details:
-DOB: ${dob}, TOB: ${tob}, Place: ${pob||'Odisha'}, Gender: ${nmGender}
-Moon Nakshatra: ${nakName} (Lord: ${nakLord}), Pada: ${pada}
-Moon Rashi: ${moonRashi}, Lagna: ${lagnaName}
-Traditional starting syllable for this Nakshatra Pada: ${suggestedSyllable}
-${father?'Father name: '+father:''}${gotra?', Gotra: '+gotra:''}
-${prefLetter?'Parent preferred starting letter: '+prefLetter:'Use traditional Nakshatra syllable: '+suggestedSyllable}
-
-Generate 12 auspicious names. Respond ONLY with valid JSON (no markdown):
-{"nakshatra_syllable":"${suggestedSyllable}","nakshatra_meaning":"brief meaning of this nakshatra","names":[
-{"name":"EnglishName","name_od":"ଓଡ଼ିଆ ନାମ","meaning":"meaning in English","meaning_od":"ଅର୍ଥ ଓଡ଼ିଆ","deity":"presiding deity","num":5,"why":"1 sentence why this name is auspicious for this child"},
-... 12 names total, 6 for ${nmGender==='Boy'?'boys':'girls'}
-],"best_name":"which name is most auspicious and why","muhurta":"best time of day for naming ceremony","ceremony_tips":"2 sentences about Namakarana ceremony in Odia tradition","od_blessing":"Odia blessing sentence for the child"}`;
+  const prompt='Odia baby naming expert. DOB:'+dob+' TOB:'+tob+' Nakshatra:'+nakName+' Pada:'+pada+' Gender:'+nmG+' Gotra:'+gotra+'. JSON only:{"nakshatra_syllables":["syllable1","syllable2","syllable3","syllable4"],"names":[{"name":"Name1","meaning":"meaning","odia":"ଓଡ଼ିଆ","lucky":true,"numerology":5},{"name":"Name2","meaning":"meaning","odia":"ଓଡ଼ିଆ","lucky":true,"numerology":3},{"name":"Name3","meaning":"meaning","odia":"ଓଡ଼ିଆ","lucky":false,"numerology":7},{"name":"Name4","meaning":"meaning","odia":"ଓଡ଼ିଆ","lucky":true,"numerology":1},{"name":"Name5","meaning":"meaning","odia":"ଓଡ଼ିଆ","lucky":true,"numerology":6},{"name":"Name6","meaning":"meaning","odia":"ଓଡ଼ିଆ","lucky":false,"numerology":8}],"naming_ceremony":"3 sentences ceremony guidance","od_blessing":"2 Odia sentences blessing for child"}';
 
   try{
     const resp = await fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:1500,messages:[{role:'user',content:prompt}]})});
@@ -4294,7 +4246,7 @@ function calcGunaMilan(mNak, fNak, mRashi, fRashi){
   return { scores, total, maxTotal };
 }
 
-async function doGunaMilan(){
+async function doGunaMilan(btnEl){
   const gmName = g('gm-name').value.trim();
   const gmDob = g('gm-dob').value;
   const gmTob = g('gm-tob').value;
@@ -4329,18 +4281,8 @@ async function doGunaMilan(){
   const verdictColor = total>=30?'var(--green-l)':total>=24?'var(--gold-lt)':total>=18?'#E8A870':'var(--red-l)';
 
   // AI reading
-  const prompt = `You are a Vedic Kundli Matching expert. LANGUAGE: ${APP_LANG==='od'?'Write ALL text responses in simple conversational Odia script.':'Write in clear English.'} Provide an in-depth analysis.
-
-Groom: ${gmName}, DOB: ${gmDob}, Nakshatra: ${mNakName}, Moon Rashi: ${['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'][mRashi]}
-Bride: ${gfName}, DOB: ${gfDob}, Nakshatra: ${fNakName}, Moon Rashi: ${['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'][fRashi]}
-
-Ashtakoot Score: ${total}/36 (${pct}%) — ${verdict}
-Koot breakdown: ${Object.values(scores).map(s=>s.name+': '+s.got+'/'+s.max).join(', ')}
-${scores.nadi.got===0?'NADI DOSHA PRESENT — critical issue':'No Nadi Dosha — good'}
-${scores.bhakoot.got===0?'BHAKOOT DOSHA PRESENT':'No Bhakoot Dosha'}
-
-Provide complete matching analysis in EXACT JSON (no markdown):
-{"overall":"3 sentences about overall compatibility of this specific couple","strengths":["compatibility strength 1","strength 2","strength 3"],"challenges":["challenge 1","challenge 2"],"nadi_analysis":"2 sentences about Nadi compatibility — critical for health and children","bhakoot_analysis":"2 sentences about Bhakoot — emotional and financial life together","children":"2 sentences about prospects for children based on this match","financial":"2 sentences about financial compatibility","manglik_check":"1 sentence on whether Manglik dosha check is needed","remedies":["remedy 1 if any dosha","remedy 2","remedy 3"],"muhurta_advice":"best season or month for marriage","verdict_detailed":"2 sentences giving final clear verdict on this match","od_summary":"3 sentences in Odia script about the match","od_blessing":"Odia blessing for the couple"}`;
+  const gunaLang = APP_LANG==='od'?'Write ALL in Odia script':'Write in English';
+  const prompt='Kundli matching expert. '+gunaLang+'. P1:'+nm1+' Lagna:'+asc1+' Moon:'+moon1+' Nak:'+nak1+'. P2:'+nm2+' Lagna:'+asc2+' Moon:'+moon2+' Nak:'+nak2+'. JSON only:{"total_gunas":28,"koot_scores":{"varna":1,"vashya":2,"tara":3,"yoni":2,"graha_maitri":4,"gana":5,"bhakoot":7,"nadi":8},"compatibility_percent":78,"verdict":"Recommended/Good/Average/Not Recommended","strengths":["strength1","strength2","strength3"],"challenges":["challenge1","challenge2"],"mangal_dosha_p1":"Yes/No with effect","mangal_dosha_p2":"Yes/No with effect","nadi_dosha":"Present/Absent","bhakoot_dosha":"Present/Absent","remedies":["remedy1","remedy2","remedy3"],"best_wedding_months":["Month Year","Month Year"],"overall_advice":"4 sentences","od_summary":"3 Odia sentences"}';
 
   try{
     const resp = await fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
@@ -4830,7 +4772,7 @@ async function doPastLife(btnEl){
   renderPastLifeResult(null,ketu,rahu,saturn,atmakaraka,isOd,dob,tob,pob);
 
   // Then fetch AI for richer reading
-  const prompt='You are a Vedic past life astrologer. DOB:'+dob+' TOB:'+tob+' Place:'+pob+'\nKetu:'+ketu.rashiName+' H'+ketu.house+'\nRahu:'+rahu.rashiName+' H'+rahu.house+'\nSaturn:'+saturn.rashiName+' H'+saturn.house+' '+saturn.dignity+'\nAtmakaraka:'+atmakaraka.name+' in '+atmakaraka.rashiName+'\nRetrograde:'+retrograde.map(p=>p.name).join(',')+'\n12th house:'+h12+'\nLANGUAGE:'+(isOd?'Write ALL in simple Odia script':'Write in clear English')+'\nRespond ONLY with valid JSON, no markdown:\n{"past_profession":"2 sentences","past_location":"1 sentence","past_skills":"2 sentences","karmic_debt":"2 sentences","soul_mission":"2 sentences","atmakaraka_meaning":"2 sentences","unfinished_business":"1 sentence","spiritual_stage":"beginner/intermediate/advanced soul - brief reason","remedy":"specific practice","blessing":"1 closing sentence"}';
+  const prompt='Past life Vedic astrologer. DOB:'+dob+' Ketu:'+ketu.rashiName+' H'+ketu.house+' Rahu:'+rahu.rashiName+' H'+rahu.house+' Saturn:'+saturn.rashiName+' H'+saturn.house+' Atmakaraka:'+atmakaraka.name+' '+atmakaraka.rashiName+(isOd?' Write ALL in simple Odia script.':' Write in English.')+'. JSON only:{"past_profession":"3 sentences past life work","past_location":"2 sentences past life place","past_skills":"3 sentences skills brought forward","karmic_debt":"3 sentences karmic lessons","soul_mission":"3 sentences Rahu mission this life","atmakaraka_meaning":"3 sentences soul purpose","unfinished_business":"2 sentences","spiritual_stage":"Beginner/Intermediate/Advanced Soul - 2 sentences","remedy":"3 specific spiritual practices","blessing":"2 sentence closing message"}';
 
   try{
     const resp=await fetch('/.netlify/functions/chat',{
@@ -4878,17 +4820,8 @@ async function doCareerTiming(btnEl){
   const currAntar=calcData?.currAntar;
   const currYear=new Date().getFullYear();
 
-  const prompt=`You are a Vedic career astrologer. Analyze career timing.
-DOB: ${dob}, TOB: ${tob}, Place: ${pob}, Current profession: ${prof}
-Lagna: ${calcData?.ascendant.rashiName||'Unknown'}
-10th house: ${tenth?tenth.name+' in '+tenth.rashiName:'empty'}
-Jupiter: ${jupiter?jupiter.rashiName+' H'+jupiter.house+' ('+jupiter.dignity+')':'unknown'}
-Current Mahadasha: ${currDasha?.planet} (ends ${currDasha?.end?.toLocaleDateString('en-IN')||'unknown'})
-Current Antardasha: ${currAntar?.planet}
-LANGUAGE: ${isOd?'Write ALL descriptions in simple Odia script.':'Write in clear English.'}
-
-Respond ONLY with JSON (no markdown):
-{"best_profession":"top 3 professions suited for this chart","10th_analysis":"2 sentences about 10th house career indicators","current_dasha_career":"2 sentences about how current ${currDasha?.planet} dasha affects career","yearly_forecast":[{"year":${currYear},"phase":"growth/stable/challenge","prediction":"1 sentence","rating":4},{"year":${currYear+1},"phase":"","prediction":"","rating":3},{"year":${currYear+2},"phase":"","prediction":"","rating":4},{"year":${currYear+3},"phase":"","prediction":"","rating":4}],"best_years":"which years in next 5 are best for career leap","foreign_prospects":"1 sentence about foreign work/settlement","business_timing":"best time to start business if applicable","government_prospects":"1 sentence about government job prospects","remedy":"career remedy","remedy_od":"ଓଡ଼ିଆ ଉପଚାର"}`;
+  const ctPlanets=calcData.planets.map(p=>p.name[0]+p.rashiName[0]+'H'+p.house).join(',');
+  const prompt='Career astrologer. DOB:'+dob+' Place:'+pob+' Profession:'+prof+' Planets:'+ctPlanets+' Dasha:'+currDasha.planet+'. JSON only:{"current_phase":"3 sentences","best_careers":["career1","career2","career3"],"year_forecast":[{"year":2025,"rating":7,"prediction":"2 sentences"},{"year":2026,"rating":8,"prediction":"2 sentences"},{"year":2027,"rating":9,"prediction":"2 sentences"},{"year":2028,"rating":8,"prediction":"2 sentences"},{"year":2029,"rating":7,"prediction":"2 sentences"}],"best_years":"2-3 best years","business_vs_job":"recommendation","foreign_career":"2 sentences","dasha_career":"3 sentences","remedies":["remedy1","remedy2","remedy3"],"od_summary":"3 Odia sentences"}';
 
   try{
     const resp=await fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:800,messages:[{role:'user',content:prompt}]})});
@@ -4954,14 +4887,9 @@ async function doSantaan(btnEl){
   const fifth2=calc2?.planets.find(p=>p.house===5);
   const jupiter2=calc2?.planets.find(p=>p.name==='Jupiter');
 
-  const prompt=`You are a Vedic astrologer specializing in Santaan Yoga (child/progeny analysis).
-Person 1 DOB: ${dob1}, TOB: ${tob1}, Place: ${pob1||'Odisha'}
-${calc1?`Person 1 - Lagna: ${calc1.ascendant.rashiName}, 5th house: ${fifth1?fifth1.name+' in '+fifth1.rashiName:'empty'}, Jupiter: ${jupiter1?jupiter1.rashiName+' H'+jupiter1.house+' ('+jupiter1.dignity+')':'unknown'}, Moon: ${moon1?moon1.rashiName:'unknown'}, Current Dasha: ${calc1.currDasha?.planet}`:''}
-${calc2?`Person 2 DOB: ${dob2}, TOB: ${tob2} - 5th house: ${fifth2?fifth2.name+' in '+fifth2.rashiName:'empty'}, Jupiter: ${jupiter2?jupiter2.rashiName+' H'+jupiter2.house+' ('+jupiter2.dignity+')':'unknown'}`:''}
-LANGUAGE: ${isOd?'Write ALL descriptions in simple Odia script.':'Write in English.'}
-
-Respond ONLY with JSON (no markdown):
-{"santaan_yoga":"Strong/Moderate/Delayed/Challenging with 2 sentence explanation","5th_house_analysis":"2 sentences about 5th house for children","jupiter_analysis":"2 sentences about Jupiter's role","best_years_for_child":"which years in next 5 are best for conception/childbirth","gender_indication":"boy/girl/both indication based on chart with disclaimer this is not scientific","delays":"any delays or challenges and why","remedies":["remedy1","remedy2","remedy3"],"remedies_od":["ଉପଚାର1","ଉପଚାର2","ଉପଚାର3"],"mantra":"specific mantra for santaan","combined_analysis":"${calc2?'2 sentences about combined couple chart':'N/A'}","blessing":"closing blessing","blessing_od":"ଓଡ଼ିଆ ଆଶୀର୍ବାଦ"}`;
+  const stH5p=calcData1.planets.find(p=>p.house===5)?.name||'empty';
+  const stJup=calcData1.planets.find(p=>p.name==='Jupiter')?.rashiName||'';
+  const prompt='Santaan yoga expert. P1:'+nm1+' DOB:'+dob1+' H5:'+stH5p+' Jupiter:'+stJup+'. P2:'+nm2+' DOB:'+dob2+'. JSON only:{"santaan_yoga":"Strong/Moderate/Weak with 3 sentences","children_count":"number indicated","first_child_timing":"specific years for first child","boy_girl":"prediction with reasoning","challenges":"2 sentences any obstacles","remedies":["remedy1","remedy2","remedy3"],"puja":"specific puja for children","best_period":"which dasha/year best for children","od_summary":"3 Odia sentences"}';
 
   try{
     const resp=await fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:700,messages:[{role:'user',content:prompt}]})});
