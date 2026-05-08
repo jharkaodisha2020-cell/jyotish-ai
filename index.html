@@ -3666,7 +3666,7 @@ async function analyzeMobile(btnEl){
   const isCompatible=mulank?Math.abs(mobileNum-mulank)<=2||(mobileNum+mulank)%9<=1:true;
 
   // AI reading
-  const prompt='Mobile numerology expert. Number:'+mobile+' Name:'+nm+'. JSON only:{"mobile_energy":"3 sentences energy of this number","lucky":"Yes/No with reason","strength":"2 sentences","weakness":"2 sentences","best_use":"when to use this number","remedy":"change last digit to X if needed","overall_score":75,"od_summary":"3 Odia sentences"}';
+  const prompt='Mobile numerology expert. Number:'+num+' Name:'+nm+'. JSON only:{"mobile_energy":"3 sentences energy of this number","lucky":"Yes/No with reason","strength":"2 sentences","weakness":"2 sentences","best_use":"when to use this number","remedy":"change last digit to X if needed","overall_score":75,"od_summary":"3 Odia sentences"}';
 
   try{
     const resp=await fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:800,messages:[{role:'user',content:prompt}]})});
@@ -3749,7 +3749,7 @@ async function analyzeNameCorrection(btnEl){
 
   const compatible=Math.abs(namank-mulank)<=2||(namank+mulank)%9<=1||(namank+bhagya)%9<=1||namank===mulank||namank===bhagya;
 
-  const prompt='Name correction expert. Name:'+nm+' DOB:'+dob+'. JSON only:{"current_name_analysis":"3 sentences current name energy","current_numbers":{"mulank":1,"bhagyank":5,"namank":3},"is_compatible":"Yes/No with reason","correction_needed":"Yes/No","suggested_spellings":["Spelling1","Spelling2","Spelling3"],"lucky_letters":"letters to add/avoid","overall_advice":"3 sentences","od_summary":"2 Odia sentences"}';
+  const prompt='Name correction expert. Name:'+name+' DOB:'+dob+'. JSON only:{"current_name_analysis":"3 sentences current name energy","current_numbers":{"mulank":1,"bhagyank":5,"namank":3},"is_compatible":"Yes/No with reason","correction_needed":"Yes/No","suggested_spellings":["Spelling1","Spelling2","Spelling3"],"lucky_letters":"letters to add/avoid","overall_advice":"3 sentences","od_summary":"2 Odia sentences"}';
 
   try{
     const resp=await fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:900,messages:[{role:'user',content:prompt}]})});
@@ -4457,8 +4457,7 @@ function buildPanchang(){
 
   // Nakshatra
   const nakIdx=Math.floor((moonLon*27)/360);
-  const nakName=E.NAK_NAMES[nakIdx]||'Ashwini';
-  const nakOd=E.NAK_OD[nakIdx]||'ଅଶ୍ୱିନୀ';
+    const nakOd=E.NAK_OD[nakIdx]||'ଅଶ୍ୱିନୀ';
 
   // Yoga (sun+moon /13.333)
   const yogaAngle=n360p(sunLon+moonLon);
@@ -4903,6 +4902,7 @@ async function doSantaan(btnEl){
   const fifth2=calc2?.planets.find(p=>p.house===5);
   const jupiter2=calc2?.planets.find(p=>p.name==='Jupiter');
 
+  const nm1=pob1||'Person 1', nm2=pob2||'Person 2';
   const stH5p=(calcData1?.planets||[]).find(p=>p.house===5)?.name||'empty';
   const stJup=calcData1.planets.find(p=>p.name==='Jupiter')?.rashiName||'';
   const prompt='Santaan yoga expert. P1:'+nm1+' DOB:'+dob1+' H5:'+stH5p+' Jupiter:'+stJup+'. P2:'+nm2+' DOB:'+dob2+'. JSON only:{"santaan_yoga":"Strong/Moderate/Weak with 3 sentences","children_count":"number indicated","first_child_timing":"specific years for first child","boy_girl":"prediction with reasoning","challenges":"2 sentences any obstacles","remedies":["remedy1","remedy2","remedy3"],"puja":"specific puja for children","best_period":"which dasha/year best for children","od_summary":"3 Odia sentences"}';
