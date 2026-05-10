@@ -4630,7 +4630,7 @@ async function getHoroscope(btnEl){
       };
     }
 
-    const rating=Math.max(1,Math.min(5,parseInt(r?.rating)||4));
+    const rating=Math.max(1,Math.min(5,parseInt(r?.rating)||4)); const stars='★'.repeat(rating)+'☆'.repeat(5-rating);
 const stars='★'.repeat(rating)+'☆'.repeat(5-rating);
     if(horoResult)horoResult.innerHTML=`
     <div class="result-hero">
