@@ -3529,6 +3529,34 @@ function buildChatQuickPrompts(lang){
   sugsEl.style.display = 'flex';
 }
 
+function formatChatMsg(text){
+  if(!text) return '';
+  let lines = text.split('\n');
+  let html = lines.map(function(line){
+    // ## Header
+    if(line.startsWith('## ')) return '<div style="font-family:\'Cinzel\',serif;font-size:13px;color:var(--gold-lt);font-weight:700;margin:14px 0 6px;padding-bottom:4px;border-bottom:1px solid rgba(184,135,10,.2)">✦ '+line.substring(3)+'</div>';
+    // # Header
+    if(line.startsWith('# ')) return '<div style="font-family:\'Cinzel\',serif;font-size:15px;color:var(--gold-lt);font-weight:700;margin:12px 0 6px">'+line.substring(2)+'</div>';
+    // Numbered list
+    var numMatch = line.match(/^(\d+)\.\s+(.+)$/);
+    if(numMatch) return '<div style="display:flex;gap:8px;margin:6px 0;padding:8px 10px;background:rgba(184,135,10,.05);border-left:2px solid var(--gold);border-radius:0 6px 6px 0"><span style="color:var(--gold);font-weight:700;flex-shrink:0">'+numMatch[1]+'.</span><span>'+numMatch[2]+'</span></div>';
+    // Bullet list
+    if(line.startsWith('- ') || line.startsWith('• ')) return '<div style="display:flex;gap:8px;margin:4px 0"><span style="color:var(--gold);flex-shrink:0">✦</span><span>'+line.substring(2)+'</span></div>';
+    return line;
+  }).join('\n');
+
+  // **bold** → gold
+  html = html.split('**').map(function(s,i){
+    return i%2===1 ? '<strong style="color:var(--gold-lt)">'+s+'</strong>' : s;
+  }).join('');
+
+  // Newlines → br
+  html = html.replace(/\n\n/g,'<br/><br/>').replace(/\n/g,'<br/>');
+
+  return html;
+}
+
+
 function chatKey(e){
   if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChat();}
 }
@@ -3593,50 +3621,25 @@ async function _doAIChat(msg, thinkId){
 
   const isOdia = (chatLang || APP_LANG) === 'od';
   const langNote = isOdia
-    ? `ସ୍ୱଭାବିକ ଓ ସ୍ୱଚ୍ଛ ଓଡ଼ିଆ ଭାଷାରେ ଉତ୍ତର ଦିଅ। ଠିକ୍ ନିମ୍ନ style ଅନୁସରଣ କର:
+    ? `ସ୍ୱଭାବିକ ଓ ଗଭୀର ଓଡ଼ିଆ ଭାଷାରେ ଉତ୍ତର ଦିଅ। ନିମ୍ନ format ଅନୁସରଣ କର:
 
-EXACT STYLE TO FOLLOW:
-ସ୍ୱାସ୍ଥ୍ୟ
-Stress ଓ overthinking କମ୍ କରିବା ଦରକାର।
-ନିଦ୍ରା ଠିକ୍ ରଖ।
-ଗ୍ୟାସ୍, ପେଟ, ମାନସିକ ଚାପ କିମ୍ବା body pain ଆସିପାରେ।
-Routine maintain କଲେ health ଭଲ ରହିବ।
+FORMAT:
+- ## ଦ୍ୱାରା section header (ଯଥା: ## ବିବାହ ସମୟ, ## ଆପଣଙ୍କ ଶକ୍ତି, ## ଉପାୟ)
+- **bold** ଦ୍ୱାରା ଗ୍ରହ ନାମ (**ଶୁକ୍ର**, **ଶନି**) ଓ ଗୁରୁତ୍ୱପୂର୍ଣ ଶବ୍ଦ
+- ଭାବ ନମ୍ବର (7ମ ଭାବ, 10ମ ଭାବ) ଓ ନିର୍ଦ୍ଦିଷ୍ଟ ବର୍ଷ (**2026-2027**) ଦିଅ
+- ଉପଚାର section ରେ 1. 2. 3. numbered list
+- ଶେଷରେ ବ୍ୟକ୍ତିଗତ ଆଶୀର୍ବଦ 🙏
+- ଅନ୍ତତ ୧୫-୨୦ ବାକ୍ୟ, ଉଷ୍ମ ଓ ବ୍ୟକ୍ତିଗତ ଭାଷା`
+    : `Respond like a warm, knowledgeable Vedic astrologer. Use this exact format:
 
-ନିୟମ:
-- ଛୋଟ ଛୋଟ ବାକ୍ୟ ବ୍ୟବହାର କର
-- English words ଯେମିତି stress, routine, yoga, career ଓଡ଼ିଆ ଭିତରେ ରଖ
-- ଗ୍ରହ ନାମ (Venus, Saturn, Jupiter) ଓ ଭାବ ନମ୍ବର (10ମ ଭାବ, 7ମ ଭାବ) ଉଲ୍ଲେଖ କର
-- ନିର୍ଦ୍ଦିଷ୍ଟ ବର୍ଷ ଦିଅ (2027, 2028 ଭଳି)
-- ଶେଷରେ ଉପଚାର ଭାଗ ଲିଖ
-- ଅନ୍ତତ ୧୨-୧୫ ବାକ୍ୟ ଲିଖ`
-    : `Respond like a real astrologer talking warmly to the person. Follow this exact style:
-
-EXACT STYLE TO FOLLOW:
-Health
-Stress and overthinking need to be reduced.
-Keep your sleep consistent.
-Issues related to gas, stomach, mental pressure or body pain may arise.
-Maintaining a proper routine will keep health good.
-
-Your Hidden Strength
-Your chart shows Saraswati Yoga.
-This means your creativity and intelligence are exceptional.
-You have talent in writing, communication, music, editing, social media or public interaction.
-People are drawn to your style and words.
-
-Remedies
-Based on your Kundli:
-Chant Gayatri Mantra every morning.
-Light a sesame oil lamp at Shiva temple on Saturdays.
-Donating yellow items brings good fortune.
-Keeping your mind calm is your greatest strength.
-
-RULES:
-- Short punchy sentences
-- Mention planet names (Venus, Saturn) and house numbers (10th house, 7th house)
-- Give specific years (2027, 2028)
-- Minimum 12-15 sentences
-- Always end with a Remedies section with 3 specific rituals`;
+FORMAT RULES:
+- Use ## for section headers (e.g.: ## Marriage Timeline, ## Your Hidden Strength, ## Remedies)
+- Use **bold** for planet names (**Venus**, **Saturn**) and key phrases
+- Mention house numbers (7th house, 10th house) and specific years (**2026-2027**)
+- Use numbered list (1. 2. 3.) for remedies with ritual details
+- End with a personal blessing message 🙏
+- Minimum 15-20 sentences
+- Warm, personal tone — address them by name`;
 
   const chartNote = kundliContext ? 'CHART:'+kundliContext : '';
   const systemPrompt = 'You are Jyotish AI, an expert Vedic astrologer who gives rich detailed personal readings. Never give short answers. '+langNote+(chartNote?' '+chartNote:'');
@@ -5881,10 +5884,10 @@ function addChatBubble(text, type, id){
     div.innerHTML = text;
   } else if(type === 'ai'){
     div.className = 'chat-bubble ai';
-    div.style.fontFamily = APP_LANG==='od' ? "'Noto Serif Oriya','Lato',serif" : "'Lato',sans-serif";
-    div.style.lineHeight = '1.85';
+    div.style.fontFamily = (chatLang||APP_LANG)==='od' ? "'Noto Serif Oriya','Lato',serif" : "'Lato',sans-serif";
+    div.style.lineHeight = '1.95';
     div.style.fontSize = '13px';
-    div.textContent = text;
+    div.innerHTML = formatChatMsg(text);
   } else if(type === 'ai thinking'){
     div.className = 'chat-bubble ai thinking';
     div.textContent = text;
