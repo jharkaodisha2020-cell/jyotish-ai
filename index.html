@@ -1949,8 +1949,9 @@ function selectAppLang(lang){
   if(pdflOd) pdflOd.classList.toggle('on', lang==='od');
   // Update chat suggestions
   updateChatSuggestions(lang);
-  // Rebuild dashboard if logged in
-  if(S.user){ buildDash(); }
+  // Navigate to landing or dashboard
+  if(S.user){ buildDash(); nav('dash'); }
+  else { nav('landing'); }
 }
 
 function updateChatSuggestions(lang){
@@ -4290,6 +4291,10 @@ async function doGunaMilan(btnEl){
   const verdictColor = total>=30?'var(--green-l)':total>=24?'var(--gold-lt)':total>=18?'#E8A870':'var(--red-l)';
 
   // AI reading
+  const nm1=gmName||'Person1', nm2=gfName||'Person2';
+  const asc1=mCalc?.ascendant?.rashiName||'Unknown', asc2=fCalc?.ascendant?.rashiName||'Unknown';
+  const moon1=E.RASHI_N[mRashi]||'Unknown', moon2=E.RASHI_N[fRashi]||'Unknown';
+  const nak1=mNakName||'Unknown', nak2=fNakName||'Unknown';
   const gunaLang = APP_LANG==='od'?'Write ALL in Odia script':'Write in English';
   const prompt='Kundli matching expert. '+gunaLang+'. P1:'+nm1+' Lagna:'+asc1+' Moon:'+moon1+' Nak:'+nak1+'. P2:'+nm2+' Lagna:'+asc2+' Moon:'+moon2+' Nak:'+nak2+'. JSON only:{"total_gunas":28,"koot_scores":{"varna":1,"vashya":2,"tara":3,"yoni":2,"graha_maitri":4,"gana":5,"bhakoot":7,"nadi":8},"compatibility_percent":78,"verdict":"Recommended/Good/Average/Not Recommended","strengths":["strength1","strength2","strength3"],"challenges":["challenge1","challenge2"],"mangal_dosha_p1":"Yes/No with effect","mangal_dosha_p2":"Yes/No with effect","nadi_dosha":"Present/Absent","bhakoot_dosha":"Present/Absent","remedies":["remedy1","remedy2","remedy3"],"best_wedding_months":["Month Year","Month Year"],"overall_advice":"4 sentences","od_summary":"3 Odia sentences"}';
 
@@ -4630,8 +4635,8 @@ async function getHoroscope(btnEl){
       };
     }
 
-    const rating=Math.max(1,Math.min(5,parseInt(r?.rating)||4)); const stars='★'.repeat(rating)+'☆'.repeat(5-rating);
-const stars='★'.repeat(rating)+'☆'.repeat(5-rating);
+    const rating=Math.max(1,Math.min(5,parseInt(r?.rating)||4));
+    const stars='★'.repeat(rating)+'☆'.repeat(5-rating);
     if(horoResult)horoResult.innerHTML=`
     <div class="result-hero">
       <div style="font-size:36px;margin-bottom:6px">${RASHI_SYMBOLS[selectedHoroscopeRashi]}</div>
@@ -4905,8 +4910,8 @@ async function doSantaan(btnEl){
   const jupiter2=calc2?.planets.find(p=>p.name==='Jupiter');
 
   const nm1=pob1||'Person 1', nm2=pob2||'Person 2';
-  const stH5p=(calcData1?.planets||[]).find(p=>p.house===5)?.name||'empty';
-  const stJup=calcData1.planets.find(p=>p.name==='Jupiter')?.rashiName||'';
+  const stH5p=(calc1?.planets||[]).find(p=>p.house===5)?.name||'empty';
+  const stJup=(calc1?.planets||[]).find(p=>p.name==='Jupiter')?.rashiName||'';
   const prompt='Santaan yoga expert. P1:'+nm1+' DOB:'+dob1+' H5:'+stH5p+' Jupiter:'+stJup+'. P2:'+nm2+' DOB:'+dob2+'. JSON only:{"santaan_yoga":"Strong/Moderate/Weak with 3 sentences","children_count":"number indicated","first_child_timing":"specific years for first child","boy_girl":"prediction with reasoning","challenges":"2 sentences any obstacles","remedies":["remedy1","remedy2","remedy3"],"puja":"specific puja for children","best_period":"which dasha/year best for children","od_summary":"3 Odia sentences"}';
 
   try{
