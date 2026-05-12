@@ -3476,6 +3476,22 @@ async function downloadPDF(){
 }
 
 
+function chatKey(e){
+  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChat();}
+}
+
+function chatSuggest(btn){
+  const msg = btn ? btn.textContent.trim() : '';
+  if(!msg) return;
+  // Hide suggestions
+  const sugs = document.getElementById('chat-suggestions');
+  if(sugs) sugs.style.display = 'none';
+  // Send the message
+  addChatBubble(msg, 'user');
+  chatHistory.push({role:'user', content: msg});
+  sendChatMsg(msg);
+}
+
 async function sendChatMsg(msg){
   // Called directly with message (from topic buttons or astrologer chat)
   if(!msg) return;
@@ -5688,9 +5704,12 @@ function showNextAstroTopic(topics, index){
     if(topic.followup && !topic.final){
       const btnDiv = document.createElement('div');
       btnDiv.style.cssText = 'display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 12px;padding-left:4px';
-      btnDiv.innerHTML = `<button class="chat-topic-btn" onclick="chatTopicTap(this,'${topic.followup.replace(/'/g,"\'")}')">
-        ${topic.followup} →
-      </button>`;
+      const topicBtn = document.createElement('button');
+      topicBtn.className = 'chat-topic-btn';
+      topicBtn.textContent = topic.followup + ' →';
+      topicBtn.dataset.topic = topic.followup;
+      topicBtn.onclick = function(){ chatTopicTap(this, this.dataset.topic); };
+      btnDiv.appendChild(topicBtn);
       const chatBody = document.getElementById('chat-body');
       if(chatBody) chatBody.appendChild(btnDiv);
       if(chatBody)chatBody.scrollTop = chatBody.scrollHeight;
@@ -5724,7 +5743,14 @@ function showNextAstroTopic(topics, index){
         ];
         const btnDiv = document.createElement('div');
         btnDiv.style.cssText = 'display:flex;flex-wrap:wrap;gap:6px;margin:8px 0;padding-left:4px';
-        btnDiv.innerHTML = sugs.map(s=>`<button class="chat-topic-btn" onclick="chatTopicTap(this,'${s.replace(/'/g,"\'")}')">💬 ${s}</button>`).join('');
+        sugs.forEach(s=>{
+          const fb = document.createElement('button');
+          fb.className = 'chat-topic-btn';
+          fb.textContent = '💬 ' + s;
+          fb.dataset.topic = s;
+          fb.onclick = function(){ chatTopicTap(this, this.dataset.topic); };
+          btnDiv.appendChild(fb);
+        });
         chatBody.appendChild(btnDiv);
         if(chatBody)chatBody.scrollTop = chatBody.scrollHeight;
       }, 500);
