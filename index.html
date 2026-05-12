@@ -3607,6 +3607,13 @@ async function sendChat(){
   sendBtn.disabled=false;
   const cm=document.getElementById('chat-messages');if(cm)cm.scrollTop=cm.scrollHeight;
   document.getElementById('chat-input').focus();
+  // If in astrologer sequence, continue after user manually types
+  if(astroTopics.length > 0 && astroCurrentIndex < astroTopics.length){
+    clearTimeout(astroMsgTimer);
+    astroMsgTimer = setTimeout(()=>{
+      showNextAstroTopic(astroTopics, astroCurrentIndex);
+    }, 3000);
+  }
 }
 
 async function _doAIChat(msg, thinkId){
@@ -3642,7 +3649,24 @@ FORMAT RULES:
 - Warm, personal tone — address them by name`;
 
   const chartNote = kundliContext ? 'CHART:'+kundliContext : '';
-  const systemPrompt = 'You are Jyotish AI, an expert Vedic astrologer who gives rich detailed personal readings. Never give short answers. '+langNote+(chartNote?' '+chartNote:'');
+  const systemPrompt = `You are Jyotish AI, an expert Vedic astrologer.
+
+LANGUAGE DETECTION RULE (very important):
+- If user writes in pure English → reply in English
+- If user writes in Odia script (ଓଡ଼ିଆ) → reply in Odia script
+- If user writes Odia words in English letters (Romanized Odia) like "mo kundali", "mora career", "bibaha kebe heba", "dasha fala" → reply in ODIA SCRIPT (ଓଡ଼ିଆ)
+- If app language is Odia (${(chatLang||APP_LANG)==='od'?'YES':'NO'}) → prefer Odia script replies
+
+FORMAT RULES (always):
+- Use ## for section headers
+- Use **bold** for planet names and key years
+- Numbered list (1. 2. 3.) for remedies
+- MINIMUM 15 sentences per reply
+- End with personal blessing 🙏
+- Never give a short answer
+
+${langNote}
+${chartNote?chartNote:''}`;
 
   try{
     const messages=[...chatHistory.slice(-8)];
@@ -3651,7 +3675,7 @@ FORMAT RULES:
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
         model:'claude-haiku-4-5-20251001',
-        max_tokens:1000,
+        max_tokens:1500,
         system:systemPrompt,
         messages
       })
@@ -3674,20 +3698,15 @@ FORMAT RULES:
     const thinkEl=document.getElementById(thinkId);
     if(thinkEl){
       thinkEl.classList.remove('thinking');
-      const isOd = APP_LANG==='od';
-      if(e.message.includes('504')||e.message.includes('timeout')){
-        thinkEl.textContent = isOd
-          ? 'ସର୍ଭର ବ୍ୟସ୍ତ ଅଛି। ଦୟାକରି ୩୦ ସେକେଣ୍ଡ ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।'
-          : 'Server is busy. Please wait 30 seconds and try again.';
-      } else {
-        thinkEl.textContent = isOd
-          ? 'ଉତ୍ତର ଦେଇ ପାରିଲୁ ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।'
-          : 'Could not get response. Please try again.';
-      }
+      const isOd2 = (chatLang||APP_LANG)==='od';
+      thinkEl.textContent = isOd2
+        ? 'ଉତ୍ତର ଦେଇ ପାରିଲୁ ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।'
+        : 'Server busy. Please try again.';
     }
   }
-  sendBtn.disabled=false;
-  document.getElementById('chat-input').focus();
+  if(sendBtn) sendBtn.disabled=false;
+  const ci=document.getElementById('chat-input');
+  if(ci) ci.focus();
 }
 
 
@@ -5847,19 +5866,20 @@ function showNextAstroTopic(topics, index){
 function chatTopicTap(btn, topic){
   // Remove the button row that was tapped
   if(btn && btn.parentElement) btn.parentElement.remove();
+  // Stop current auto sequence timer
+  clearTimeout(astroMsgTimer);
   // Add as user bubble immediately
   addChatBubble(topic, 'user');
   chatHistory.push({role:'user', content: topic});
   const input = document.getElementById('chat-input');
   if(input) input.value = '';
-  // AI responds, then sequence continues from next index
+  // AI responds, then continue sequence
   sendChatMsg(topic).then(()=>{
-    // Resume sequence after a short delay if it hasn't continued
+    // After AI replies, show next auto-topic after 2.5s
     if(astroTopics.length > 0 && astroCurrentIndex < astroTopics.length){
-      clearTimeout(astroMsgTimer);
       astroMsgTimer = setTimeout(()=>{
         showNextAstroTopic(astroTopics, astroCurrentIndex);
-      }, 2000);
+      }, 2500);
     }
   }).catch(()=>{});
 }
