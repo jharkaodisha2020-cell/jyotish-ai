@@ -489,9 +489,13 @@ select option{background:#0C0602}
 <div class="chat-page" id="chat-page">
   <div class="chat-header">
     <svg width="28" height="28" viewBox="0 0 28 28"><circle cx="14" cy="14" r="13" fill="#1E110A" stroke="#B8870A" stroke-width=".8"/><text x="14" y="18" text-anchor="middle" font-size="11" fill="#B8870A" font-family="serif">ॐ</text></svg>
-    <div>
+    <div style="flex:1">
       <div class="chat-header-title">Jyotish AI — Astro Chat</div>
       <div style="font-size:10px;color:var(--muted)">Ask anything about your Kundli · ଜ୍ୟୋତିଷ ପ୍ରଶ୍ନ</div>
+    </div>
+    <div style="display:flex;gap:4px;align-items:center;margin-right:8px">
+      <button id="chat-lang-en" onclick="setChatLang('en')" style="background:var(--maroon);color:var(--cream);border:none;border-radius:12px;padding:3px 10px;font-size:10px;font-weight:700;cursor:pointer;font-family:'Lato',sans-serif">EN</button>
+      <button id="chat-lang-od" onclick="setChatLang('od')" style="background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:12px;padding:3px 10px;font-size:10px;font-weight:700;cursor:pointer;font-family:'Noto Serif Oriya',sans-serif">ଓଡ଼ିଆ</button>
     </div>
     <button class="chat-close" onclick="closeChat()">✕</button>
   </div>
@@ -3476,6 +3480,55 @@ async function downloadPDF(){
 }
 
 
+let chatLang = APP_LANG || 'en';
+
+function setChatLang(lang){
+  chatLang = lang;
+  const enBtn = document.getElementById('chat-lang-en');
+  const odBtn = document.getElementById('chat-lang-od');
+  if(enBtn){
+    enBtn.style.background = lang==='en' ? 'var(--maroon)' : 'transparent';
+    enBtn.style.color = lang==='en' ? 'var(--cream)' : 'var(--muted)';
+    enBtn.style.border = lang==='en' ? 'none' : '1px solid var(--border)';
+  }
+  if(odBtn){
+    odBtn.style.background = lang==='od' ? 'var(--maroon)' : 'transparent';
+    odBtn.style.color = lang==='od' ? 'var(--cream)' : 'var(--muted)';
+    odBtn.style.border = lang==='od' ? 'none' : '1px solid var(--border)';
+  }
+  // Update placeholder
+  const input = document.getElementById('chat-input');
+  if(input) input.placeholder = lang==='od' ? 'ଆପଣଙ୍କ ଜ୍ୟୋତିଷ ପ୍ରଶ୍ନ ଲିଖନ୍ତୁ...' : 'Ask your astrology question...';
+  // Update quick prompts
+  buildChatQuickPrompts(lang);
+}
+
+function buildChatQuickPrompts(lang){
+  const sugsEl = document.getElementById('chat-suggestions');
+  if(!sugsEl) return;
+  const sugs = lang==='od' ? [
+    'ମୋ ବ୍ୟକ୍ତିତ୍ୱ ଓ ଜୀବନ ଲକ୍ଷ୍ୟ',
+    'ବିବାହ କେବେ ଓ କେଉଁ ପ୍ରକାର',
+    'ଜୀବନ ସାଥୀ କେଉଁ ପ୍ରକାର ହେବ',
+    'ମୋ କ୍ୟାରିୟର ଓ ଶ୍ରେଷ୍ଠ ବର୍ଷ',
+    'ଦଶା ଫଳ ଓ ଉପଚାର',
+    'ସ୍ୱାସ୍ଥ୍ୟ ଓ ଆୟୁ ବିଷୟ',
+    'ବିଦେଶ ଯୋଗ ଅଛି କି',
+    'ଧନ ଓ ସ୍ଥାୟୀ ସମ୍ପତ୍ତି',
+  ] : [
+    'Tell me about my personality',
+    'When will I get married?',
+    'What will my spouse be like?',
+    'My career & best years ahead',
+    'My current Dasha effect & remedy',
+    'My health prediction',
+    'Foreign travel or settlement?',
+    'My wealth & property prospects',
+  ];
+  sugsEl.innerHTML = sugs.map(s=>`<button class="chat-sug" onclick="chatSuggest(this)">${s}</button>`).join('');
+  sugsEl.style.display = 'flex';
+}
+
 function chatKey(e){
   if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChat();}
 }
@@ -3503,6 +3556,7 @@ async function sendChatMsg(msg){
   if(sendBtn) sendBtn.disabled = false;
   const input = document.getElementById('chat-input');
   if(input) input.focus();
+  return true;
 }
 
 async function sendChat(){
@@ -3537,7 +3591,7 @@ async function _doAIChat(msg, thinkId){
     kundliContext='Name:'+res.input?.nm+' Lagna:'+res.ascendant?.rashiName+' Moon:'+p0[1]?.rashiName+' Nak:'+res.moonNak?.name+' Dasha:'+res.currDasha?.planet+' till '+res.currDasha?.end?.getFullYear()+' Antar:'+res.currAntar?.planet+' Planets:'+p0.map(x=>x.name[0]+x.rashiName[0]+'H'+x.house).join(',');
   }
 
-  const isOdia = APP_LANG === 'od';
+  const isOdia = (chatLang || APP_LANG) === 'od';
   const langNote = isOdia
     ? `ସ୍ୱଭାବିକ ଓ ସ୍ୱଚ୍ଛ ଓଡ଼ିଆ ଭାଷାରେ ଉତ୍ତର ଦିଅ। ଠିକ୍ ନିମ୍ନ style ଅନୁସରଣ କର:
 
@@ -5433,6 +5487,10 @@ function closeChat(){
 function openChat(){
   const chatPage = document.getElementById('chat-page');
   if(chatPage) chatPage.classList.add('open');
+  // Set chat language to match app language
+  chatLang = APP_LANG || 'en';
+  setChatLang(chatLang);
+  buildChatQuickPrompts(chatLang);
   const input = document.getElementById('chat-input');
   if(input) setTimeout(()=>input.focus(), 300);
 }
@@ -5451,6 +5509,8 @@ function clearKundliCache(){
 let astroMsgTimer = null;
 let astroTopicIndex = 0;
 let astroStarted = false;
+let astroTopics = [];
+let astroCurrentIndex = 0;
 
 function startAstrologerChat(){
   if(!S.calcResult){toast('Please generate a Kundli first.');return;}
@@ -5494,13 +5554,14 @@ function runAstrologerSequence(){
   // Build topic sequence from actual reading data
   const topics = isOd ? [
     {
-      delay: 600,
-      msg: `🔮 ${nm} ଙ୍କ ଜନ୍ମ ଚକ୍ର ଦେଖିଲି...
+      delay: 400,
+      msg: `🔮 ${nm} ଙ୍କ ଜନ୍ମ ଚକ୍ର ଦେଖିଲି।
 
-**${asc} ଲଗ୍ନ · ${moonRashi} ରାଶି · ${nak} ନକ୍ଷତ୍ର**
+**${asc} ଲଗ୍ନ · ${moonRashi} ରାଶି · ${nak} ନକ୍ଷତ୍ର · ${dasha} ମହାଦଶା**
 
-ତୁମ ଜୀବନ ବିଷୟରେ ବହୁ ଗୁରୁତ୍ୱପୂର୍ଣ ବାର୍ତ୍ତା ଅଛି। ଗୋଟିଏ ଗୋଟିଏ ଭାବେ ଜଣାଉଛି...`,
-      delay_after: 2500
+ଆପଣଙ୍କ ସମ୍ପୂର୍ଣ କୁଣ୍ଡଳୀ ବିଶ୍ଳେଷଣ ଆରମ୍ଭ କରୁଛି...`,
+      delay_after: 1000,
+      auto_ask: 'ମୋ କୁଣ୍ଡଳୀ ସମ୍ପର୍କରେ ବିସ୍ତାରିତ ଜଣାଅ'
     },
     {
       delay: 2500,
@@ -5582,13 +5643,14 @@ _ଉଦାହରଣ: "ମୋ ବ୍ୟବସାୟ ଆରମ୍ଭ ପାଇଁ 
     }
   ] : [
     {
-      delay: 600,
-      msg: `🔮 I've analyzed ${nm}'s birth chart...
+      delay: 400,
+      msg: `🔮 ${nm}, I have your complete birth chart ready.
 
-**${asc} Lagna · ${moonRashi} Moon · ${nak} Nakshatra**
+**${asc} Lagna · ${moonRashi} Moon · ${nak} Nakshatra · ${dasha} Mahadasha**
 
-There are important insights about your life. Let me reveal them one by one...`,
-      delay_after: 2500
+Let me start with your complete Kundli reading...`,
+      delay_after: 1000,
+      auto_ask: isOd ? 'ମୋ କୁଣ୍ଡଳୀ ସମ୍ପର୍କରେ ବିସ୍ତାରିତ ଜଣାଅ' : 'Tell me everything about my Kundli'
     },
     {
       delay: 2500,
@@ -5670,7 +5732,9 @@ _Example: "What's the best time to start a business?" or "What remedies for my h
     }
   ];
 
-  // Show topics sequentially
+  // Store topics globally and start sequence
+  astroTopics = topics;
+  astroCurrentIndex = 0;
   showNextAstroTopic(topics, 0);
 }
 
@@ -5686,6 +5750,24 @@ function showNextAstroTopic(topics, index){
     // Remove typing indicator
     const typingEl = document.getElementById(typingId);
     if(typingEl) typingEl.remove();
+
+    // If this topic has auto_ask, send it automatically as user message
+    if(topic.auto_ask){
+      setTimeout(()=>{
+        addChatBubble(topic.auto_ask, 'user');
+        chatHistory.push({role:'user', content: topic.auto_ask});
+        sendChatMsg(topic.auto_ask).then(()=>{
+          // After AI responds, show next topic
+          if(index + 1 < topics.length){
+            clearTimeout(astroMsgTimer);
+            astroMsgTimer = setTimeout(()=>{
+              showNextAstroTopic(topics, index + 1);
+            }, 2000);
+          }
+        });
+      }, topic.delay_after || 1000);
+      return; // Don't show followup button for auto_ask topics
+    }
 
     // Format message
     let formatted = topic.msg;
@@ -5716,6 +5798,7 @@ function showNextAstroTopic(topics, index){
     }
 
     // Schedule next topic
+    astroCurrentIndex = index + 1;
     if(!topic.final && index + 1 < topics.length){
       astroMsgTimer = setTimeout(()=>{
         showNextAstroTopic(topics, index + 1);
@@ -5764,11 +5847,18 @@ function chatTopicTap(btn, topic){
   // Add as user bubble immediately
   addChatBubble(topic, 'user');
   chatHistory.push({role:'user', content: topic});
-  // Clear input just in case
   const input = document.getElementById('chat-input');
   if(input) input.value = '';
-  // Trigger AI response directly (bypass input check in sendChat)
-  sendChatMsg(topic);
+  // AI responds, then sequence continues from next index
+  sendChatMsg(topic).then(()=>{
+    // Resume sequence after a short delay if it hasn't continued
+    if(astroTopics.length > 0 && astroCurrentIndex < astroTopics.length){
+      clearTimeout(astroMsgTimer);
+      astroMsgTimer = setTimeout(()=>{
+        showNextAstroTopic(astroTopics, astroCurrentIndex);
+      }, 2000);
+    }
+  }).catch(()=>{});
 }
 
 function addChatBubble(text, type, id){
