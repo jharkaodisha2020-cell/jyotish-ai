@@ -1955,6 +1955,7 @@ function selectAppLang(lang){
 }
 
 function updateChatSuggestions(lang){
+  const chatBody2 = document.getElementById('chat-messages') || document.getElementById('chat-body');
   const sugsEl = document.getElementById('chat-suggestions');
   if(!sugsEl) return;
   const sugs = lang==='od' ? [
@@ -2003,6 +2004,7 @@ const T = {
 function t(key){ return (T[APP_LANG||'en']||T.en)[key] || (T.en)[key] || key; }
 
 const S={user:null,token:null,plan:null,kGender:'Male',lang:'en',calcResult:null};
+let chatHistory = [];
 // Restore session token immediately on load
 (function(){try{const s=localStorage.getItem('jyotish_session');if(s){const d=JSON.parse(s);if(d&&d.token){S.token=d.token;}}}catch(e){}})();
 const PLANS={basic:{n:'Jataka Reading',od:'ଜାତକ ପଠନ',price:100,days:365,tag:'One-Time'},monthly:{n:'Monthly Predictions',od:'ମାସିକ ଭବିଷ୍ୟ',price:50,days:30,tag:'Monthly'},yearly:{n:'Varshik Annual',od:'ବାର୍ଷିକ',price:500,days:365,tag:'Annual'}};
@@ -2070,6 +2072,10 @@ function dashGo(tab){
   },50);}
   else if(tab==='santaan'){nav('santaan');}
   else if(tab==='userdetails'){nav('userdetails');}
+  else if(tab==='chat'){
+    const chatPage=document.getElementById('chat-page');
+    if(chatPage)chatPage.classList.add('open');
+  }
 }
 
 /* ─── PLAN removed duplicate ──────────────────────────────────────────────*/
@@ -3489,6 +3495,7 @@ async function sendChat(){
   const msg=input.value.trim();
   if(!msg)return;
   input.value='';
+  const chatBody2 = document.getElementById('chat-messages') || document.getElementById('chat-body');
   const sugsEl = document.getElementById('chat-suggestions');
   if(sugsEl) sugsEl.style.display='none';
 
@@ -3500,6 +3507,7 @@ async function sendChat(){
   addChatBubble('Consulting the stars...','ai thinking',thinkId);
   await _doAIChat(msg, thinkId);
   sendBtn.disabled=false;
+  const cm=document.getElementById('chat-messages');if(cm)cm.scrollTop=cm.scrollHeight;
   document.getElementById('chat-input').focus();
 }
 
@@ -4443,6 +4451,7 @@ function getLahiriPanch(jd){
 
 function buildPanchang(){
   const isOd=APP_LANG==='od';
+  try{
   const now=new Date();
   const Y=now.getFullYear(),M=now.getMonth()+1,D=now.getDate();
   const h=now.getHours(),min=now.getMinutes();
@@ -4463,7 +4472,8 @@ function buildPanchang(){
 
   // Nakshatra
   const nakIdx=Math.floor((moonLon*27)/360);
-    const nakOd=E.NAK_OD[nakIdx]||'ଅଶ୍ୱିନୀ';
+  const nakName=E.NAK_NAMES[nakIdx]||'Ashwini';
+  const nakOd=E.NAK_OD[nakIdx]||'ଅଶ୍ୱିନୀ';
 
   // Yoga (sun+moon /13.333)
   const yogaAngle=n360p(sunLon+moonLon);
@@ -4545,6 +4555,7 @@ function buildPanchang(){
     <div><div class="wa-btn-txt">${isOd?'WhatsApp ରେ ଭାଗ କରନ୍ତୁ':'Share on WhatsApp'}</div>
     <div class="wa-btn-sub">${isOd?'ବନ୍ଧୁଙ୍କ ସହ ଆଜର ପଞ୍ଚାଙ୍ଗ ଭାଗ କରନ୍ତୁ':'Share today Panchang with friends'}</div></div>
   </button>`;
+  }catch(e){console.error('Panchang:',e);const pb=g('panchang-body');if(pb)pb.innerHTML='<div class="err">Panchang error: '+e.message+'</div>';}
 }
 
 /* ─── DAILY HOROSCOPE ───────────────────────────────*/
@@ -5398,8 +5409,16 @@ function shareKundli(){
   }
 }
 
+function closeChat(){
+  const chatPage = document.getElementById('chat-page');
+  if(chatPage) chatPage.classList.remove('open');
+}
+
 function openChat(){
-  dashGo('chat');
+  const chatPage = document.getElementById('chat-page');
+  if(chatPage) chatPage.classList.add('open');
+  const input = document.getElementById('chat-input');
+  if(input) setTimeout(()=>input.focus(), 300);
 }
 
 function clearKundliCache(){
@@ -5431,8 +5450,9 @@ function startAstrologerChat(){
 
   setTimeout(()=>{
     // Clear existing chat
+    if(typeof chatHistory === 'undefined') window.chatHistory = [];
     chatHistory = [];
-    const chatBody = document.getElementById('chat-body');
+    const chatBody = document.getElementById('chat-messages') || document.getElementById('chat-body');
     if(chatBody) chatBody.innerHTML = '';
     const sugs = document.getElementById('chat-suggestions');
     if(sugs) sugs.style.display = 'none';
@@ -5726,7 +5746,7 @@ function chatTopicTap(btn, topic){
 }
 
 function addChatBubble(text, type, id){
-  const chatBody = document.getElementById('chat-body');
+  const chatBody = document.getElementById('chat-messages') || document.getElementById('chat-body');
   if(!chatBody) return;
   const div = document.createElement('div');
   if(id) div.id = id;
