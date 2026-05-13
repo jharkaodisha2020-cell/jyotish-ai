@@ -255,6 +255,12 @@ select option{background:#0C0602}
 .typing-dot:nth-child(2){animation-delay:.15s}
 .typing-dot:nth-child(3){animation-delay:.3s}
 @keyframes typingBounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
+/* AI Chat Popup */
+@keyframes slideUp{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
+#ai-chat-popup.show{display:flex}
+#timed-chat-page.show{display:flex}
+#chat-locked-overlay.show{display:flex}
+
 /* global user details */
 .user-details-bar{background:linear-gradient(135deg,var(--surface),#1E0800);border:1px solid var(--gold);border-radius:12px;padding:14px;margin-bottom:14px}
 .ud-title{font-family:'Cinzel',serif;font-size:13px;color:var(--gold-lt);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
@@ -925,33 +931,110 @@ select option{background:#0C0602}
 <!-- ═══ KUNDLI RESULT ═══ -->
 <div class="pg" id="pg-result">
   <div class="wrap">
-    <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+    <!-- Top bar -->
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:14px;padding-top:4px">
       <div class="back" onclick="dashGo('kundli')" style="flex:1">← New Reading</div>
       <button onclick="shareKundli()" style="background:rgba(184,135,10,.15);border:1px solid rgba(184,135,10,.3);border-radius:7px;padding:6px 12px;font-size:11px;color:var(--gold-lt);cursor:pointer;font-family:'Lato',sans-serif">📤 Share</button>
     </div>
-    <div class="chat-read-banner" id="read-kundli-banner" onclick="startAstrologerChat()">
-      <div class="chat-read-banner-ic">🔮</div>
-      <div class="chat-read-banner-txt">
-        <div class="chat-read-banner-title" id="read-banner-title">Read My Kundli — Astrologer Speaks</div>
-        <div class="chat-read-banner-sub" id="read-banner-sub">Tap to reveal your marriage, career, dasha & more...</div>
-      </div>
-      <div style="color:var(--gold-lt);font-size:18px">→</div>
-    </div>
-    <div class="pdf-lang-row">
-      <button class="pdf-lang-btn on" id="pdfl-en" onclick="setPdfLang('en')">English PDF</button>
-      <button class="pdf-lang-btn" id="pdfl-od" onclick="setPdfLang('od')">ଓଡ଼ିଆ PDF</button>
-    </div>
-    <button class="pdf-btn" onclick="downloadPDF()">⬇ Download Kundli Report</button>
-    <button class="wa-btn" onclick="shareKundliWA()" style="margin-bottom:12px">
-      <div class="wa-btn-ic">📱</div>
-      <div><div class="wa-btn-txt" id="wa-share-txt">Share on WhatsApp</div>
-      <div class="wa-btn-sub" id="wa-share-sub">Invite friends to get their Kundli</div></div>
-    </button>
-    <div class="lang-toggle">
-      <button class="lt-btn on" id="lt-en" onclick="setLang('en')">English</button>
-      <button class="lt-btn" id="lt-od" onclick="setLang('od')">ଓଡ଼ିଆ</button>
-    </div>
+
+    <!-- Kundli Result Body -->
     <div id="result-body"></div>
+
+    <!-- PDF Download + AI Chat Buttons -->
+    <div style="margin-top:16px">
+      <button class="pdf-btn" id="main-pdf-btn" onclick="downloadPDFAndShowChat()">
+        ⬇ Download Kundli PDF Report
+      </button>
+      <button onclick="openGPTChat()" style="width:100%;background:linear-gradient(135deg,#10a37f,#1a7a5e);color:#fff;border:none;border-radius:12px;padding:14px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Lato',sans-serif;display:flex;align-items:center;justify-content:center;gap:10px;margin-top:10px">
+        <span style="font-size:20px">🤖</span>
+        <div style="text-align:left">
+          <div id="ai-chat-btn-txt">Chat with AI — Know More About Your Kundli</div>
+          <div style="font-size:10px;font-weight:400;opacity:.8">GPT-4o · 20 min FREE · File attach</div>
+        </div>
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ AI CHAT POPUP (after PDF download) ═══ -->
+<div id="ai-chat-popup" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.85);backdrop-filter:blur(4px);align-items:flex-end;justify-content:center">
+  <div style="background:#1A0E06;border:1px solid var(--gold);border-radius:20px 20px 0 0;width:100%;max-width:500px;padding:24px 20px 32px;animation:slideUp .3s ease">
+    <div style="width:40px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 20px"></div>
+    <div style="text-align:center;margin-bottom:20px">
+      <div style="font-size:36px;margin-bottom:10px">🤖</div>
+      <div style="font-family:'Cinzel',serif;font-size:18px;color:var(--gold-lt);margin-bottom:6px" id="popup-title">Ask AI About Your Kundli</div>
+      <div style="font-size:12px;color:var(--muted)" id="popup-sub">Chat with GPT-4o — Upload your PDF and ask anything</div>
+    </div>
+
+    <!-- Timer display -->
+    <div style="background:rgba(184,135,10,.08);border:1px solid rgba(184,135,10,.2);border-radius:10px;padding:10px 14px;margin-bottom:16px;display:flex;align-items:center;gap:10px">
+      <span style="font-size:20px">⏱</span>
+      <div>
+        <div style="font-size:11px;color:var(--muted)" id="popup-timer-label">15 min free chat remaining</div>
+        <div style="font-family:'Cinzel',serif;font-size:18px;color:var(--green-l);font-weight:700" id="popup-timer">15:00</div>
+      </div>
+      <div style="flex:1;text-align:right;font-size:10px;color:var(--muted)">After free time<br/>₹49 for 30 min</div>
+    </div>
+
+    <!-- Open ChatGPT button -->
+    <button onclick="openGPTChat()" style="width:100%;background:linear-gradient(135deg,#10a37f,#0d8c6d);color:#fff;border:none;border-radius:12px;padding:16px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Lato',sans-serif;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:10px">
+      <span style="font-size:22px">🤖</span>
+      <div>
+        <div id="popup-chat-btn-txt">Open AI Chat — Ask About My Kundli</div>
+        <div style="font-size:10px;font-weight:400;opacity:.8">Powered by GPT-4o · Upload PDF · Ask anything</div>
+      </div>
+    </button>
+
+    <button onclick="closeAIChatPopup()" style="width:100%;background:transparent;border:1px solid var(--border);border-radius:10px;padding:12px;font-size:13px;color:var(--muted);cursor:pointer;font-family:'Lato',sans-serif">
+      Maybe later
+    </button>
+  </div>
+</div>
+
+<!-- ═══ BUILT-IN AI CHAT (with 20 min timer) ═══ -->
+<div id="timed-chat-page" style="display:none;position:fixed;inset:0;z-index:450;background:var(--bg);flex-direction:column">
+  <div style="display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--surface);border-bottom:1px solid var(--border)">
+    <svg width="28" height="28" viewBox="0 0 28 28"><circle cx="14" cy="14" r="13" fill="#1E110A" stroke="#B8870A" stroke-width=".8"/><text x="14" y="18" text-anchor="middle" font-size="11" fill="#B8870A" font-family="serif">ॐ</text></svg>
+    <div style="flex:1">
+      <div style="font-family:'Cinzel',serif;font-size:14px;color:var(--cream)" id="timed-chat-title">Jyotish AI Chat</div>
+      <div style="font-size:10px;color:var(--muted)">Powered by GPT-4o</div>
+    </div>
+    <!-- Timer in header -->
+    <div style="background:rgba(184,135,10,.1);border:1px solid rgba(184,135,10,.2);border-radius:20px;padding:4px 12px;text-align:center">
+      <div style="font-size:8px;color:var(--muted);text-transform:uppercase">Free time</div>
+      <div style="font-family:'Cinzel',serif;font-size:14px;color:var(--green-l);font-weight:700" id="timed-chat-timer">15:00</div>
+    </div>
+    <button onclick="closeTimedChat()" style="background:transparent;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:4px">✕</button>
+  </div>
+
+  <!-- File attach area -->
+  <div id="timed-file-area" style="padding:10px 16px;background:#0C0602;border-bottom:1px solid var(--border)">
+    <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:12px;color:var(--muted)">
+      <input type="file" id="kundli-pdf-input" accept=".pdf,image/*" style="display:none" onchange="handlePDFAttach(this)"/>
+      <span style="background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:5px 12px;font-size:11px;color:var(--gold-lt);cursor:pointer">📎 Attach Kundli PDF</span>
+      <span id="attached-file-name" style="color:var(--green-l);font-size:11px"></span>
+    </label>
+  </div>
+
+  <div id="timed-chat-messages" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px"></div>
+
+  <!-- Locked overlay (shown after 20 min) -->
+  <div id="chat-locked-overlay" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,.9);z-index:10;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center">
+    <div style="font-size:48px;margin-bottom:16px">⏰</div>
+    <div style="font-family:'Cinzel',serif;font-size:20px;color:var(--gold-lt);margin-bottom:8px" id="locked-title">Free Chat Ended</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:24px;line-height:1.7" id="locked-sub">Your 20 minutes of free AI consultation is complete.<br/>Continue for deeper insights.</div>
+    <button onclick="payForChat()" style="background:linear-gradient(135deg,var(--gold),var(--saffron));color:#fff;border:none;border-radius:12px;padding:16px 32px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Cinzel',serif;margin-bottom:10px;width:100%">
+      💳 Continue for ₹49 (30 min more)
+    </button>
+    <button onclick="closeTimedChat()" style="background:transparent;border:1px solid var(--border);border-radius:10px;padding:12px;font-size:13px;color:var(--muted);cursor:pointer;width:100%">
+      Close Chat
+    </button>
+  </div>
+
+  <div style="display:flex;gap:8px;padding:12px 16px;background:var(--surface);border-top:1px solid var(--border)">
+    <textarea id="timed-chat-input" style="flex:1;background:#0C0602;border:1px solid var(--border);border-radius:18px;padding:10px 14px;font-size:13px;color:var(--ink);font-family:'Lato',sans-serif;outline:none;resize:none;max-height:80px" placeholder="Ask about your Kundli..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendTimedChat();}"></textarea>
+    <button onclick="sendTimedChat()" id="timed-send-btn" style="background:var(--gold);border:none;border-radius:50%;width:40px;height:40px;cursor:pointer;font-size:16px;flex-shrink:0">➤</button>
   </div>
 </div>
 
@@ -3533,25 +3616,31 @@ function formatChatMsg(text){
   if(!text) return '';
   let lines = text.split('\n');
   let html = lines.map(function(line){
-    // ## Header
-    if(line.startsWith('## ')) return '<div style="font-family:\'Cinzel\',serif;font-size:13px;color:var(--gold-lt);font-weight:700;margin:14px 0 6px;padding-bottom:4px;border-bottom:1px solid rgba(184,135,10,.2)">✦ '+line.substring(3)+'</div>';
-    // # Header
-    if(line.startsWith('# ')) return '<div style="font-family:\'Cinzel\',serif;font-size:15px;color:var(--gold-lt);font-weight:700;margin:12px 0 6px">'+line.substring(2)+'</div>';
-    // Numbered list
-    var numMatch = line.match(/^(\d+)\.\s+(.+)$/);
-    if(numMatch) return '<div style="display:flex;gap:8px;margin:6px 0;padding:8px 10px;background:rgba(184,135,10,.05);border-left:2px solid var(--gold);border-radius:0 6px 6px 0"><span style="color:var(--gold);font-weight:700;flex-shrink:0">'+numMatch[1]+'.</span><span>'+numMatch[2]+'</span></div>';
-    // Bullet list
-    if(line.startsWith('- ') || line.startsWith('• ')) return '<div style="display:flex;gap:8px;margin:4px 0"><span style="color:var(--gold);flex-shrink:0">✦</span><span>'+line.substring(2)+'</span></div>';
-    return line;
-  }).join('\n');
+    var t = line.trim();
+    // --- divider
+    if(t === '---' || t === '***' || t === '___') return '<hr style="border:none;border-top:1px solid rgba(184,135,10,.2);margin:10px 0"/>';
+    // ### Header (3 hashes)
+    if(t.startsWith('### ')) return '<div style="font-family:\'Cinzel\',serif;font-size:12px;color:var(--cream);font-weight:700;margin:12px 0 5px;letter-spacing:.5px">'+t.substring(4)+'</div>';
+    // ## Header (2 hashes)
+    if(t.startsWith('## ')) return '<div style="font-family:\'Cinzel\',serif;font-size:13px;color:var(--gold-lt);font-weight:700;margin:14px 0 6px;padding-bottom:4px;border-bottom:1px solid rgba(184,135,10,.25)">✦ '+t.substring(3)+'</div>';
+    // # Header (1 hash)
+    if(t.startsWith('# ')) return '<div style="font-family:\'Cinzel\',serif;font-size:15px;color:var(--gold-lt);font-weight:700;margin:14px 0 8px;text-align:center">'+t.substring(2)+'</div>';
+    // Numbered list: 1. text
+    var numMatch = t.match(/^(\d+)\.\s+(.+)$/);
+    if(numMatch) return '<div style="display:flex;gap:8px;margin:6px 0;padding:8px 12px;background:rgba(184,135,10,.05);border-left:2px solid var(--gold);border-radius:0 7px 7px 0"><span style="color:var(--gold);font-weight:700;flex-shrink:0;min-width:18px">'+numMatch[1]+'.</span><span style="line-height:1.7">'+numMatch[2]+'</span></div>';
+    // Bullet: - text or * text or ✦ text
+    if(t.startsWith('- ') || t.startsWith('* ')) return '<div style="display:flex;gap:8px;margin:4px 0 4px 4px;line-height:1.7"><span style="color:var(--gold);flex-shrink:0;margin-top:2px">✦</span><span>'+t.substring(2)+'</span></div>';
+    if(t.startsWith('✦') && t.length > 2) return '<div style="display:flex;gap:8px;margin:4px 0 4px 4px;line-height:1.7"><span style="color:var(--gold);flex-shrink:0">✦</span><span>'+t.substring(1).trim()+'</span></div>';
+    // Empty line
+    if(t === '') return '<div style="margin:4px 0"></div>';
+    // Normal text
+    return '<div style="line-height:1.85;margin:2px 0">'+line+'</div>';
+  }).join('');
 
-  // **bold** → gold
+  // **bold** → gold bold
   html = html.split('**').map(function(s,i){
     return i%2===1 ? '<strong style="color:var(--gold-lt)">'+s+'</strong>' : s;
   }).join('');
-
-  // Newlines → br
-  html = html.replace(/\n\n/g,'<br/><br/>').replace(/\n/g,'<br/>');
 
   return html;
 }
@@ -5568,6 +5657,389 @@ function openChat(){
   buildChatQuickPrompts(chatLang);
   const input = document.getElementById('chat-input');
   if(input) setTimeout(()=>input.focus(), 300);
+}
+
+/* ═══════════════════════════════════════════
+   20-MIN TIMED AI CHAT SYSTEM
+═══════════════════════════════════════════*/
+let chatTimerInterval = null;
+let chatSecondsLeft = 15 * 60; // 15 minutes
+let chatStarted = false;
+let attachedPDFBase64 = null;
+let timedChatHistory = [];
+const FREE_CHAT_SECONDS = 15 * 60;
+
+function downloadPDFAndShowChat(){
+  downloadPDF();
+}
+
+function showAIChatPopup(){
+  const isOd = APP_LANG==='od';
+  const popup = document.getElementById('ai-chat-popup');
+  if(!popup) return;
+  // Update text based on language
+  const title = document.getElementById('popup-title');
+  const sub = document.getElementById('popup-sub');
+  const btnTxt = document.getElementById('popup-chat-btn-txt');
+  if(title) title.textContent = isOd ? 'AI ଚାଟରେ ଆପଣଙ୍କ କୁଣ୍ଡଳୀ ବିଷୟରେ ଜାଣନ୍ତୁ' : 'Ask AI About Your Kundli';
+  if(sub) sub.textContent = isOd ? 'GPT-4o ସହ ଚାଟ — PDF ଅପଲୋଡ କରନ୍ତୁ ଓ ଯାହା ଜଣିବ ପ୍ରଶ୍ନ କରନ୍ତୁ' : 'Chat with GPT-4o — Upload PDF and ask anything';
+  if(btnTxt) btnTxt.textContent = isOd ? 'AI ଚାଟ ଖୋଲନ୍ତୁ — ମୋ କୁଣ୍ଡଳୀ ବିଷୟରେ ଜଣାଅ' : 'Open AI Chat — Ask About My Kundli';
+  popup.classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeAIChatPopup(){
+  const popup = document.getElementById('ai-chat-popup');
+  if(popup) popup.classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+function openGPTChat(){
+  closeAIChatPopup();
+  const isOd = APP_LANG==='od';
+  // Update timed chat title
+  const title = document.getElementById('timed-chat-title');
+  if(title) title.textContent = isOd ? 'Jyotish AI ଚାଟ' : 'Jyotish AI Chat';
+  const inp = document.getElementById('timed-chat-input');
+  if(inp) inp.placeholder = isOd ? 'ଆପଣଙ୍କ ପ୍ରଶ୍ନ ଲିଖନ୍ତୁ...' : 'Ask about your Kundli...';
+  // Update result page button
+  const btn = document.getElementById('ai-chat-btn-txt');
+  if(btn) btn.textContent = isOd ? 'AI ଚାଟ — ଆପଣଙ୍କ କୁଣ୍ଡଳୀ ବିଷୟରେ ଜାଣନ୍ତୁ' : 'Chat with AI — Know More About Your Kundli';
+  // Open the timed chat full screen
+  const page = document.getElementById('timed-chat-page');
+  if(page) page.classList.add('show');
+  document.body.style.overflow = 'hidden';
+  // Start timer if not started
+  if(!chatStarted){
+    chatStarted = true;
+    chatSecondsLeft = FREE_CHAT_SECONDS;
+    startChatTimer();
+    setTimeout(sendAutoKundliMessage, 800);
+  }
+}
+
+function closeTimedChat(){
+  const page = document.getElementById('timed-chat-page');
+  if(page) page.classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+function startChatTimer(){
+  chatTimerInterval = setInterval(()=>{
+    chatSecondsLeft--;
+    updateTimerDisplay();
+    if(chatSecondsLeft <= 0){
+      clearInterval(chatTimerInterval);
+      lockChat();
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay(){
+  const mins = Math.floor(chatSecondsLeft/60);
+  const secs = chatSecondsLeft % 60;
+  const display = mins+':'+(secs<10?'0':'')+secs;
+  const t1 = document.getElementById('timed-chat-timer');
+  const t2 = document.getElementById('popup-timer');
+  if(t1) {
+    t1.textContent = display;
+    t1.style.color = chatSecondsLeft < 120 ? 'var(--red-l)' : chatSecondsLeft < 300 ? '#E8A870' : 'var(--green-l)';
+  }
+  if(t2) t2.textContent = display;
+}
+
+function lockChat(){
+  const overlay = document.getElementById('chat-locked-overlay');
+  if(overlay) overlay.classList.add('show');
+  const isOd = APP_LANG==='od';
+  const t = document.getElementById('locked-title');
+  const s = document.getElementById('locked-sub');
+  if(t) t.textContent = isOd ? 'ମାଗଣା ଚାଟ ଶେଷ ହୋଇଗଲା' : 'Free Chat Ended';
+  if(s) s.textContent = isOd ? 'ଆପଣଙ୍କ ୨୦ ମିନିଟ ମାଗଣା AI ପରାମର୍ଶ ସଂପୂର୍ଣ ହୋଇଛି। ଅଧିକ ଜାଣିବା ପାଇଁ ଜାରି ରଖନ୍ତୁ।' : 'Your 20 minutes of free AI consultation is complete. Continue for deeper insights.';
+  // Disable input
+  const inp = document.getElementById('timed-chat-input');
+  const btn = document.getElementById('timed-send-btn');
+  if(inp) inp.disabled = true;
+  if(btn) btn.disabled = true;
+}
+
+function payForChat(){
+  const isOd = APP_LANG==='od';
+  // Show Razorpay payment page
+  showRazorpayChat(isOd);
+}
+
+function showRazorpayChat(isOd){
+  // Create payment page overlay
+  const overlay = document.createElement('div');
+  overlay.id = 'razorpay-overlay';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.95);display:flex;align-items:center;justify-content:center;padding:20px';
+  overlay.innerHTML = `
+    <div style="background:#1A0E06;border:1px solid var(--gold);border-radius:16px;padding:28px;max-width:380px;width:100%;text-align:center">
+      <div style="font-size:40px;margin-bottom:12px">💎</div>
+      <div style="font-family:'Cinzel',serif;font-size:20px;color:var(--gold-lt);margin-bottom:6px">
+        ${isOd?'AI ଚାଟ ଜାରି ରଖନ୍ତୁ':'Continue AI Consultation'}
+      </div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:20px;line-height:1.7">
+        ${isOd?'ଆପଣଙ୍କ ୨୦ ମିନିଟ ମାଗଣା ଚାଟ ଶେଷ ହୋଇଛି।':'Your 20 minutes free chat is complete.'}
+      </div>
+      
+      <!-- Plan options -->
+      <div style="display:flex;gap:10px;margin-bottom:20px">
+        <div onclick="selectChatPlan(this,'30min',49)" style="flex:1;background:rgba(184,135,10,.08);border:2px solid var(--gold);border-radius:10px;padding:14px;cursor:pointer;transition:.2s">
+          <div style="font-family:'Cinzel',serif;font-size:18px;color:var(--gold-lt);font-weight:700">₹49</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:3px">${isOd?'30 ମିନିଟ':'30 Minutes'}</div>
+        </div>
+        <div onclick="selectChatPlan(this,'60min',89)" style="flex:1;background:rgba(184,135,10,.04);border:1px solid var(--border);border-radius:10px;padding:14px;cursor:pointer;transition:.2s">
+          <div style="font-family:'Cinzel',serif;font-size:18px;color:var(--cream);font-weight:700">₹89</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:3px">${isOd?'60 ମିନିଟ':'60 Minutes'}</div>
+          <div style="font-size:9px;color:var(--green-l);margin-top:2px">BEST VALUE</div>
+        </div>
+      </div>
+
+      <button id="rzp-pay-btn" onclick="initiateRazorpay(49,'30min')" style="width:100%;background:linear-gradient(135deg,#10a37f,#0d8c6d);color:#fff;border:none;border-radius:12px;padding:15px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Cinzel',serif;margin-bottom:10px">
+        💳 ${isOd?'ଏବେ ପେ କରନ୍ତୁ':'Pay Now'} — ₹49
+      </button>
+      <button onclick="document.getElementById('razorpay-overlay').remove()" style="width:100%;background:transparent;border:1px solid var(--border);border-radius:10px;padding:11px;font-size:13px;color:var(--muted);cursor:pointer">
+        ${isOd?'ଏବେ ନୁହେଁ':'Not Now'}
+      </button>
+    </div>`;
+  document.body.appendChild(overlay);
+}
+
+let selectedPlanAmount = 49;
+let selectedPlanDuration = '30min';
+
+function selectChatPlan(el, duration, amount){
+  selectedPlanAmount = amount;
+  selectedPlanDuration = duration;
+  // Update button
+  const btn = document.getElementById('rzp-pay-btn');
+  if(btn) btn.textContent = '💳 Pay Now — ₹'+amount;
+  // Highlight selected
+  el.parentElement.querySelectorAll('div[onclick]').forEach(d=>{
+    d.style.borderColor='var(--border)';d.style.borderWidth='1px';
+    d.style.background='rgba(184,135,10,.04)';
+  });
+  el.style.borderColor='var(--gold)';el.style.borderWidth='2px';
+  el.style.background='rgba(184,135,10,.08)';
+  el.onclick = ()=>{}; // prevent recursive call
+}
+
+function initiateRazorpay(amount, plan){
+  // Check if Razorpay is loaded
+  if(typeof Razorpay === 'undefined'){
+    // Load Razorpay script dynamically
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.onload = () => openRazorpay(amount, plan);
+    script.onerror = () => toast('Payment gateway loading failed. Try again.');
+    document.head.appendChild(script);
+    return;
+  }
+  openRazorpay(amount, plan);
+}
+
+function openRazorpay(amount, plan){
+  const isOd = APP_LANG==='od';
+  const userName = S.user?.name || 'User';
+  const userEmail = S.user?.email || '';
+  
+  const options = {
+    key: 'rzp_test_YOUR_KEY_HERE', // Replace with your Razorpay key
+    amount: amount * 100, // in paise
+    currency: 'INR',
+    name: 'Jyotish AI',
+    description: 'AI Chat — '+plan,
+    image: 'https://jyotishaiodisha.netlify.app/icon.png',
+    handler: function(response){
+      // Payment success
+      document.getElementById('razorpay-overlay')?.remove();
+      const extraMins = plan==='30min'?30:60;
+      chatSecondsLeft = extraMins * 60;
+      // Unlock chat
+      document.getElementById('chat-locked-overlay')?.classList.remove('show');
+      const inp = document.getElementById('timed-chat-input');
+      const btn = document.getElementById('timed-send-btn');
+      if(inp) inp.disabled = false;
+      if(btn) btn.disabled = false;
+      // Restart timer
+      clearInterval(chatTimerInterval);
+      startChatTimer();
+      toast(isOd?'ଧନ୍ୟବାଦ! '+extraMins+' ମିନିଟ ଯୋଡ଼ା ହୋଇଛି':'Thank you! '+extraMins+' min added');
+    },
+    prefill: { name: userName, email: userEmail },
+    theme: { color: '#B8870A' }
+  };
+  
+  try{
+    const rzp = new Razorpay(options);
+    rzp.on('payment.failed', function(resp){
+      toast('Payment failed: '+resp.error.description);
+    });
+    rzp.open();
+  }catch(e){
+    toast('Payment error: '+e.message);
+  }
+}
+
+function handlePDFAttach(input){
+  const file = input.files[0];
+  if(!file) return;
+  const nameEl = document.getElementById('attached-file-name');
+  if(nameEl) nameEl.textContent = '✓ '+file.name;
+  // Read file as base64 for sending to API
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    attachedPDFBase64 = e.target.result.split(',')[1];
+    toast('PDF attached — now ask your question');
+  };
+  reader.readAsDataURL(file);
+}
+
+function addTimedBubble(text, role){
+  const msgs = document.getElementById('timed-chat-messages');
+  if(!msgs) return;
+  const div = document.createElement('div');
+  div.className = 'chat-bubble '+(role==='user'?'user':'ai');
+  div.style.maxWidth = '90%';
+  div.style.fontFamily = APP_LANG==='od' ? "'Noto Serif Oriya','Lato',serif" : "'Lato',sans-serif";
+  div.style.fontSize = '13px';
+  div.style.lineHeight = '1.85';
+  if(role === 'assistant') div.innerHTML = formatChatMsg(text);
+  else div.textContent = text;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return div;
+}
+
+function sendAutoKundliMessage(){
+  if(!S.calcResult) return;
+  const isOd = APP_LANG==='od';
+  const res = S.calcResult;
+  const nm = res.input?.nm || '';
+  const asc = res.ascendant?.rashiName || '';
+  const moon = res.planets?.[1]?.rashiName || '';
+  const nak = res.moonNak?.name || '';
+  const dasha = res.currDasha?.planet || '';
+
+  // Show kundli summary bubble
+  const summary = isOd
+    ? `🔮 ${nm} ଙ୍କ କୁଣ୍ଡଳୀ ସଂଲଗ୍ନ ହୋଇଛି
+✦ ଲଗ୍ନ: ${asc} | ରାଶି: ${moon} | ନକ୍ଷତ୍ର: ${nak} | ଦଶା: ${dasha}`
+    : `🔮 Kundli attached for ${nm}
+✦ Lagna: ${asc} | Moon: ${moon} | Nakshatra: ${nak} | Dasha: ${dasha}`;
+  
+  addTimedBubble(summary, 'assistant');
+
+  // Auto send first question after 1 sec
+  setTimeout(()=>{
+    const q = isOd ? 'ମୋ ସମ୍ପୂର୍ଣ କୁଣ୍ଡଳୀ ବିଶ୍ଳେଷଣ କର' : 'Tell me everything about my Kundli';
+    addTimedBubble(q, 'user');
+    timedChatHistory.push({role:'user', content: q});
+    sendTimedChatMsg(q);
+  }, 1000);
+}
+
+async function sendTimedChat(){
+  if(chatSecondsLeft <= 0) return;
+  const inp = document.getElementById('timed-chat-input');
+  const msg = inp?.value.trim();
+  if(!msg) return;
+  inp.value = '';
+  addTimedBubble(msg, 'user');
+  timedChatHistory.push({role:'user', content: msg});
+  await sendTimedChatMsg(msg);
+}
+
+async function sendTimedChatMsg(msg){
+  const btn = document.getElementById('timed-send-btn');
+  if(btn) btn.disabled = true;
+  
+  // Typing indicator
+  const typing = addTimedBubble('...', 'assistant');
+  if(typing) typing.style.color = 'var(--muted)';
+
+  try{
+    // Build kundli context
+    let ctx = '';
+    if(S.calcResult){
+      const res = S.calcResult;
+      const p = res.planets||[];
+      ctx = 'Name:'+res.input?.nm+' Lagna:'+res.ascendant?.rashiName+' Moon:'+p[1]?.rashiName+
+        ' Nak:'+res.moonNak?.name+' Pada:'+res.moonNak?.pada+
+        ' Dasha:'+res.currDasha?.planet+' till '+res.currDasha?.end?.getFullYear()+
+        ' Planets:'+p.map(x=>x.name.substring(0,3)+':'+x.rashiName.substring(0,3)+'H'+x.house+'('+x.dignity[0]+')').join(' ');
+    }
+
+    const isOd = APP_LANG==='od';
+    const sysPart = isOd
+      ? 'ବିଶেষଜ୍ଞ ଓଡ଼ିଆ ଜ୍ୟୋତିଷ AI। ## headers, **bold** planets, numbered remedies। ୧୫+ ବାକ୍ୟ। 🙏 ରେ ଶେଷ।'
+      : 'Expert Vedic astrologer AI. Use ## headers, **bold** planets, numbered remedies. Min 15 sentences. End with 🙏.';
+    
+    const systemPrompt = sysPart + (ctx ? ' CHART: '+ctx : '');
+
+    const resp = await fetch('/.netlify/functions/chat', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-haiku-4-5-20251001', // will be overridden to GPT-4o in chat.js
+        max_tokens:1500,
+        system:systemPrompt,
+        messages:[...timedChatHistory.slice(-8)]
+      })
+    });
+    const data = await resp.json();
+    const reply = (data.content||[]).map(c=>c.text||'').join('') || 'Please try again.';
+    
+    if(typing) typing.remove();
+    addTimedBubble(reply, 'assistant');
+    timedChatHistory.push({role:'assistant', content:reply});
+
+    // Show follow-up suggestions
+    showTimedChatSuggestions();
+
+  }catch(e){
+    if(typing) typing.textContent = 'Error: '+e.message+'. Please try again.';
+  }
+  if(btn) btn.disabled = false;
+}
+
+function showTimedChatSuggestions(){
+  const isOd = APP_LANG==='od';
+  const msgs = document.getElementById('timed-chat-messages');
+  if(!msgs) return;
+  const sugs = isOd ? [
+    'ବିବାହ ସମୟ ଓ ଜୀବନ ସାଥୀ',
+    'କ୍ୟାରିୟର ଓ ଅର୍ଥ',
+    'ସ୍ୱାସ୍ଥ୍ୟ ଓ ଉପଚାର',
+    'ଦଶା ଫଳ ଓ ଭବିଷ୍ୟ',
+    'ବିଦେଶ ଓ ସ୍ଥାୟୀ ସମ୍ପତ୍ତି',
+  ] : [
+    'Tell me about marriage & spouse',
+    'My career & best years',
+    'Health & remedies',
+    'Current Dasha & predictions',
+    'Foreign & property prospects',
+  ];
+  
+  // Remove old suggestions
+  const old = msgs.querySelector('.timed-sugs');
+  if(old) old.remove();
+  
+  const div = document.createElement('div');
+  div.className = 'timed-sugs';
+  div.style.cssText = 'display:flex;flex-wrap:wrap;gap:6px;margin:8px 0';
+  div.innerHTML = sugs.map(s=>`<button class="chat-topic-btn" style="font-size:11px" onclick="timedQuickAsk('${s.replace(/'/g,"\'")}',this.parentElement)">${s}</button>`).join('');
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function timedQuickAsk(topic, container){
+  if(container) container.remove();
+  addTimedBubble(topic, 'user');
+  timedChatHistory.push({role:'user', content:topic});
+  sendTimedChatMsg(topic);
 }
 
 function clearKundliCache(){
