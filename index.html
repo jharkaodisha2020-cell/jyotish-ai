@@ -3727,17 +3727,25 @@ async function _doAIChat(msg, thinkId){
     const res=S.calcResult;
     const p=res.planets||[];
     const p0=res.planets||[];
-    const h7p=p0.find(x=>x.house===7)?.name||'';
-    const h10p=p0.find(x=>x.house===10)?.name||'';
-    const h5p=p0.find(x=>x.house===5)?.name||'';
-    kundliContext='Name:'+res.input?.nm+
-      ' Lagna:'+res.ascendant?.rashiName+
-      ' Moon:'+p0[1]?.rashiName+
-      ' Nak:'+res.moonNak?.name+' Pada:'+res.moonNak?.pada+
-      ' Dasha:'+res.currDasha?.planet+' till '+res.currDasha?.end?.getFullYear()+
-      ' Antar:'+res.currAntar?.planet+
-      ' H7:'+h7p+' H10:'+h10p+' H5:'+h5p+
-      ' Planets:'+p0.map(x=>x.name.substring(0,3)+':'+x.rashiName.substring(0,3)+'H'+x.house+'('+x.dignity[0]+')').join(' ');
+    const asc0=res.ascendant||{};
+    const nak0=res.moonNak||{};
+    const dasha0=res.currDasha||{};
+    const antar0=res.currAntar||{};
+    const HOUSES0=['','1st','2nd','3rd','4th','5th','6th','7th','8th','9th','10th','11th','12th'];
+    const planetLines0=p0.map(pl=>`${pl.name}: ${pl.rashiName}, House ${pl.house} (${HOUSES0[pl.house]}), ${(pl.lon%30).toFixed(1)}°, ${pl.dignity||''}${pl.isRetro?' Retro':''}`).join('\n');
+    const dashaEnd0=dasha0.end?new Date(dasha0.end).getFullYear():'';
+    const antarEnd0=antar0.end?new Date(antar0.end).getFullYear():'';
+    kundliContext=`
+=== COMPLETE BIRTH CHART ===
+Name: ${res.input?.nm||''} | DOB: ${res.input?.dob||''} | TOB: ${res.input?.tob||''} | POB: ${res.input?.pob||''}
+Lagna: ${asc0.rashiName||''} | Moon: ${p0[1]?.rashiName||''} | Nakshatra: ${nak0.name||''} Pada ${nak0.pada||''}
+Mahadasha: ${dasha0.planet||''} till ${dashaEnd0} | Antardasha: ${antar0.planet||''} till ${antarEnd0}
+
+PLANETS:
+${planetLines0}
+
+7th House: ${p0.find(x=>x.house===7)?.name||'Empty'} | 10th: ${p0.find(x=>x.house===10)?.name||'Empty'} | 5th: ${p0.find(x=>x.house===5)?.name||'Empty'}
+===========================`;
   }
 
   const isOdia = (chatLang || APP_LANG) === 'od';
@@ -5981,15 +5989,75 @@ async function sendTimedChatMsg(msg){
   if(typing) typing.style.color = 'var(--muted)';
 
   try{
-    // Build kundli context
+    // Build FULL kundli context - same as pasting into ChatGPT
     let ctx = '';
     if(S.calcResult){
       const res = S.calcResult;
       const p = res.planets||[];
-      ctx = 'Name:'+res.input?.nm+' Lagna:'+res.ascendant?.rashiName+' Moon:'+p[1]?.rashiName+
-        ' Nak:'+res.moonNak?.name+' Pada:'+res.moonNak?.pada+
-        ' Dasha:'+res.currDasha?.planet+' till '+res.currDasha?.end?.getFullYear()+
-        ' Planets:'+p.map(x=>x.name.substring(0,3)+':'+x.rashiName.substring(0,3)+'H'+x.house+'('+x.dignity[0]+')').join(' ');
+      const asc = res.ascendant||{};
+      const nak = res.moonNak||{};
+      const dasha = res.currDasha||{};
+      const antar = res.currAntar||{};
+      const nm = res.input?.nm||'';
+      const dob = res.input?.dob||'';
+      const tob = res.input?.tob||'';
+      const pob = res.input?.pob||'';
+      const gender = res.input?.gender||'';
+
+      // Planet details - full format
+      const HOUSES = ['','1st','2nd','3rd','4th','5th','6th','7th','8th','9th','10th','11th','12th'];
+      const planetLines = p.map(pl=>pl.name+': '+pl.rashiName+', H'+pl.house+', '+(pl.lon%30).toFixed(1)+'deg, '+(pl.dignity||'')+(pl.isRetro?' R':'')).join(' | ');
+
+      // Special yogas from result
+      const yogas = res.yogas||[];
+      const yogaLines = yogas.length ? yogas.map(y=>y.name||y).join(', ') : 'To be analyzed';
+
+      // Dasha details
+      const dashaEnd = dasha.end ? new Date(dasha.end).getFullYear() : '';
+      const antarEnd = antar.end ? new Date(antar.end).getFullYear() : '';
+
+      // Aspects
+      const aspects = res.aspects||[];
+      const aspectLines = aspects.slice(0,6).map(a=>`${a.planet1} aspects ${a.planet2} (${a.type||''})`).join(', ');
+
+      ctx = `
+=== COMPLETE BIRTH CHART / KUNDLI ===
+Name: ${nm}
+Date of Birth: ${dob}
+Time of Birth: ${tob}
+Place of Birth: ${pob}
+Gender: ${gender}
+
+--- ASCENDANT (LAGNA) ---
+Lagna: ${asc.rashiName} (${asc.rashiOd||asc.rashiName})
+Lagna Lord: ${asc.lord||''}
+Lagna Degree: ${(asc.lon%30||0).toFixed(1)}°
+
+--- MOON (CHANDRA) ---
+Moon Sign (Rashi): ${p[1]?.rashiName||''} 
+Nakshatra: ${nak.name||''}, Pada ${nak.pada||''}
+Nakshatra Lord: ${nak.lord||''}
+Moon House: ${p[1]?.house||''}th Bhava
+
+--- ALL PLANETS ---
+${planetLines}
+
+--- CURRENT DASHA ---
+Mahadasha: ${dasha.planet||''} (until ${dashaEnd})
+Antardasha: ${antar.planet||''} (until ${antarEnd})
+
+--- YOGAS PRESENT ---
+${yogaLines}
+
+--- KEY ASPECTS ---
+${aspectLines||'Standard planetary aspects apply'}
+
+--- SPECIAL NOTES ---
+Lagna Lord in ${p.find(x=>x.name===asc.lord)?.house||'?'}th House
+7th House: ${p.find(x=>x.house===7)?.name||'Empty'}
+10th House: ${p.find(x=>x.house===10)?.name||'Empty'}
+5th House: ${p.find(x=>x.house===5)?.name||'Empty'}
+==============================`;
     }
 
     const isOd = APP_LANG==='od';
