@@ -255,6 +255,25 @@ select option{background:#0C0602}
 .typing-dot:nth-child(2){animation-delay:.15s}
 .typing-dot:nth-child(3){animation-delay:.3s}
 @keyframes typingBounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
+/* Quick chips in timed chat */
+.quick-chip{
+  background:rgba(184,135,10,.08);
+  border:1px solid rgba(184,135,10,.25);
+  border-radius:20px;
+  padding:6px 14px;
+  font-size:11px;
+  color:var(--gold-lt);
+  cursor:pointer;
+  white-space:nowrap;
+  font-family:'Lato',sans-serif;
+  flex-shrink:0;
+  transition:background .15s;
+}
+.quick-chip:hover,.quick-chip:active{
+  background:rgba(184,135,10,.2);
+  border-color:var(--gold);
+}
+
 /* AI Chat Popup */
 @keyframes slideUp{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
 #ai-chat-popup.show{display:flex}
@@ -653,308 +672,156 @@ select option{background:#0C0602}
 
 
 <div class="pg on" id="pg-landing">
-  <div class="wrap">
+  <!-- Hero Section -->
+  <div style="background:linear-gradient(180deg,#0C0602 0%,#1A0E06 100%);min-height:100vh;padding-bottom:40px">
 
-    <!-- HERO SECTION -->
-    <div style="text-align:center;padding:24px 0 20px">
-      <svg width="72" height="72" viewBox="0 0 72 72" style="margin:0 auto 14px;display:block">
-        <circle cx="36" cy="36" r="34" fill="#1A0A02" stroke="#B8870A" stroke-width="1"/>
-        <circle cx="36" cy="36" r="29" stroke="#B8870A" stroke-width="0.5" stroke-dasharray="3 4" fill="none">
-          <animateTransform attributeName="transform" type="rotate" from="0 36 36" to="360 36 36" dur="20s" repeatCount="indefinite"/>
-        </circle>
-        <polygon points="36,10 39,24 52,24 42,32 46,46 36,39 26,46 30,32 20,24 33,24" fill="#C8520A" opacity="0.2"/>
-        <polygon points="36,10 39,24 52,24 42,32 46,46 36,39 26,46 30,32 20,24 33,24" fill="none" stroke="#B8870A" stroke-width="1.2"/>
-        <circle cx="36" cy="36" r="9" fill="#1A0A02" stroke="#B8870A" stroke-width="0.7"/>
-        <text x="36" y="40" text-anchor="middle" font-size="11" fill="#D4A020" font-family="serif">ॐ</text>
-      </svg>
-      <h1 style="font-family:'Cinzel',serif;font-size:28px;font-weight:700;background:linear-gradient(135deg,#F0D080,#B8870A,#F0D080);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px">Jyotish AI</h1>
-      <p style="font-size:12px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Vedic Astrology · AI Powered</p>
-      <p style="font-size:13px;color:#C8A070" class="od">ଭାରତର ଅଗ୍ରଣୀ AI ଜ୍ୟୋତିଷ ସେବା</p>
+    <!-- Nav bar -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid rgba(184,135,10,.15)">
+      <div style="font-family:'Cinzel',serif;font-size:18px;color:var(--gold-lt)">🔯 Jyotish AI</div>
+      <button onclick="nav('login')" style="background:var(--gold);color:#0C0602;border:none;border-radius:20px;padding:8px 18px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Lato',sans-serif">Login / Sign Up</button>
     </div>
 
-    <!-- STATS ROW -->
-    <div style="display:flex;justify-content:center;gap:0;background:rgba(184,135,10,.06);border:1px solid rgba(184,135,10,.15);border-radius:12px;padding:14px;margin-bottom:20px">
-      <div style="flex:1;text-align:center;border-right:1px solid rgba(184,135,10,.15)">
-        <div style="font-family:'Cinzel',serif;font-size:16px;color:var(--gold-lt);font-weight:700">VSOP87</div>
-        <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Planetary Engine</div>
-      </div>
-      <div style="flex:1;text-align:center;border-right:1px solid rgba(184,135,10,.15)">
-        <div style="font-family:'Cinzel',serif;font-size:16px;color:var(--gold-lt);font-weight:700">27</div>
-        <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Nakshatras</div>
-      </div>
-      <div style="flex:1;text-align:center;border-right:1px solid rgba(184,135,10,.15)">
-        <div style="font-family:'Cinzel',serif;font-size:16px;color:var(--gold-lt);font-weight:700">12+</div>
-        <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Services</div>
-      </div>
-      <div style="flex:1;text-align:center">
-        <div style="font-family:'Cinzel',serif;font-size:16px;color:var(--gold-lt);font-weight:700">Free</div>
-        <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Currently</div>
-      </div>
-    </div>
-
-    <!-- FEATURES LIST -->
-    <div style="margin-bottom:20px">
-      <div style="font-family:'Cinzel',serif;font-size:13px;color:var(--gold-lt);margin-bottom:12px;text-align:center">✦ What You Get ✦</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-        <div style="background:rgba(184,135,10,.05);border:1px solid rgba(184,135,10,.12);border-radius:9px;padding:10px;display:flex;align-items:center;gap:8px"><span style="font-size:18px">☀️</span><div><div style="font-size:11px;color:var(--cream);font-weight:700">Accurate Kundli</div><div style="font-size:10px;color:var(--muted)">ଜନ୍ମ ଚକ୍ର</div></div></div>
-        <div style="background:rgba(184,135,10,.05);border:1px solid rgba(184,135,10,.12);border-radius:9px;padding:10px;display:flex;align-items:center;gap:8px"><span style="font-size:18px">🔮</span><div><div style="font-size:11px;color:var(--cream);font-weight:700">Past Life Analysis</div><div style="font-size:10px;color:var(--muted)">ପୂର୍ବ ଜନ୍ମ</div></div></div>
-        <div style="background:rgba(184,135,10,.05);border:1px solid rgba(184,135,10,.12);border-radius:9px;padding:10px;display:flex;align-items:center;gap:8px"><span style="font-size:18px">💑</span><div><div style="font-size:11px;color:var(--cream);font-weight:700">Guna Milan</div><div style="font-size:10px;color:var(--muted)">ଗୁଣ ମିଳାନ</div></div></div>
-        <div style="background:rgba(184,135,10,.05);border:1px solid rgba(184,135,10,.12);border-radius:9px;padding:10px;display:flex;align-items:center;gap:8px"><span style="font-size:18px">👶</span><div><div style="font-size:11px;color:var(--cream);font-weight:700">Namakarana</div><div style="font-size:10px;color:var(--muted)">ନାମକରଣ</div></div></div>
-        <div style="background:rgba(184,135,10,.05);border:1px solid rgba(184,135,10,.12);border-radius:9px;padding:10px;display:flex;align-items:center;gap:8px"><span style="font-size:18px">📅</span><div><div style="font-size:11px;color:var(--cream);font-weight:700">Daily Panchang</div><div style="font-size:10px;color:var(--muted)">ଦୈନିକ ପଞ୍ଚାଙ୍ଗ</div></div></div>
-        <div style="background:rgba(184,135,10,.05);border:1px solid rgba(184,135,10,.12);border-radius:9px;padding:10px;display:flex;align-items:center;gap:8px"><span style="font-size:18px">🕐</span><div><div style="font-size:11px;color:var(--cream);font-weight:700">Muhurta Finder</div><div style="font-size:10px;color:var(--muted)">ଶୁଭ ମୁହୂର୍ତ</div></div></div>
-        <div style="background:rgba(184,135,10,.05);border:1px solid rgba(184,135,10,.12);border-radius:9px;padding:10px;display:flex;align-items:center;gap:8px"><span style="font-size:18px">💼</span><div><div style="font-size:11px;color:var(--cream);font-weight:700">Career Timing</div><div style="font-size:10px;color:var(--muted)">କ୍ୟାରିୟର</div></div></div>
-        <div style="background:rgba(184,135,10,.05);border:1px solid rgba(184,135,10,.12);border-radius:9px;padding:10px;display:flex;align-items:center;gap:8px"><span style="font-size:18px">🌙</span><div><div style="font-size:11px;color:var(--cream);font-weight:700">Daily Horoscope</div><div style="font-size:10px;color:var(--muted)">ରାଶି ଫଳ</div></div></div>
-        <div style="background:rgba(184,135,10,.05);border:1px solid rgba(184,135,10,.12);border-radius:9px;padding:10px;display:flex;align-items:center;gap:8px"><span style="font-size:18px">🕉️</span><div><div style="font-size:11px;color:var(--cream);font-weight:700">Seven Chakra</div><div style="font-size:10px;color:var(--muted)">ସାତ ଚକ୍ର</div></div></div>
-        <div style="background:rgba(184,135,10,.05);border:1px solid rgba(184,135,10,.12);border-radius:9px;padding:10px;display:flex;align-items:center;gap:8px"><span style="font-size:18px">💚</span><div><div style="font-size:11px;color:var(--cream);font-weight:700">Health Report</div><div style="font-size:10px;color:var(--muted)">ସ୍ୱାସ୍ଥ୍ୟ</div></div></div>
-        <div style="background:rgba(184,135,10,.05);border:1px solid rgba(184,135,10,.12);border-radius:9px;padding:10px;display:flex;align-items:center;gap:8px"><span style="font-size:18px">🔢</span><div><div style="font-size:11px;color:var(--cream);font-weight:700">Anka Shastra</div><div style="font-size:10px;color:var(--muted)">ଅଙ୍କ ଶାସ୍ତ୍ର</div></div></div>
-        <div style="background:rgba(184,135,10,.05);border:1px solid rgba(184,135,10,.12);border-radius:9px;padding:10px;display:flex;align-items:center;gap:8px"><span style="font-size:18px">💬</span><div><div style="font-size:11px;color:var(--cream);font-weight:700">AI Astro Chat</div><div style="font-size:10px;color:var(--muted)">AI ଚାଟ</div></div></div>
-      </div>
-    </div>
-
-  </div>
-</div>
-
-<!-- register merged into login OTP flow -->
-
-<!-- ═══ LOGIN / REGISTER (OTP unified) ═══ -->
-<div class="pg" id="pg-login">
-  <div class="wrap"><div class="back" onclick="nav('landing')">← Back</div>
-    <div class="auth-box">
-      <div style="text-align:center;margin-bottom:18px">
-        <svg width="44" height="44" viewBox="0 0 44 44" style="margin:0 auto 10px;display:block"><circle cx="22" cy="22" r="20" stroke="#3D2710" stroke-width="1" fill="none"/><text x="22" y="27" text-anchor="middle" font-size="16" fill="#B8870A" font-family="serif">ॐ</text></svg>
-        <div class="auth-title" id="otp-title">Sign In / Register</div>
-        <div class="auth-sub" id="otp-sub">Enter your email to receive a one-time password</div>
-      </div>
-
-      <!-- STEP 1: Email entry -->
-      <div id="otp-step1">
-        <div class="fg"><label>Full Name (new users only)</label><input id="otp-name" placeholder="Your full name"/></div>
-        <div class="fg"><label>Email Address</label><input id="otp-email" type="email" placeholder="you@gmail.com"/></div>
-        <button class="btn" id="otp-send-btn" onclick="sendOTP()">Send OTP to Email ✦</button>
-        <div id="otp-err1" class="err"></div>
-        <div style="font-size:11px;color:var(--muted);text-align:center;margin-top:10px">A 6-digit code will be sent to your email · Free · Instant</div>
-      </div>
-
-      <!-- STEP 2: OTP entry -->
-      <div id="otp-step2" style="display:none">
-        <div style="text-align:center;margin-bottom:16px">
-          <div style="font-size:28px;margin-bottom:6px">📧</div>
-          <div style="font-size:13px;color:var(--ink)">OTP sent to <span id="otp-email-show" style="color:var(--gold-lt);font-weight:700"></span></div>
-          <div style="font-size:11px;color:var(--muted);margin-top:4px">Check your inbox and spam folder</div>
-        </div>
-        <div class="fg">
-          <label>Enter 6-digit OTP</label>
-          <input id="otp-code" type="number" placeholder="Enter OTP" maxlength="6" style="font-size:22px;letter-spacing:6px;text-align:center;font-family:'Cinzel',serif"/>
-        </div>
-        <button class="btn" id="otp-verify-btn" onclick="verifyOTP()">Verify & Sign In ✦</button>
-        <div id="otp-err2" class="err"></div>
-        <div style="text-align:center;margin-top:12px">
-          <span style="font-size:12px;color:var(--muted)">Didn't receive? </span>
-          <a onclick="backToEmail()" style="font-size:12px;color:var(--gold);cursor:pointer">Try again</a>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</div>
-
-<!-- ═══ DASHBOARD ═══ -->
-<div class="pg" id="pg-dash">
-  <div class="wrap">
-    <div style="text-align:center;padding:22px 0 16px">
-      <div style="font-family:'Cinzel',serif;font-size:19px;color:var(--cream)" id="dash-nm">Namaste 🙏</div>
-      <div style="display:inline-flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--gold);border-radius:20px;padding:3px 13px;font-size:11px;color:var(--gold-lt);font-weight:700;margin-top:6px" id="dash-plan">✦ Loading</div>
-    </div>
-    <div style="text-align:right;margin-bottom:8px">
-      <button class="ud-edit-btn" style="font-size:11px;padding:5px 12px" onclick="nav('userdetails')">
-        ✏ ${APP_LANG==='od'?'ବିବରଣ ସଂପାଦନ':'Edit My Details'}
+    <!-- Hero -->
+    <div style="text-align:center;padding:40px 20px 30px">
+      <div style="font-size:52px;margin-bottom:12px">🔯</div>
+      <h1 style="font-family:'Cinzel',serif;font-size:26px;color:var(--gold-lt);margin:0 0 8px;line-height:1.3">ଜ୍ୟୋତିଷ AI</h1>
+      <h2 style="font-family:'Noto Serif Oriya',serif;font-size:17px;color:var(--cream);margin:0 0 12px;font-weight:400;line-height:1.5">ଆପଣଙ୍କ ଜନ୍ମ ଚକ୍ରରୁ ଜୀବନର ସଂପୂର୍ଣ ଭବିଷ୍ୟ ଜାଣନ୍ତୁ</h2>
+      <p style="font-size:13px;color:var(--muted);margin:0 0 28px;line-height:1.7;max-width:320px;margin-left:auto;margin-right:auto">AI ଜ୍ୟୋତିଷ + ଅସଲ ଜ୍ୟୋତିଷୀ — ବିବାହ, କ୍ୟାରିୟର, ଦଶା, ସ୍ୱାସ୍ଥ୍ୟ ସବୁ ଏଠି</p>
+      <button onclick="nav('login')" style="background:linear-gradient(135deg,var(--gold),var(--saffron));color:#0C0602;border:none;border-radius:25px;padding:14px 36px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Cinzel',serif;box-shadow:0 4px 20px rgba(184,135,10,.3)">
+        🔮 ମୋ କୁଣ୍ଡଳୀ ଦେଖନ୍ତୁ
       </button>
-    </div>
-    <div id="dash-ud-bar"></div>
-    <div class="stat-grid">
-      <div class="stat"><div class="stat-n" id="s-k">0</div><div class="stat-l">Kundlis</div></div>
-      <div class="stat"><div class="stat-n" id="s-v">—</div><div class="stat-l">Valid Till</div></div>
-    </div>
-    <div class="action-grid" id="act-grid"></div>
-    <div id="hist-wrap"></div>
-    <div id="upg-wrap"></div>
-  </div>
-</div>
-
-<!-- ═══ USER DETAILS SETUP ═══ -->
-<div class="pg" id="pg-userdetails">
-  <div class="wrap">
-    <div style="font-family:'Cinzel',serif;font-size:17px;color:var(--cream);margin:14px 0 4px" id="ud-page-title">My Birth Details</div>
-    <div style="font-size:11px;color:var(--muted);margin-bottom:16px">Fill once — used across all services automatically</div>
-    <div class="card">
-      <div class="sh">✦ Personal Information</div>
-      <div class="fg"><label>Full Name / ପୂର୍ଣ ନାମ</label><input id="ud-name" placeholder="Enter your full name"/></div>
-      <div class="fg"><label>Date of Birth</label><input id="ud-dob" type="date"/></div>
-      <div class="fg"><label>Time of Birth</label>
-        <div class="time-picker">
-          <select id="ud-tob-h" onchange="syncUDTime()">
-            <option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option>
-          </select>
-          <span class="time-picker-sep">:</span>
-          <select id="ud-tob-m" onchange="syncUDTime()">
-            <option value="00">00</option><option value="05">05</option><option value="10">10</option><option value="15">15</option><option value="20">20</option><option value="25">25</option><option value="30">30</option><option value="35">35</option><option value="40">40</option><option value="45">45</option><option value="50">50</option><option value="55">55</option>
-          </select>
-          <select id="ud-tob-ampm" onchange="syncUDTime()">
-            <option value="AM">AM</option>
-            <option value="PM">PM</option>
-          </select>
-        </div>
-        <input type="hidden" id="ud-tob" value="06:00"/>
-      </div>
-      <div class="fg">
-        <label>Gender / ଲିଙ୍ଗ</label>
-        <div class="grow-row">
-          <button class="gbtn on" id="ud-gm" onclick="setUDGender('Male')">Male / ପୁରୁଷ</button>
-          <button class="gbtn" id="ud-gf" onclick="setUDGender('Female')">Female / ସ୍ତ୍ରୀ</button>
-          <button class="gbtn" id="ud-go" onclick="setUDGender('Other')">Other</button>
-        </div>
-      </div>
-      <div class="fg"><label>Gotra (Optional)</label><input id="ud-gotra" placeholder="e.g. Kashyap, Bharadwaj"/></div>
-    </div>
-    <div class="card">
-      <div class="sh">✦ Birth Place</div>
-      <div class="fg">
-        <label>State</label>
-        <select id="ud-state" onchange="updateUDDistricts()">
-          <option value="odisha">Odisha</option>
-          <option value="other">Other State</option>
-        </select>
-      </div>
-      <div id="ud-odisha-fields">
-        <div class="state-district-row">
-          <div class="fg">
-            <label>District</label>
-            <select id="ud-district" onchange="updateUDCity()">
-              <option value="angul">Angul</option>
-<option value="balangir">Balangir</option>
-<option value="balasore">Balasore</option>
-<option value="bargarh">Bargarh</option>
-<option value="bhadrak">Bhadrak</option>
-<option value="boudh">Boudh</option>
-<option value="cuttack">Cuttack</option>
-<option value="deogarh">Deogarh</option>
-<option value="dhenkanal">Dhenkanal</option>
-<option value="gajapati">Gajapati</option>
-<option value="ganjam">Ganjam</option>
-<option value="jagatsinghpur">Jagatsinghpur</option>
-<option value="jajpur">Jajpur</option>
-<option value="jharsuguda">Jharsuguda</option>
-<option value="kalahandi">Kalahandi</option>
-<option value="kandhamal">Kandhamal</option>
-<option value="kendrapada">Kendrapada</option>
-<option value="kendujhar">Kendujhar</option>
-<option value="khurda">Khurda</option>
-<option value="koraput">Koraput</option>
-<option value="malkangiri">Malkangiri</option>
-<option value="mayurbhanj">Mayurbhanj</option>
-<option value="nabarangpur">Nabarangpur</option>
-<option value="nayagarh">Nayagarh</option>
-<option value="nuapada">Nuapada</option>
-<option value="puri">Puri</option>
-<option value="rayagada">Rayagada</option>
-<option value="sambalpur">Sambalpur</option>
-<option value="subarnapur">Subarnapur</option>
-<option value="sundargarh">Sundargarh</option>
-            </select>
-          </div>
-          <div class="fg">
-            <label>City / Town</label>
-            <select id="ud-city-select">
-              <option value="">Select city</option>
-            </select>
-          </div>
-        </div>
-        <div class="fg">
-          <label>Or type city name</label>
-          <input id="ud-city-manual" placeholder="e.g. Bhubaneswar, Cuttack"/>
-        </div>
-      </div>
-      <div id="ud-other-state-fields" style="display:none">
-        <div class="fg"><label>City, State</label><input id="ud-city-other" placeholder="e.g. Mumbai, Maharashtra"/></div>
-      </div>
-    </div>
-    <div id="ud-err" class="err"></div>
-    <button class="btn" onclick="saveUserDetails()">✦ Save My Details</button>
-    <button class="btn-outline" onclick="dashGo('dash')" style="margin-top:6px">Skip for now</button>
-  </div>
-</div>
-
-<!-- ═══ KUNDLI FORM ═══ -->
-<div class="pg" id="pg-form">
-  <div class="wrap"><div class="back" onclick="dashGo('dash')">← Dashboard</div>
-    <div style="font-family:'Cinzel',serif;font-size:17px;color:var(--cream);margin-bottom:4px">New Kundli Reading</div>
-    <div style="font-size:11px;color:var(--muted);margin-bottom:14px" class="od">ନୂଆ ଜ୍ୟୋତିଷ ଚିଠା</div>
-    <div class="card">
-      <div class="fg"><label>Full Name / ପୂର୍ଣ ନାମ</label><input id="k-nm" placeholder="Enter full name"/></div>
-      <div class="g2">
-        <div class="fg"><label>Date of Birth</label><input id="k-dob" type="date"/></div>
-        <div class="fg"><label>Time of Birth (IST)</label><div class="time-picker" id="k-tob-picker">
-          <select id="k-tob-h" onchange="syncTime('k-tob')">
-            <option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option>
-          </select>
-          <span class="time-picker-sep">:</span>
-          <select id="k-tob-m" onchange="syncTime('k-tob')">
-            <option value="00">00</option><option value="05">05</option><option value="10">10</option><option value="15">15</option><option value="20">20</option><option value="25">25</option><option value="30">30</option><option value="35">35</option><option value="40">40</option><option value="45">45</option><option value="50">50</option><option value="55">55</option>
-          </select>
-          <select id="k-tob-ampm" onchange="syncTime('k-tob')">
-            <option value="AM">AM</option>
-            <option value="PM">PM</option>
-          </select>
-          <input type="hidden" id="k-tob" value="06:00"/>
-        </div></div>
-      </div>
-      <div class="fg">
-        <label>Place of Birth / ଜନ୍ମ ସ୍ଥାନ</label>
-        <input id="k-pob" placeholder="e.g. Bhubaneswar, Puri, Mumbai"/>
-        <div style="font-size:10px;color:var(--muted);margin-top:3px">50+ Indian cities supported for accurate Lagna calculation</div>
-      </div>
-      <div class="fg"><label>Gotra / ଗୋତ୍ର (Optional)</label><input id="k-gotra" placeholder="e.g. Kashyap, Bharadwaj"/></div>
-      <div class="fg">
-        <label>Gender / ଲିଙ୍ଗ</label>
-        <div class="grow-row">
-          <button class="gbtn on" id="kg-m" onclick="setKG('Male')">Male / ପୁରୁଷ</button>
-          <button class="gbtn" id="kg-f" onclick="setKG('Female')">Female / ସ୍ତ୍ରୀ</button>
-          <button class="gbtn" id="kg-o" onclick="setKG('Other')">Other</button>
-        </div>
-      </div>
-      <div id="k-err" class="err"></div>
-      <button class="btn" id="k-gen-btn" onclick="doKundli()">✦ Calculate Kundli Accurately</button>
-    </div>
-  </div>
-</div>
-
-<!-- ═══ KUNDLI RESULT ═══ -->
-<div class="pg" id="pg-result">
-  <div class="wrap">
-    <!-- Top bar -->
-    <div style="display:flex;gap:8px;align-items:center;margin-bottom:14px;padding-top:4px">
-      <div class="back" onclick="dashGo('kundli')" style="flex:1">← New Reading</div>
-      <button onclick="shareKundli()" style="background:rgba(184,135,10,.15);border:1px solid rgba(184,135,10,.3);border-radius:7px;padding:6px 12px;font-size:11px;color:var(--gold-lt);cursor:pointer;font-family:'Lato',sans-serif">📤 Share</button>
+      <div style="margin-top:12px;font-size:11px;color:var(--muted)">✓ ମାଗଣା · ✓ ୧ ମିନିଟରେ ଫଳ · ✓ AI + ଅସଲ ଜ୍ୟୋତିଷୀ</div>
     </div>
 
-    <!-- PDF + AI Chat Buttons (TOP) -->
-    <div id="result-action-btns" style="margin-bottom:14px">
-      <button class="pdf-btn" id="main-pdf-btn" onclick="downloadPDFAndShowChat()">
-        ⬇ Download Kundli PDF Report
+    <!-- Stats bar -->
+    <div style="display:flex;justify-content:center;gap:0;margin:0 16px 32px;background:rgba(184,135,10,.06);border:1px solid rgba(184,135,10,.15);border-radius:14px;overflow:hidden">
+      <div style="flex:1;text-align:center;padding:16px 8px;border-right:1px solid rgba(184,135,10,.1)">
+        <div style="font-family:'Cinzel',serif;font-size:20px;color:var(--gold-lt);font-weight:700">50K+</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:3px">କୁଣ୍ଡଳୀ</div>
+      </div>
+      <div style="flex:1;text-align:center;padding:16px 8px;border-right:1px solid rgba(184,135,10,.1)">
+        <div style="font-family:'Cinzel',serif;font-size:20px;color:var(--gold-lt);font-weight:700">4.8★</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:3px">Rating</div>
+      </div>
+      <div style="flex:1;text-align:center;padding:16px 8px">
+        <div style="font-family:'Cinzel',serif;font-size:20px;color:var(--gold-lt);font-weight:700">100%</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:3px">ଓଡ଼ିଆ</div>
+      </div>
+    </div>
+
+    <!-- Features -->
+    <div style="padding:0 16px;margin-bottom:32px">
+      <div style="font-family:'Cinzel',serif;font-size:15px;color:var(--gold-lt);text-align:center;margin-bottom:16px">✦ ଆମ ସେବା ✦</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div style="background:rgba(184,135,10,.06);border:1px solid rgba(184,135,10,.15);border-radius:12px;padding:16px;text-align:center">
+          <div style="font-size:28px;margin-bottom:8px">🔯</div>
+          <div style="font-size:12px;color:var(--cream);font-weight:700;margin-bottom:4px">AI କୁଣ୍ଡଳୀ</div>
+          <div style="font-size:10px;color:var(--muted);line-height:1.5">ଜନ୍ମ ଚକ୍ର ବିଶ୍ଳେଷଣ GPT-5 ଦ୍ୱାରା</div>
+        </div>
+        <div style="background:rgba(184,135,10,.06);border:1px solid rgba(184,135,10,.15);border-radius:12px;padding:16px;text-align:center">
+          <div style="font-size:28px;margin-bottom:8px">🤖</div>
+          <div style="font-size:12px;color:var(--cream);font-weight:700;margin-bottom:4px">AI ଚାଟ</div>
+          <div style="font-size:10px;color:var(--muted);line-height:1.5">15 ମିନିଟ ମାଗଣା · GPT-5.5 Premium</div>
+        </div>
+        <div style="background:rgba(184,135,10,.06);border:1px solid rgba(184,135,10,.15);border-radius:12px;padding:16px;text-align:center">
+          <div style="font-size:28px;margin-bottom:8px">📅</div>
+          <div style="font-size:12px;color:var(--cream);font-weight:700;margin-bottom:4px">ପଞ୍ଚାଙ୍ଗ</div>
+          <div style="font-size:10px;color:var(--muted);line-height:1.5">ଆଜିର ତିଥି, ନକ୍ଷତ୍ର, ଯୋଗ</div>
+        </div>
+        <div style="background:rgba(184,135,10,.06);border:1px solid rgba(184,135,10,.15);border-radius:12px;padding:16px;text-align:center">
+          <div style="font-size:28px;margin-bottom:8px">📞</div>
+          <div style="font-size:12px;color:var(--cream);font-weight:700;margin-bottom:4px">ଅସଲ ଜ୍ୟୋତିଷୀ</div>
+          <div style="font-size:10px;color:var(--muted);line-height:1.5">Video Call / Chat ପ୍ରାମ୍ଭ ହେବ</div>
+        </div>
+        <div style="background:rgba(184,135,10,.06);border:1px solid rgba(184,135,10,.15);border-radius:12px;padding:16px;text-align:center">
+          <div style="font-size:28px;margin-bottom:8px">💑</div>
+          <div style="font-size:12px;color:var(--cream);font-weight:700;margin-bottom:4px">ଗୁଣ ମିଳାନ</div>
+          <div style="font-size:10px;color:var(--muted);line-height:1.5">ବିବାହ ମିଳାନ ଚାର୍ଟ</div>
+        </div>
+        <div style="background:rgba(184,135,10,.06);border:1px solid rgba(184,135,10,.15);border-radius:12px;padding:16px;text-align:center">
+          <div style="font-size:28px;margin-bottom:8px">🔢</div>
+          <div style="font-size:12px;color:var(--cream);font-weight:700;margin-bottom:4px">ଅଙ୍କ ଶାସ୍ତ୍ର</div>
+          <div style="font-size:10px;color:var(--muted);line-height:1.5">Numerology ଓ ନାମ ସଂଶୋଧନ</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Talk to Real Astrologer Section -->
+    <div style="margin:0 16px 32px;background:linear-gradient(135deg,rgba(184,135,10,.12),rgba(139,69,19,.08));border:1px solid rgba(184,135,10,.3);border-radius:16px;padding:24px;text-align:center">
+      <div style="font-size:36px;margin-bottom:12px">👳</div>
+      <div style="font-family:'Cinzel',serif;font-size:17px;color:var(--gold-lt);margin-bottom:6px">ଅସଲ ଜ୍ୟୋତିଷୀ ସହ କଥା ହୁଅନ୍ତୁ</div>
+      <div style="font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:20px">ଅନୁଭବୀ ଓଡ଼ିଆ ଜ୍ୟୋତିଷୀ ସହ Video Call ବା Chat ଦ୍ୱାରା<br/>ଆପଣଙ୍କ ସମସ୍ୟାର ସମାଧାନ ପାଆନ୍ତୁ</div>
+
+      <!-- Astrologer preview cards -->
+      <div style="display:flex;gap:10px;overflow-x:auto;padding-bottom:8px;scrollbar-width:none;margin-bottom:16px">
+        <div style="flex-shrink:0;background:rgba(0,0,0,.3);border:1px solid rgba(184,135,10,.2);border-radius:12px;padding:14px;text-align:center;min-width:120px">
+          <div style="font-size:32px;margin-bottom:6px">🧑‍💼</div>
+          <div style="font-size:11px;color:var(--cream);font-weight:700">Pt. Suresh</div>
+          <div style="font-size:9px;color:var(--muted);margin-top:2px">25 yr exp</div>
+          <div style="font-size:9px;color:var(--green-l);margin-top:4px">● Online</div>
+        </div>
+        <div style="flex-shrink:0;background:rgba(0,0,0,.3);border:1px solid rgba(184,135,10,.2);border-radius:12px;padding:14px;text-align:center;min-width:120px">
+          <div style="font-size:32px;margin-bottom:6px">👩‍💼</div>
+          <div style="font-size:11px;color:var(--cream);font-weight:700">Smt. Pratima</div>
+          <div style="font-size:9px;color:var(--muted);margin-top:2px">18 yr exp</div>
+          <div style="font-size:9px;color:var(--green-l);margin-top:4px">● Online</div>
+        </div>
+        <div style="flex-shrink:0;background:rgba(0,0,0,.3);border:1px solid rgba(184,135,10,.2);border-radius:12px;padding:14px;text-align:center;min-width:120px">
+          <div style="font-size:32px;margin-bottom:6px">🧑‍💼</div>
+          <div style="font-size:11px;color:var(--cream);font-weight:700">Pt. Ramesh</div>
+          <div style="font-size:9px;color:var(--muted);margin-top:2px">30 yr exp</div>
+          <div style="font-size:9px;color:var(--muted);margin-top:4px">● Busy</div>
+        </div>
+      </div>
+
+      <button onclick="showAstrologerInfo()" style="width:100%;background:linear-gradient(135deg,var(--gold),var(--saffron));color:#0C0602;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Cinzel',serif;margin-bottom:8px">
+        📞 ଜ୍ୟୋତିଷୀ ସହ କଥା ହୁଅନ୍ତୁ
       </button>
-      <button onclick="openGPTChat()" style="width:100%;background:linear-gradient(135deg,#10a37f,#1a7a5e);color:#fff;border:none;border-radius:12px;padding:14px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Lato',sans-serif;display:flex;align-items:center;justify-content:center;gap:10px;margin-top:10px">
-        <span style="font-size:20px">🤖</span>
-        <div style="text-align:left">
-          <div id="ai-chat-btn-txt">Chat with AI — Know More About Your Kundli</div>
-          <div style="font-size:10px;font-weight:400;opacity:.8">GPT-4o · 15 min FREE · Kundli auto-attached</div>
+      <div style="font-size:10px;color:var(--muted)">ଶୀଘ୍ର ଆସୁଛି · Coming Soon</div>
+    </div>
+
+    <!-- Testimonials -->
+    <div style="padding:0 16px;margin-bottom:32px">
+      <div style="font-family:'Cinzel',serif;font-size:15px;color:var(--gold-lt);text-align:center;margin-bottom:16px">✦ ଲୋକଙ୍କ ମତ ✦</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="background:rgba(184,135,10,.05);border:1px solid rgba(184,135,10,.12);border-radius:12px;padding:16px">
+          <div style="font-size:13px;color:var(--gold-lt);margin-bottom:4px">⭐⭐⭐⭐⭐</div>
+          <div style="font-size:12px;color:var(--cream);line-height:1.6;margin-bottom:8px">"ମୋ ବିବାହ ବିଷୟରେ ଯାହା କହିଲେ ଠିକ୍ ହୋଇଗଲା! AI ଅନେକ ଭଲ ଫଳ ଦେଲା।"</div>
+          <div style="font-size:10px;color:var(--muted)">— ସୁମିତ୍ରା ଦେବୀ, ଭୁବନେଶ୍ୱର</div>
         </div>
+        <div style="background:rgba(184,135,10,.05);border:1px solid rgba(184,135,10,.12);border-radius:12px;padding:16px">
+          <div style="font-size:13px;color:var(--gold-lt);margin-bottom:4px">⭐⭐⭐⭐⭐</div>
+          <div style="font-size:12px;color:var(--cream);line-height:1.6;margin-bottom:8px">"Career ବିଷୟରେ ସଠିକ ଭବିଷ୍ୟ ଜାଣିଲି। ଏ app ଅସାଧାରଣ!"</div>
+          <div style="font-size:10px;color:var(--muted)">— ରାଜେଶ ନାୟକ, କଟକ</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Join as Astrologer -->
+    <div style="margin:0 16px 32px;background:rgba(139,69,19,.1);border:1px solid rgba(184,135,10,.2);border-radius:16px;padding:24px">
+      <div style="font-family:'Cinzel',serif;font-size:15px;color:var(--gold-lt);margin-bottom:8px;text-align:center">🌟 ଜ୍ୟୋତିଷୀ ଭାବରେ ଯୋଗ ଦିଅନ୍ତୁ</div>
+      <div style="font-size:12px;color:var(--muted);line-height:1.7;text-align:center;margin-bottom:16px">ଆପଣ ଜ୍ୟୋତିଷ ଜାଣନ୍ତି? ଆମ Platform ରେ ଯୋଗ ଦେଇ ଘରେ ବସି ରୋଜଗାର କରନ୍ତୁ</div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px">
+        <div style="display:flex;align-items:center;gap:10px;font-size:12px;color:var(--cream)"><span style="color:var(--gold)">✦</span> ନିଜ ସময় ଅନୁଯାୟୀ Online ରୁ ଟଙ୍କା ରୋଜଗାର</div>
+        <div style="display:flex;align-items:center;gap:10px;font-size:12px;color:var(--cream)"><span style="color:var(--gold)">✦</span> Video Call ଓ Chat ଦ୍ୱାରା ପରାମର୍ଶ</div>
+        <div style="display:flex;align-items:center;gap:10px;font-size:12px;color:var(--cream)"><span style="color:var(--gold)">✦</span> ହଜାର ହଜାର ଓଡ଼ିଆ ଗ୍ରାହକ</div>
+        <div style="display:flex;align-items:center;gap:10px;font-size:12px;color:var(--cream)"><span style="color:var(--gold)">✦</span> ବିনା Investment ରେ ଆରମ୍ଭ</div>
+      </div>
+      <button onclick="nav('astro-onboard')" style="width:100%;background:var(--maroon);color:var(--cream);border:1px solid var(--gold);border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Cinzel',serif">
+        📞 ଜ୍ୟୋତିଷୀ ସହ ବୁକ କରନ୍ତୁ
       </button>
     </div>
 
-    <!-- Kundli Result Body -->
-    <div id="result-body"></div>
-
+    <!-- CTA -->
+    <div style="text-align:center;padding:0 20px 20px">
+      <button onclick="nav('login')" style="background:linear-gradient(135deg,var(--gold),var(--saffron));color:#0C0602;border:none;border-radius:25px;padding:14px 40px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Cinzel',serif;box-shadow:0 4px 20px rgba(184,135,10,.3)">
+        ✦ ମାଗଣାରେ ଆରମ୍ଭ କରନ୍ତୁ
+      </button>
+      <div style="margin-top:10px;font-size:10px;color:var(--muted)">jyotishaiodisha.netlify.app</div>
+    </div>
   </div>
+
+
 </div>
 
 <!-- ═══ AI CHAT POPUP (after PDF download) ═══ -->
@@ -998,7 +865,7 @@ select option{background:#0C0602}
     <svg width="28" height="28" viewBox="0 0 28 28"><circle cx="14" cy="14" r="13" fill="#1E110A" stroke="#B8870A" stroke-width=".8"/><text x="14" y="18" text-anchor="middle" font-size="11" fill="#B8870A" font-family="serif">ॐ</text></svg>
     <div style="flex:1">
       <div style="font-family:'Cinzel',serif;font-size:14px;color:var(--cream)" id="timed-chat-title">Jyotish AI Chat</div>
-      <div style="font-size:10px;color:var(--muted)">Powered by GPT-4o</div>
+      <div style="font-size:10px;color:var(--muted)" id="timed-model-badge">Powered by GPT-5.4-mini · Free</div>
     </div>
     <!-- Timer in header -->
     <div style="background:rgba(184,135,10,.1);border:1px solid rgba(184,135,10,.2);border-radius:20px;padding:4px 12px;text-align:center">
@@ -1038,9 +905,21 @@ select option{background:#0C0602}
     </button>
   </div>
 
-  <div style="display:flex;gap:8px;padding:12px 16px;background:var(--surface);border-top:1px solid var(--border)">
+  <!-- Quick question chips -->
+  <div id="timed-quick-chips" style="display:flex;gap:6px;padding:8px 12px;overflow-x:auto;background:var(--surface);border-top:1px solid var(--border);scrollbar-width:none;-webkit-overflow-scrolling:touch">
+    <button class="quick-chip" onclick="timedChipAsk(this)">💑 Marriage & Spouse</button>
+    <button class="quick-chip" onclick="timedChipAsk(this)">💼 Career & Finance</button>
+    <button class="quick-chip" onclick="timedChipAsk(this)">🧠 Health Prediction</button>
+    <button class="quick-chip" onclick="timedChipAsk(this)">🪐 Dasha Effects</button>
+    <button class="quick-chip" onclick="timedChipAsk(this)">🌍 Foreign Yoga</button>
+    <button class="quick-chip" onclick="timedChipAsk(this)">💰 Wealth & Property</button>
+    <button class="quick-chip" onclick="timedChipAsk(this)">👶 Children Yoga</button>
+    <button class="quick-chip" onclick="timedChipAsk(this)">🔮 Lucky Gem & Remedy</button>
+  </div>
+  <!-- Input row -->
+  <div style="display:flex;gap:8px;padding:10px 12px;background:var(--surface)">
     <textarea id="timed-chat-input" style="flex:1;background:#0C0602;border:1px solid var(--border);border-radius:18px;padding:10px 14px;font-size:13px;color:var(--ink);font-family:'Lato',sans-serif;outline:none;resize:none;max-height:80px" placeholder="Ask about your Kundli..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendTimedChat();}"></textarea>
-    <button onclick="sendTimedChat()" id="timed-send-btn" style="background:var(--gold);border:none;border-radius:50%;width:40px;height:40px;cursor:pointer;font-size:16px;flex-shrink:0">➤</button>
+    <button onclick="sendTimedChat()" id="timed-send-btn" style="background:var(--gold);border:none;border-radius:50%;width:40px;height:40px;cursor:pointer;font-size:18px;flex-shrink:0;align-self:flex-end">➤</button>
   </div>
 </div>
 
@@ -2165,6 +2044,7 @@ function dashGo(tab){
   },50);}
   else if(tab==='santaan'){nav('santaan');}
   else if(tab==='userdetails'){nav('userdetails');}
+  else if(tab==='astro-onboard'){nav('astro-onboard');}
   else if(tab==='chat'){
     const chatPage=document.getElementById('chat-page');
     if(chatPage)chatPage.classList.add('open');
@@ -2300,6 +2180,9 @@ async function activatePlan(){
 /* ─── DASHBOARD ─────────────────────────────────────────*/
 function buildDash(){
   const u=S.user;if(!u)return;
+  const isOdD=APP_LANG==='od';
+  const editBtn=document.getElementById('edit-details-btn');
+  if(editBtn) editBtn.innerHTML='✏ '+(isOdD?'ବିବରଣ ସଂପାଦନ':'Edit My Details');
   g('dash-nm').textContent=`Namaste, ${u.name.split(' ')[0]} 🙏`;
   const pl=u.plan?PLANS[u.plan]:null;
   g('dash-plan').textContent=pl?`✦ ${pl.n}`:'✦ No Active Plan';
@@ -5690,6 +5573,7 @@ let chatSecondsLeft = 15 * 60; // 15 minutes
 let chatStarted = false;
 let attachedPDFBase64 = null;
 let timedChatHistory = [];
+let isPaidSession = false; // false = gpt-5.4-mini, true = gpt-5.5
 const FREE_CHAT_SECONDS = 15 * 60;
 
 function downloadPDFAndShowChat(){
@@ -5730,7 +5614,18 @@ function openGPTChat(){
   if(btn) btn.textContent = isOd ? 'AI ଚାଟ — ଆପଣଙ୍କ କୁଣ୍ଡଳୀ ବିଷୟରେ ଜାଣନ୍ତୁ' : 'Chat with AI — Know More About Your Kundli';
   // Open the timed chat full screen
   const page = document.getElementById('timed-chat-page');
-  if(page) page.classList.add('show');
+  if(page){
+    page.style.display = 'flex';
+    page.style.flexDirection = 'column';
+  }
+  // Update chip language and model badge
+  setTimeout(updateChipLanguage, 100);
+  const badge = document.getElementById('timed-model-badge');
+  if(badge){
+    const isOd2 = APP_LANG==='od';
+    badge.textContent = isOd2 ? 'GPT-5.4-mini · ମାଗଣା ୧୫ ମିନିଟ' : 'GPT-5.4-mini · Free 15 min';
+    badge.style.color = 'var(--muted)';
+  }
   document.body.style.overflow = 'hidden';
   // Start timer if not started
   if(!chatStarted){
@@ -5743,7 +5638,7 @@ function openGPTChat(){
 
 function closeTimedChat(){
   const page = document.getElementById('timed-chat-page');
-  if(page) page.classList.remove('show');
+  if(page) page.style.display = 'none';
   document.body.style.overflow = '';
 }
 
@@ -5773,7 +5668,7 @@ function updateTimerDisplay(){
 
 function lockChat(){
   const overlay = document.getElementById('chat-locked-overlay');
-  if(overlay) overlay.classList.add('show');
+  if(overlay){ overlay.style.display='flex'; overlay.style.flexDirection='column'; }
   const isOd = APP_LANG==='od';
   const t = document.getElementById('locked-title');
   const s = document.getElementById('locked-sub');
@@ -5880,8 +5775,11 @@ function openRazorpay(amount, plan){
       document.getElementById('razorpay-overlay')?.remove();
       const extraMins = plan==='30min'?30:60;
       chatSecondsLeft = extraMins * 60;
-      // Unlock chat
-      document.getElementById('chat-locked-overlay')?.classList.remove('show');
+      // Unlock chat — upgrade to GPT-5.5 for paid session
+      isPaidSession = true;
+      const badge = document.getElementById('timed-model-badge');
+      if(badge){ badge.textContent = 'GPT-5.5 · Premium ✨'; badge.style.color='var(--gold-lt)'; }
+      const lo=document.getElementById('chat-locked-overlay');if(lo)lo.style.display='none';
       const inp = document.getElementById('timed-chat-input');
       const btn = document.getElementById('timed-send-btn');
       if(inp) inp.disabled = false;
@@ -6071,10 +5969,11 @@ Lagna Lord in ${p.find(x=>x.name===asc.lord)?.house||'?'}th House
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
-        model:'claude-haiku-4-5-20251001', // will be overridden to GPT-4o in chat.js
-        max_tokens:1500,
+        model:'gpt-5.4-mini', // overridden in chat.js based on paid flag
+        max_tokens: isPaidSession ? 2000 : 1500,
         system:systemPrompt,
-        messages:[...timedChatHistory.slice(-8)]
+        messages:[...timedChatHistory.slice(-8)],
+        paid: isPaidSession
       })
     });
     const data = await resp.json();
@@ -6123,11 +6022,82 @@ function showTimedChatSuggestions(){
   msgs.scrollTop = msgs.scrollHeight;
 }
 
+function timedChipAsk(btn){
+  const isOd = APP_LANG==='od';
+  const topicMap = {
+    '💑 Marriage & Spouse': isOd ? 'ବିବାହ ସମୟ ଓ ଜୀବନ ସାଥୀ ବିଷୟରେ ବିସ୍ତାରରେ ଜଣାଅ' : 'Tell me in detail about my marriage timing and what my spouse will be like',
+    '💼 Career & Finance': isOd ? 'ମୋ କ୍ୟାରିୟର, ଆୟ ଓ ଶ୍ରେଷ୍ଠ ବ୍ୟବସାୟ ସମ୍ପର୍କରେ ଜଣାଅ' : 'Tell me about my career, income sources and best business options',
+    '🧠 Health Prediction': isOd ? 'ମୋ ସ୍ୱାସ୍ଥ୍ୟ, ରୋଗ ଯୋଗ ଓ ଉପଚାର ଜଣାଅ' : 'Tell me about my health, disease risks and preventive remedies',
+    '🪐 Dasha Effects': isOd ? 'ବର୍ତ୍ତମାନ ଦଶା ଓ ଅନ୍ତର୍ଦଶା ଫଳ ବିସ୍ତାରରେ ଜଣାଅ' : 'Explain my current Mahadasha and Antardasha effects in detail',
+    '🌍 Foreign Yoga': isOd ? 'ବିଦେଶ ଯୋଗ, ଯାତ୍ରା ଓ ସ୍ଥାୟୀ ବସବାସ ବିଷୟ ଜଣାଅ' : 'Tell me about foreign travel, settlement yoga in my chart',
+    '💰 Wealth & Property': isOd ? 'ଧନ ଯୋଗ, ସ୍ଥାୟୀ ସମ୍ପତ୍ତି ଓ ଅର୍ଥ ଲାଭ ସମ୍ପର୍କରେ ଜଣାଅ' : 'Tell me about wealth yoga, property and financial growth in my chart',
+    '👶 Children Yoga': isOd ? 'ସନ୍ତାନ ଯୋଗ, ସଂଖ୍ୟା ଓ ସମୟ ଜଣାଅ' : 'Tell me about children yoga, timing and number of children in my chart',
+    '🔮 Lucky Gem & Remedy': isOd ? 'ମୋ ପାଇଁ ଶ୍ରେଷ୍ଠ ରତ୍ନ, ଯନ୍ତ୍ର ଓ ଉପଚାର ଜଣାଅ' : 'Tell me my lucky gemstone, yantra and specific remedies based on my chart',
+  };
+  const text = btn.textContent.trim();
+  const msg = topicMap[text] || text;
+  addTimedBubble(msg, 'user');
+  timedChatHistory.push({role:'user', content: msg});
+  sendTimedChatMsg(msg);
+  // Update chip languages if needed
+  updateChipLanguage();
+}
+
+function updateChipLanguage(){
+  const isOd = APP_LANG==='od';
+  const chips = document.querySelectorAll('.quick-chip');
+  const odLabels = ['💑 ବିବାହ ଓ ଜୀବନ ସାଥୀ','💼 କ୍ୟାରିୟର ଓ ଅର୍ଥ','🧠 ସ୍ୱାସ୍ଥ୍ୟ ଭବିଷ୍ୟ','🪐 ଦଶା ଫଳ','🌍 ବିଦେଶ ଯୋଗ','💰 ଧନ ଓ ସମ୍ପତ୍ତି','👶 ସନ୍ତାନ ଯୋଗ','🔮 ଭାଗ୍ୟ ରତ୍ନ ଓ ଉପଚାର'];
+  const enLabels = ['💑 Marriage & Spouse','💼 Career & Finance','🧠 Health Prediction','🪐 Dasha Effects','🌍 Foreign Yoga','💰 Wealth & Property','👶 Children Yoga','🔮 Lucky Gem & Remedy'];
+  chips.forEach((chip, i)=>{
+    chip.textContent = isOd ? (odLabels[i]||chip.textContent) : (enLabels[i]||chip.textContent);
+  });
+}
+
 function timedQuickAsk(topic, container){
   if(container) container.remove();
   addTimedBubble(topic, 'user');
   timedChatHistory.push({role:'user', content:topic});
   sendTimedChatMsg(topic);
+}
+
+function showAstrologerInfo(){
+  toast('ଶୀଘ୍ର ଆସୁଛି! Coming Soon — Real Astrologer Video Call feature');
+}
+
+function showAstrologerJoinForm(){
+  nav('astro-onboard');
+}
+
+function submitAstrologerJoin(){
+  const name = document.getElementById('aj-name')?.value.trim();
+  const phone = document.getElementById('aj-phone')?.value.trim();
+  const exp = document.getElementById('aj-exp')?.value;
+  const city = document.getElementById('aj-city')?.value.trim();
+  if(!name||!phone||!exp||!city){
+    toast('ସବୁ * ଫିଲ୍ଡ ପୂରଣ କରନ୍ତୁ'); return;
+  }
+  const specs = [...document.querySelectorAll('.aj-spec:checked')].map(c=>c.value).join(', ');
+  const langs = [...document.querySelectorAll('.aj-lang:checked')].map(c=>c.value).join(', ');
+  const bio = document.getElementById('aj-bio')?.value||'';
+  const upi = document.getElementById('aj-upi')?.value||'';
+  const avail = document.getElementById('aj-avail')?.value||'';
+  const wa = document.getElementById('aj-wa')?.value||phone;
+  // Send via WhatsApp to admin
+  const msg = `🌟 NEW ASTROLOGER APPLICATION 🌟
+  
+Name: ${name}
+Phone: ${phone}
+WhatsApp: ${wa}
+City: ${city}
+Experience: ${exp}
+Specialization: ${specs}
+Languages: ${langs}
+Available: ${avail}
+UPI: ${upi}
+Bio: ${bio}`;
+  window.open('https://wa.me/91XXXXXXXXXX?text='+encodeURIComponent(msg),'_blank');
+  toast('ଆବেদন ପଠାଯାଇଛି! ଆମ ଦଳ ଶୀଘ୍ର ଯୋଗାଯୋଗ କରିବ।');
+  setTimeout(()=>nav('landing'), 1500);
 }
 
 function clearKundliCache(){
@@ -6593,5 +6563,155 @@ function addChatBubble(text, type, id){
   }catch(e){console.log('Result restore error',e);}
 })();
 </script>
+<!-- ═══ ASTROLOGER ONBOARDING PAGE (separate URL/page) ═══ -->
+<div id="pg-astro-onboard" class="pg" style="display:none;background:#0C0602;min-height:100vh">
+  <div style="background:linear-gradient(180deg,#1A0E06,#0C0602);padding:20px 20px 40px">
+
+    <!-- Back -->
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:24px">
+      <button onclick="nav('landing')" style="background:transparent;border:none;color:var(--muted);font-size:22px;cursor:pointer">←</button>
+      <div style="font-family:'Cinzel',serif;font-size:15px;color:var(--gold-lt)">Astrologer Onboarding</div>
+    </div>
+
+    <!-- Hero -->
+    <div style="text-align:center;margin-bottom:28px">
+      <div style="font-size:44px;margin-bottom:10px">🌟</div>
+      <div style="font-family:'Cinzel',serif;font-size:20px;color:var(--gold-lt);margin-bottom:8px">Join as Astrologer</div>
+      <div style="font-size:12px;color:var(--muted);line-height:1.7">Reach thousands of Odia users.<br/>Earn from home via chat & video call.</div>
+    </div>
+
+    <!-- Benefits -->
+    <div style="background:rgba(184,135,10,.07);border:1px solid rgba(184,135,10,.2);border-radius:14px;padding:18px;margin-bottom:24px">
+      <div style="font-family:'Cinzel',serif;font-size:13px;color:var(--gold-lt);margin-bottom:12px">✦ What You Get</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;gap:10px;align-items:flex-start">
+          <span style="color:var(--gold);flex-shrink:0">✦</span>
+          <div><div style="font-size:12px;color:var(--cream);font-weight:700">70% Earnings Per Session</div><div style="font-size:10px;color:var(--muted);margin-top:2px">You keep 70% of every chat/call fee</div></div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-start">
+          <span style="color:var(--gold);flex-shrink:0">✦</span>
+          <div><div style="font-size:12px;color:var(--cream);font-weight:700">Weekly UPI Payments</div><div style="font-size:10px;color:var(--muted);margin-top:2px">Earnings paid every Monday to your UPI</div></div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-start">
+          <span style="color:var(--gold);flex-shrink:0">✦</span>
+          <div><div style="font-size:12px;color:var(--cream);font-weight:700">Your Own Profile Page</div><div style="font-size:10px;color:var(--muted);margin-top:2px">Photo, bio, specialization shown to users</div></div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-start">
+          <span style="color:var(--gold);flex-shrink:0">✦</span>
+          <div><div style="font-size:12px;color:var(--cream);font-weight:700">Zero Investment</div><div style="font-size:10px;color:var(--muted);margin-top:2px">Free to join. No hidden charges.</div></div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-start">
+          <span style="color:var(--gold);flex-shrink:0">✦</span>
+          <div><div style="font-size:12px;color:var(--cream);font-weight:700">Set Your Own Rate</div><div style="font-size:10px;color:var(--muted);margin-top:2px">₹10–₹500 per minute — you decide</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Application Form -->
+    <div style="font-family:'Cinzel',serif;font-size:14px;color:var(--gold-lt);margin-bottom:16px">✦ Application Form</div>
+    <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:24px">
+
+      <div>
+        <div style="font-size:10px;color:var(--gold-lt);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px">Full Name *</div>
+        <input id="aj-name" placeholder="Your full name" style="width:100%;background:#0C0602;border:1px solid var(--border);border-radius:8px;padding:11px 14px;font-size:13px;color:var(--ink);font-family:'Lato',sans-serif;box-sizing:border-box;outline:none"/>
+      </div>
+
+      <div>
+        <div style="font-size:10px;color:var(--gold-lt);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px">Mobile Number *</div>
+        <input id="aj-phone" placeholder="10 digit mobile" type="tel" style="width:100%;background:#0C0602;border:1px solid var(--border);border-radius:8px;padding:11px 14px;font-size:13px;color:var(--ink);font-family:'Lato',sans-serif;box-sizing:border-box;outline:none"/>
+      </div>
+
+      <div>
+        <div style="font-size:10px;color:var(--gold-lt);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px">WhatsApp Number</div>
+        <input id="aj-wa" placeholder="WhatsApp (if different)" type="tel" style="width:100%;background:#0C0602;border:1px solid var(--border);border-radius:8px;padding:11px 14px;font-size:13px;color:var(--ink);font-family:'Lato',sans-serif;box-sizing:border-box;outline:none"/>
+      </div>
+
+      <div>
+        <div style="font-size:10px;color:var(--gold-lt);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px">Years of Experience *</div>
+        <select id="aj-exp" style="width:100%;background:#0C0602;border:1px solid var(--border);border-radius:8px;padding:11px 14px;font-size:13px;color:var(--ink);font-family:'Lato',sans-serif;box-sizing:border-box;outline:none">
+          <option value="">Select...</option>
+          <option>1–3 years</option>
+          <option>3–5 years</option>
+          <option>5–10 years</option>
+          <option>10–20 years</option>
+          <option>20+ years</option>
+        </select>
+      </div>
+
+      <div>
+        <div style="font-size:10px;color:var(--gold-lt);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px">Specialization *</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--cream);cursor:pointer"><input type="checkbox" value="Vedic" class="aj-spec" style="accent-color:var(--gold)"/> Vedic Jyotish</label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--cream);cursor:pointer"><input type="checkbox" value="KP" class="aj-spec" style="accent-color:var(--gold)"/> KP System</label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--cream);cursor:pointer"><input type="checkbox" value="Numerology" class="aj-spec" style="accent-color:var(--gold)"/> Numerology</label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--cream);cursor:pointer"><input type="checkbox" value="Vastu" class="aj-spec" style="accent-color:var(--gold)"/> Vastu</label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--cream);cursor:pointer"><input type="checkbox" value="Palmistry" class="aj-spec" style="accent-color:var(--gold)"/> Palmistry</label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--cream);cursor:pointer"><input type="checkbox" value="Tarot" class="aj-spec" style="accent-color:var(--gold)"/> Tarot</label>
+        </div>
+      </div>
+
+      <div>
+        <div style="font-size:10px;color:var(--gold-lt);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px">Languages *</div>
+        <div style="display:flex;gap:14px;flex-wrap:wrap">
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--cream);cursor:pointer"><input type="checkbox" value="Odia" class="aj-lang" style="accent-color:var(--gold)" checked/> ଓଡ଼ିଆ</label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--cream);cursor:pointer"><input type="checkbox" value="Hindi" class="aj-lang" style="accent-color:var(--gold)"/> Hindi</label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--cream);cursor:pointer"><input type="checkbox" value="English" class="aj-lang" style="accent-color:var(--gold)"/> English</label>
+        </div>
+      </div>
+
+      <div>
+        <div style="font-size:10px;color:var(--gold-lt);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px">City / District *</div>
+        <input id="aj-city" placeholder="Your city" style="width:100%;background:#0C0602;border:1px solid var(--border);border-radius:8px;padding:11px 14px;font-size:13px;color:var(--ink);font-family:'Lato',sans-serif;box-sizing:border-box;outline:none"/>
+      </div>
+
+      <div>
+        <div style="font-size:10px;color:var(--gold-lt);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px">Your Rate (₹ per minute)</div>
+        <select id="aj-rate" style="width:100%;background:#0C0602;border:1px solid var(--border);border-radius:8px;padding:11px 14px;font-size:13px;color:var(--ink);font-family:'Lato',sans-serif;box-sizing:border-box;outline:none">
+          <option>₹10/min</option>
+          <option>₹20/min</option>
+          <option>₹30/min</option>
+          <option>₹50/min</option>
+          <option>₹100/min</option>
+        </select>
+      </div>
+
+      <div>
+        <div style="font-size:10px;color:var(--gold-lt);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px">Daily Available Time</div>
+        <select id="aj-avail" style="width:100%;background:#0C0602;border:1px solid var(--border);border-radius:8px;padding:11px 14px;font-size:13px;color:var(--ink);font-family:'Lato',sans-serif;box-sizing:border-box;outline:none">
+          <option>Morning (6am–12pm)</option>
+          <option>Afternoon (12pm–6pm)</option>
+          <option>Evening (6pm–10pm)</option>
+          <option>Any time</option>
+        </select>
+      </div>
+
+      <div>
+        <div style="font-size:10px;color:var(--gold-lt);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px">About You</div>
+        <textarea id="aj-bio" placeholder="Brief intro — your experience, education, achievements..." style="width:100%;background:#0C0602;border:1px solid var(--border);border-radius:8px;padding:11px 14px;font-size:13px;color:var(--ink);font-family:'Lato',sans-serif;box-sizing:border-box;outline:none;resize:none;height:80px"></textarea>
+      </div>
+
+      <div>
+        <div style="font-size:10px;color:var(--gold-lt);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px">UPI ID (for payments)</div>
+        <input id="aj-upi" placeholder="yourname@upi" style="width:100%;background:#0C0602;border:1px solid var(--border);border-radius:8px;padding:11px 14px;font-size:13px;color:var(--ink);font-family:'Lato',sans-serif;box-sizing:border-box;outline:none"/>
+      </div>
+    </div>
+
+    <!-- Terms box -->
+    <div style="background:rgba(184,135,10,.06);border-radius:10px;padding:14px;margin-bottom:20px;font-size:11px;color:var(--muted);line-height:1.8">
+      <div style="color:var(--gold-lt);font-weight:700;margin-bottom:6px">✦ Terms & Conditions</div>
+      ✓ You earn 70% of every session fee<br/>
+      ✓ Weekly payout every Monday via UPI<br/>
+      ✓ Your profile visible to all app users<br/>
+      ✓ Minimum ₹50 guaranteed per session<br/>
+      ✓ Must maintain 4★+ rating to stay active<br/>
+      ✓ Team will verify and onboard within 48 hrs
+    </div>
+
+    <button onclick="submitAstrologerJoin()" style="width:100%;background:linear-gradient(135deg,var(--gold),var(--saffron));color:#0C0602;border:none;border-radius:12px;padding:15px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Cinzel',serif;margin-bottom:30px">
+      ✦ Submit Application
+    </button>
+  </div>
+</div>
+
 </body>
 </html>
