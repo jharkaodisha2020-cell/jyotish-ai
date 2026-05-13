@@ -937,11 +937,8 @@ select option{background:#0C0602}
       <button onclick="shareKundli()" style="background:rgba(184,135,10,.15);border:1px solid rgba(184,135,10,.3);border-radius:7px;padding:6px 12px;font-size:11px;color:var(--gold-lt);cursor:pointer;font-family:'Lato',sans-serif">📤 Share</button>
     </div>
 
-    <!-- Kundli Result Body -->
-    <div id="result-body"></div>
-
-    <!-- PDF Download + AI Chat Buttons -->
-    <div style="margin-top:16px">
+    <!-- PDF + AI Chat Buttons (TOP) -->
+    <div id="result-action-btns" style="margin-bottom:14px">
       <button class="pdf-btn" id="main-pdf-btn" onclick="downloadPDFAndShowChat()">
         ⬇ Download Kundli PDF Report
       </button>
@@ -949,10 +946,13 @@ select option{background:#0C0602}
         <span style="font-size:20px">🤖</span>
         <div style="text-align:left">
           <div id="ai-chat-btn-txt">Chat with AI — Know More About Your Kundli</div>
-          <div style="font-size:10px;font-weight:400;opacity:.8">GPT-4o · 20 min FREE · File attach</div>
+          <div style="font-size:10px;font-weight:400;opacity:.8">GPT-4o · 15 min FREE · Kundli auto-attached</div>
         </div>
       </button>
     </div>
+
+    <!-- Kundli Result Body -->
+    <div id="result-body"></div>
 
   </div>
 </div>
@@ -1008,12 +1008,18 @@ select option{background:#0C0602}
     <button onclick="closeTimedChat()" style="background:transparent;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:4px">✕</button>
   </div>
 
-  <!-- File attach area -->
-  <div id="timed-file-area" style="padding:10px 16px;background:#0C0602;border-bottom:1px solid var(--border)">
-    <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:12px;color:var(--muted)">
+  <!-- Kundli auto-attached status -->
+  <div id="timed-file-area" style="padding:8px 16px;background:#0C0602;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+    <div style="display:flex;align-items:center;gap:8px">
+      <span style="font-size:14px">✅</span>
+      <div>
+        <div style="font-size:11px;color:var(--green-l);font-weight:700" id="kundli-attached-status">Kundli Auto-Attached</div>
+        <div style="font-size:10px;color:var(--muted)" id="kundli-attached-detail">AI has your full chart data</div>
+      </div>
+    </div>
+    <label style="cursor:pointer">
       <input type="file" id="kundli-pdf-input" accept=".pdf,image/*" style="display:none" onchange="handlePDFAttach(this)"/>
-      <span style="background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:5px 12px;font-size:11px;color:var(--gold-lt);cursor:pointer">📎 Attach Kundli PDF</span>
-      <span id="attached-file-name" style="color:var(--green-l);font-size:11px"></span>
+      <span style="background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:10px;color:var(--muted);cursor:pointer">📎 Add PDF too</span>
     </label>
   </div>
 
@@ -2641,6 +2647,15 @@ function renderResult(res){
 
   const rems=isOd?r.remedies_od:r.remedies;
   const gems=isOd?r.gemstones_od:r.gemstones;
+
+  // Update action buttons text
+  const isOdBtn = APP_LANG==='od';
+  const pdfBtn = document.getElementById('main-pdf-btn');
+  if(pdfBtn) pdfBtn.textContent = isOdBtn ? '⬇ କୁଣ୍ଡଳୀ PDF ଡାଉନଲୋଡ' : '⬇ Download Kundli PDF Report';
+  const chatBtnTxt = document.getElementById('ai-chat-btn-txt');
+  if(chatBtnTxt) chatBtnTxt.textContent = isOdBtn ? 'AI ଚାଟ — ଆପଣଙ୍କ କୁଣ୍ଡଳୀ ବିଷୟରେ ଜାଣନ୍ତୁ' : 'Chat with AI — Know More About Your Kundli';
+  const actionBtns = document.getElementById('result-action-btns');
+  if(actionBtns) actionBtns.style.display = 'block';
 
   g('result-body').innerHTML=`
   <div class="rhero">
@@ -5916,6 +5931,11 @@ function addTimedBubble(text, role){
 function sendAutoKundliMessage(){
   if(!S.calcResult) return;
   const isOd = APP_LANG==='od';
+  // Update status bar
+  const statusEl = document.getElementById('kundli-attached-status');
+  const detailEl = document.getElementById('kundli-attached-detail');
+  if(statusEl) statusEl.textContent = isOd ? 'କୁଣ୍ଡଳୀ ସଂଲଗ୍ନ ହୋଇଛି' : 'Kundli Auto-Attached';
+  if(detailEl) detailEl.textContent = isOd ? 'AI ଆପଣଙ୍କ ସମ୍ପୂର୍ଣ ଚାର୍ଟ ଦେଖୁଛି' : 'AI has your full chart data';
   const res = S.calcResult;
   const nm = res.input?.nm || '';
   const asc = res.ascendant?.rashiName || '';
