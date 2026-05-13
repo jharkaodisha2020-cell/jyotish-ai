@@ -3623,7 +3623,17 @@ async function _doAIChat(msg, thinkId){
     const res=S.calcResult;
     const p=res.planets||[];
     const p0=res.planets||[];
-    kundliContext='Name:'+res.input?.nm+' Lagna:'+res.ascendant?.rashiName+' Moon:'+p0[1]?.rashiName+' Nak:'+res.moonNak?.name+' Dasha:'+res.currDasha?.planet+' till '+res.currDasha?.end?.getFullYear()+' Antar:'+res.currAntar?.planet+' Planets:'+p0.map(x=>x.name[0]+x.rashiName[0]+'H'+x.house).join(',');
+    const h7p=p0.find(x=>x.house===7)?.name||'';
+    const h10p=p0.find(x=>x.house===10)?.name||'';
+    const h5p=p0.find(x=>x.house===5)?.name||'';
+    kundliContext='Name:'+res.input?.nm+
+      ' Lagna:'+res.ascendant?.rashiName+
+      ' Moon:'+p0[1]?.rashiName+
+      ' Nak:'+res.moonNak?.name+' Pada:'+res.moonNak?.pada+
+      ' Dasha:'+res.currDasha?.planet+' till '+res.currDasha?.end?.getFullYear()+
+      ' Antar:'+res.currAntar?.planet+
+      ' H7:'+h7p+' H10:'+h10p+' H5:'+h5p+
+      ' Planets:'+p0.map(x=>x.name.substring(0,3)+':'+x.rashiName.substring(0,3)+'H'+x.house+'('+x.dignity[0]+')').join(' ');
   }
 
   const isOdia = (chatLang || APP_LANG) === 'od';
@@ -3649,24 +3659,67 @@ FORMAT RULES:
 - Warm, personal tone — address them by name`;
 
   const chartNote = kundliContext ? 'CHART:'+kundliContext : '';
-  const systemPrompt = `You are Jyotish AI, an expert Vedic astrologer.
+  const isOdiaChat = (chatLang||APP_LANG)==='od';
+  
+  // Detect if this is a full reading request
+  const isFullReading = /kundali|kundli|about me|mora|bisayare|kuhantu|janao|tell me|full reading|sab kuch|sabakichu|poora|complete/i.test(msg);
+  
+  // Build rich full-reading system prompt (like ChatGPT)
+  const fullReadingPrompt = isOdiaChat ? `ଆପଣ ଏକ ବିଶেষଜ୍ଞ ଓଡ଼ିଆ ଜ୍ୟୋତିଷ AI। ନିମ୍ନ ନିୟମ ଅନୁସରଣ କରି ଉତ୍ତର ଦିଅ:
 
-LANGUAGE DETECTION RULE (very important):
-- If user writes in pure English → reply in English
-- If user writes in Odia script (ଓଡ଼ିଆ) → reply in Odia script
-- If user writes Odia words in English letters (Romanized Odia) like "mo kundali", "mora career", "bibaha kebe heba", "dasha fala" → reply in ODIA SCRIPT (ଓଡ଼ିଆ)
-- If app language is Odia (${(chatLang||APP_LANG)==='od'?'YES':'NO'}) → prefer Odia script replies
+LANGUAGE: ସ୍ୱାଭାବିକ ଓ ଆଧୁନିକ ଓଡ଼ିଆ ଭାଷା ବ୍ୟବହାର କର। English technical words ଯଥା career, stress, business, online ଓଡ଼ିଆ ମଧ୍ୟରେ ରଖ।
 
-FORMAT RULES (always):
-- Use ## for section headers
-- Use **bold** for planet names and key years
-- Numbered list (1. 2. 3.) for remedies
-- MINIMUM 15 sentences per reply
-- End with personal blessing 🙏
-- Never give a short answer
+FORMAT (ଏହି exactly format use କର):
+## ✨ [Section Title]
+- bullet points with details
+- **bold** for planet names and key years
+---
 
-${langNote}
-${chartNote?chartNote:''}`;
+SECTIONS TO COVER (each with ##):
+1. ବ୍ୟକ୍ତିତ୍ୱ ଓ ସ୍ୱଭାବ (Personality)
+2. Career & Finance  
+3. ଧନ ଓ ସମ୍ପତ୍ତି (Wealth)
+4. Marriage & Love Life
+5. Health
+6. Foreign/Settlement Yoga
+7. Current Mahadasha effect
+8. ଉପାୟ - numbered remedies (1. 2. 3. 4.)
+9. Overall Reading + best years 2025-2030
+
+END WITH: "ଆପଣ ଚାହିଲେ ମୁଁ ଏବେ [list 5 follow-up topics] ବିଷୟରେ ଆହୁରି ବିସ୍ତାରରେ କହିପାରିବି। 🙏"
+
+CHART DATA: ${chartNote}` 
+  : `You are an expert Vedic astrologer AI. Follow this exact ChatGPT-style format:
+
+LANGUAGE: Warm, personal English mixed with technical astrology terms.
+
+FORMAT:
+## ✨ [Section Title]
+- bullet points with specific details
+- **bold** for planet names and key years
+---
+
+SECTIONS TO COVER (each with ##):
+1. Personality & Nature
+2. Career & Finance
+3. Wealth & Property  
+4. Marriage & Love Life
+5. Health Predictions
+6. Foreign/Settlement Yoga
+7. Current Mahadasha (${S.calcResult?.currDasha?.planet||''} dasha) effect
+8. Remedies - numbered (1. 2. 3. 4.)
+9. Overall Reading + turning points
+
+END WITH: "If you want, I can now give detailed reading on [list 5 follow-up topics] 🙏"
+
+CHART DATA: ${chartNote}`;
+
+  // Short question prompt - for specific questions
+  const quickPrompt = isOdiaChat
+    ? 'ବିଶেষਜ୍ଞ ଓଡ଼ିଆ ଜ୍ୟୋତିଷ AI। ## headers, **bold** planets, numbered remedies use କର। ୧୨+ ବାକ୍ୟ। 🙏 ରେ ଶେଷ। CHART: '+chartNote
+    : 'Expert Vedic astrologer AI. Use ## headers, **bold** planets, numbered remedies. Min 12 sentences. End with 🙏. CHART: '+chartNote;
+
+  const systemPrompt = isFullReading ? fullReadingPrompt : quickPrompt;
 
   try{
     const messages=[...chatHistory.slice(-8)];
@@ -3677,7 +3730,7 @@ ${chartNote?chartNote:''}`;
         model:'claude-haiku-4-5-20251001',
         max_tokens:1500,
         system:systemPrompt,
-        messages
+        messages:messages.slice(-6)
       })
     });
     const data=await resp.json();
