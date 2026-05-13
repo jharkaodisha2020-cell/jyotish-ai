@@ -21,13 +21,19 @@ exports.handler = async function(event) {
   try{
     const body = JSON.parse(event.body);
 
-    // Use haiku for kundli JSON generation (fast, structured)
-    // Use sonnet for chat (better quality)
-    const isChatMsg = body.messages && body.messages.length > 1;
-    body.model = isChatMsg ? 'claude-haiku-4-5-20251001' : 'claude-haiku-4-5-20251001';
-
-    // Hard cap tokens - keep response fast
-    body.max_tokens = Math.min(body.max_tokens || 800, 800);
+    // Use haiku for structured JSON (kundli generation) - fast
+    // Use sonnet for chat messages - richer, longer responses
+    const isChat = body.messages && body.messages.length > 0 && body.system;
+    
+    if(isChat){
+      // Chat: use sonnet for detailed responses
+      body.model = 'claude-sonnet-4-6';
+      body.max_tokens = Math.min(body.max_tokens || 1500, 1500);
+    } else {
+      // Kundli JSON generation: use haiku for speed
+      body.model = 'claude-haiku-4-5-20251001';
+      body.max_tokens = Math.min(body.max_tokens || 800, 900);
+    }
 
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
