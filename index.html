@@ -655,8 +655,8 @@ select option{background:#0C0602}
     <p style="font-size:14px;line-height:1.7;color:rgba(255,255,255,.85);margin:0 0 24px">କୁଣ୍ଡଳୀ, ଭବିଷ୍ୟବାଣୀ ଓ AI ଜ୍ୟୋତିଷ<br/>ସଂପୂର୍ଣ ଓଡ଼ିଆରେ</p>
 
     <div style="display:flex;gap:12px;margin-bottom:24px">
-      <button onclick="nav('login')" style="flex:1;padding:14px;border:none;border-radius:14px;background:linear-gradient(135deg,#ffd86b,#b8870a);font-weight:700;font-size:14px;cursor:pointer;font-family:'Cinzel',serif;color:#0C0602">🔮 ମୋ କୁଣ୍ଡଳୀ</button>
-      <button onclick="nav('login')" style="flex:1;padding:14px;border-radius:14px;background:transparent;color:#ffd86b;border:1.5px solid #ffd86b;font-weight:700;font-size:13px;cursor:pointer;font-family:'Lato',sans-serif">🤖 AI ଚାଟ</button>
+      <button onclick="landingGetStarted('kundli')" style="flex:1;padding:14px;border:none;border-radius:14px;background:linear-gradient(135deg,#ffd86b,#b8870a);font-weight:700;font-size:14px;cursor:pointer;font-family:'Cinzel',serif;color:#0C0602">🔮 ମୋ କୁଣ୍ଡଳୀ</button>
+      <button onclick="landingGetStarted('chat')" style="flex:1;padding:14px;border-radius:14px;background:transparent;color:#ffd86b;border:1.5px solid #ffd86b;font-weight:700;font-size:13px;cursor:pointer;font-family:'Lato',sans-serif">🤖 AI ଚାଟ</button>
     </div>
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px">
@@ -702,7 +702,7 @@ select option{background:#0C0602}
       </div>
     </div>
 
-    <button onclick="nav('login')" style="width:100%;padding:15px;border:none;border-radius:14px;background:linear-gradient(135deg,#ffd86b,#b8870a);font-weight:700;font-size:15px;cursor:pointer;font-family:'Cinzel',serif;color:#0C0602;box-shadow:0 4px 20px rgba(255,215,0,.25)">✦ ମାଗଣାରେ ଆରମ୍ଭ କରନ୍ତୁ</button>
+    <button onclick="landingGetStarted('kundli')" style="width:100%;padding:15px;border:none;border-radius:14px;background:linear-gradient(135deg,#ffd86b,#b8870a);font-weight:700;font-size:15px;cursor:pointer;font-family:'Cinzel',serif;color:#0C0602;box-shadow:0 4px 20px rgba(255,215,0,.25)">✦ ମାଗଣାରେ ଆରମ୍ଭ କରନ୍ତୁ</button>
     <div style="margin-top:10px;font-size:10px;color:rgba(255,255,255,.3)">jyotishaiodisha.netlify.app</div>
   </div>
 </div>
@@ -4633,13 +4633,37 @@ function selectHoroscopeRashi(idx){
 let chatTimerInterval=null,chatSecondsLeft=15*60,chatStarted=false;
 let isPaidSession=false,timedChatHistory=[],attachedPDFBase64=null;
 
+function landingGetStarted(dest){
+  if(S.user){
+    // Already logged in
+    if(dest==='chat'){
+      dashGo('kundli'); // go generate kundli first if no result
+      if(S.calcResult){ openGPTChat(); }
+      else { toast('First generate your Kundli, then use AI Chat'); dashGo('kundli'); }
+    } else {
+      dashGo('kundli');
+    }
+  } else {
+    nav('login');
+  }
+}
+
 function openGPTChat(){
+  // Must be logged in to use AI chat
+  if(!S.user){
+    nav('login');
+    const isOd=APP_LANG==='od';
+    toast(isOd?'AI ଚାଟ ପାଇଁ ଲଗ୍ ଇନ କରନ୍ତୁ':'Please login to use AI Chat');
+    return;
+  }
   const isOd=APP_LANG==='od';
   const page=document.getElementById('timed-chat-page');
   if(page){page.style.display='flex';page.style.flexDirection='column';}
   document.body.style.overflow='hidden';
   const badge=document.getElementById('timed-model-badge');
   if(badge)badge.textContent=isOd?'GPT-5.4-mini · ୧୫ ମିନିଟ ମାଗଣା':'GPT-5.4-mini · Free 15 min';
+  const title=document.getElementById('timed-chat-title');
+  if(title)title.textContent=isOd?'Jyotish AI ଚାଟ':'Jyotish AI Chat';
   if(!chatStarted){chatStarted=true;chatSecondsLeft=15*60;startChatTimer();setTimeout(sendAutoKundliMessage,800);}
 }
 
