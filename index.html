@@ -3503,6 +3503,8 @@ async function sendChatMsg(msg){
 
 async function formatChatMsg(text){
   if(!text) return '';
+  if(typeof text !== 'string') text = String(text);
+  if(text === '[object Promise]') return '<em style="color:var(--muted)">Loading...</em>';
   let lines = text.split('\n');
   let html = lines.map(function(line){
     var t = line.trim();
@@ -4730,10 +4732,8 @@ function sendAutoKundliMessage(){
   if(!S.calcResult)return;
   const isOd=APP_LANG==='od',res=S.calcResult;
   const sum=isOd
-    ?`🔮 ${res.input?.nm||''} ଙ୍କ କୁଣ୍ଡଳୀ ସଂଲଗ୍ନ
-✦ ଲଗ୍ନ: ${res.ascendant?.rashiName||''} | ରାଶି: ${res.planets?.[1]?.rashiName||''} | ନକ୍ଷତ୍ର: ${res.moonNak?.name||''} | ଦଶା: ${res.currDasha?.planet||''}`
-    :`🔮 Kundli attached for ${res.input?.nm||''}
-✦ Lagna: ${res.ascendant?.rashiName||''} | Moon: ${res.planets?.[1]?.rashiName||''} | Nak: ${res.moonNak?.name||''} | Dasha: ${res.currDasha?.planet||''}`;
+    ?('🔮 '+( res.input?.nm||'')+' ଙ୍କ କୁଣ୍ଡଳୀ ସଂଲଗ୍ନ\n✦ ଲଗ୍ନ: '+(res.ascendant?.rashiName||'')+' | ରାଶି: '+(res.planets?.[1]?.rashiName||'')+' | ନକ୍ଷତ୍ର: '+(res.moonNak?.name||'')+' | ଦଶା: '+(res.currDasha?.planet||''))
+    :('🔮 Kundli attached for '+(res.input?.nm||'')+'\n✦ Lagna: '+(res.ascendant?.rashiName||'')+' | Moon: '+(res.planets?.[1]?.rashiName||'')+' | Nak: '+(res.moonNak?.name||'')+' | Dasha: '+(res.currDasha?.planet||''));
   addTimedBubble(sum,'assistant');
   setTimeout(()=>{
     const q=isOd?'ମୋ ସମ୍ପୂର୍ଣ କୁଣ୍ଡଳୀ ବିଶ୍ଳେଷଣ କର':'Tell me everything about my Kundli';
@@ -4742,6 +4742,12 @@ function sendAutoKundliMessage(){
 }
 
 function addTimedBubble(text,role){
+  // Guard against Promise objects
+  if(text && typeof text.then === 'function'){
+    text.then(resolved => addTimedBubble(resolved, role));
+    return null;
+  }
+  if(text === '[object Promise]' || text === undefined) return null;
   const msgs=document.getElementById('timed-chat-messages');if(!msgs)return;
   const div=document.createElement('div');
   div.className='chat-bubble '+(role==='user'?'user':'ai');
@@ -4768,11 +4774,11 @@ async function sendTimedChatMsg(msg){
       const HOUSES=['','1st','2nd','3rd','4th','5th','6th','7th','8th','9th','10th','11th','12th'];
       const pl=p.map(x=>x.name+':'+x.rashiName+' '+HOUSES[x.house]+' '+(x.lon%30).toFixed(1)+'°'+(x.isRetro?'R':'')).join(' | ');
       const de=res.currDasha?.end?new Date(res.currDasha.end).getFullYear():'';
-      ctx=`Name:${res.input?.nm} DOB:${res.input?.dob} TOB:${res.input?.tob} Place:${res.input?.pob}
-Lagna:${res.ascendant?.rashiName} Moon:${p[1]?.rashiName} Nak:${res.moonNak?.name} Pada:${res.moonNak?.pada}
-Dasha:${res.currDasha?.planet} till ${de} Antar:${res.currAntar?.planet}
-Planets: ${pl}
-H7:${p.find(x=>x.house===7)?.name||'Empty'} H10:${p.find(x=>x.house===10)?.name||'Empty'} H5:${p.find(x=>x.house===5)?.name||'Empty'}`;
+      ctx='Name:'+(res.input?.nm||'')+' DOB:'+(res.input?.dob||'')+' TOB:'+(res.input?.tob||'')+' Place:'+(res.input?.pob||'')
+        +' | Lagna:'+(res.ascendant?.rashiName||'')+' Moon:'+(p[1]?.rashiName||'')+' Nak:'+(res.moonNak?.name||'')+' Pada:'+(res.moonNak?.pada||'')
+        +' | Dasha:'+(res.currDasha?.planet||'')+' till '+de+' Antar:'+(res.currAntar?.planet||'')
+        +' | Planets: '+pl
+        +' | H7:'+(p.find(x=>x.house===7)?.name||'Empty')+' H10:'+(p.find(x=>x.house===10)?.name||'Empty')+' H5:'+(p.find(x=>x.house===5)?.name||'Empty');
     }
     const isOd=APP_LANG==='od';
     const sys=(isOd
