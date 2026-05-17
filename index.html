@@ -255,31 +255,6 @@ select option{background:#0C0602}
 .typing-dot:nth-child(2){animation-delay:.15s}
 .typing-dot:nth-child(3){animation-delay:.3s}
 @keyframes typingBounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
-/* Quick chips in timed chat */
-.quick-chip{
-  background:rgba(184,135,10,.08);
-  border:1px solid rgba(184,135,10,.25);
-  border-radius:20px;
-  padding:6px 14px;
-  font-size:11px;
-  color:var(--gold-lt);
-  cursor:pointer;
-  white-space:nowrap;
-  font-family:'Lato',sans-serif;
-  flex-shrink:0;
-  transition:background .15s;
-}
-.quick-chip:hover,.quick-chip:active{
-  background:rgba(184,135,10,.2);
-  border-color:var(--gold);
-}
-
-/* AI Chat Popup */
-@keyframes slideUp{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
-#ai-chat-popup.show{display:flex}
-#timed-chat-page.show{display:flex}
-#chat-locked-overlay.show{display:flex}
-
 /* global user details */
 .user-details-bar{background:linear-gradient(135deg,var(--surface),#1E0800);border:1px solid var(--gold);border-radius:12px;padding:14px;margin-bottom:14px}
 .ud-title{font-family:'Cinzel',serif;font-size:13px;color:var(--gold-lt);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
@@ -472,6 +447,9 @@ select option{background:#0C0602}
 .num-section{display:none}.num-section.on{display:block}
 .cross-insight{background:linear-gradient(135deg,#1E0A00,var(--surface));border:1px solid var(--gold);border-radius:10px;padding:14px;margin-bottom:10px}
 .cross-title{font-family:'Cinzel',serif;font-size:12px;color:var(--gold-lt);margin-bottom:6px}
+.quick-chip{background:rgba(184,135,10,.08);border:1px solid rgba(184,135,10,.25);border-radius:20px;padding:6px 14px;font-size:11px;color:var(--gold-lt);cursor:pointer;white-space:nowrap;font-family:'Lato',sans-serif;flex-shrink:0}
+.quick-chip:active{background:rgba(184,135,10,.2)}
+@keyframes slideUp{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
@@ -514,13 +492,9 @@ select option{background:#0C0602}
 <div class="chat-page" id="chat-page">
   <div class="chat-header">
     <svg width="28" height="28" viewBox="0 0 28 28"><circle cx="14" cy="14" r="13" fill="#1E110A" stroke="#B8870A" stroke-width=".8"/><text x="14" y="18" text-anchor="middle" font-size="11" fill="#B8870A" font-family="serif">ॐ</text></svg>
-    <div style="flex:1">
+    <div>
       <div class="chat-header-title">Jyotish AI — Astro Chat</div>
       <div style="font-size:10px;color:var(--muted)">Ask anything about your Kundli · ଜ୍ୟୋତିଷ ପ୍ରଶ୍ନ</div>
-    </div>
-    <div style="display:flex;gap:4px;align-items:center;margin-right:8px">
-      <button id="chat-lang-en" onclick="setChatLang('en')" style="background:var(--maroon);color:var(--cream);border:none;border-radius:12px;padding:3px 10px;font-size:10px;font-weight:700;cursor:pointer;font-family:'Lato',sans-serif">EN</button>
-      <button id="chat-lang-od" onclick="setChatLang('od')" style="background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:12px;padding:3px 10px;font-size:10px;font-weight:700;cursor:pointer;font-family:'Noto Serif Oriya',sans-serif">ଓଡ଼ିଆ</button>
     </div>
     <button class="chat-close" onclick="closeChat()">✕</button>
   </div>
@@ -671,7 +645,7 @@ select option{background:#0C0602}
 
 
 
-<di<div class="pg" id="pg-landing" style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:radial-gradient(circle at top,#28113d,#07010f);overflow-y:auto">
+<div class="pg on" id="pg-landing" style="background:radial-gradient(circle at top,#28113d,#07010f);display:flex;align-items:center;justify-content:center;padding:24px;overflow-y:auto;min-height:100vh">
   <div style="width:100%;max-width:480px;padding:36px 24px;border-radius:28px;text-align:center;background:rgba(255,255,255,.06);border:1px solid rgba(255,215,0,.35);box-shadow:0 0 40px rgba(255,215,0,.12);backdrop-filter:blur(12px);margin:24px 0">
 
     <div style="width:72px;height:72px;margin:0 auto 18px;border-radius:50%;display:grid;place-items:center;font-size:34px;color:gold;border:1.5px solid gold;background:rgba(255,215,0,.08)">ॐ</div>
@@ -704,17 +678,14 @@ select option{background:#0C0602}
     <div style="background:rgba(255,215,0,.07);border:1px solid rgba(255,215,0,.25);border-radius:14px;padding:18px;margin-bottom:20px;text-align:left">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
         <span style="font-size:26px">👳</span>
-        <div>
-          <div style="font-family:'Cinzel',serif;font-size:13px;color:#ffd76a;font-weight:700">ଅସଲ ଜ୍ୟୋତିଷୀ ସହ କଥା ହୁଅନ୍ତୁ</div>
-          <div style="font-size:10px;color:rgba(255,255,255,.4);margin-top:2px">Video Call · Chat · Coming Soon</div>
-        </div>
+        <div><div style="font-family:'Cinzel',serif;font-size:13px;color:#ffd76a;font-weight:700">ଅସଲ ଜ୍ୟୋତିଷୀ ସହ କଥା ହୁଅନ୍ତୁ</div><div style="font-size:10px;color:rgba(255,255,255,.4);margin-top:2px">Video Call · Chat · Coming Soon</div></div>
       </div>
       <div style="display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin-bottom:12px">
         <div style="flex-shrink:0;text-align:center;background:rgba(0,0,0,.3);border:1px solid rgba(255,215,0,.2);border-radius:10px;padding:10px 14px"><div style="font-size:24px">🧑‍💼</div><div style="font-size:10px;color:#fff;margin-top:4px;white-space:nowrap">Pt. Suresh</div><div style="font-size:9px;color:rgba(255,255,255,.4)">25 yrs</div><div style="font-size:9px;color:#4ade80;margin-top:3px">● Online</div></div>
         <div style="flex-shrink:0;text-align:center;background:rgba(0,0,0,.3);border:1px solid rgba(255,215,0,.2);border-radius:10px;padding:10px 14px"><div style="font-size:24px">👩‍💼</div><div style="font-size:10px;color:#fff;margin-top:4px;white-space:nowrap">Smt. Pratima</div><div style="font-size:9px;color:rgba(255,255,255,.4)">18 yrs</div><div style="font-size:9px;color:#4ade80;margin-top:3px">● Online</div></div>
         <div style="flex-shrink:0;text-align:center;background:rgba(0,0,0,.3);border:1px solid rgba(255,215,0,.2);border-radius:10px;padding:10px 14px"><div style="font-size:24px">🧑‍💼</div><div style="font-size:10px;color:#fff;margin-top:4px;white-space:nowrap">Pt. Ramesh</div><div style="font-size:9px;color:rgba(255,255,255,.4)">30 yrs</div><div style="font-size:9px;color:rgba(255,255,255,.35)">● Busy</div></div>
       </div>
-      <button onclick="showAstrologerInfo()" style="width:100%;padding:11px;border:none;border-radius:10px;background:linear-gradient(135deg,#ffd86b,#b8870a);color:#0C0602;font-weight:700;font-size:13px;cursor:pointer;font-family:'Lato',sans-serif">📞 ଜ୍ୟୋତିଷୀ ସହ ବୁକ କରନ୍ତୁ</button>
+      <button onclick="alert('Coming Soon! Real astrologer booking launching soon.')" style="width:100%;padding:11px;border:none;border-radius:10px;background:linear-gradient(135deg,#ffd86b,#b8870a);color:#0C0602;font-weight:700;font-size:13px;cursor:pointer;font-family:'Lato',sans-serif">📞 ଜ୍ୟୋତିଷୀ ସହ ବୁକ କରନ୍ତୁ</button>
     </div>
 
     <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px">
@@ -735,6 +706,257 @@ select option{background:#0C0602}
   </div>
 </div>
 
+<div class="pg" id="pg-login">
+  <div class="wrap"><div class="back" onclick="nav('landing')">← Back</div>
+    <div class="auth-box">
+      <div style="text-align:center;margin-bottom:18px">
+        <svg width="44" height="44" viewBox="0 0 44 44" style="margin:0 auto 10px;display:block"><circle cx="22" cy="22" r="20" stroke="#3D2710" stroke-width="1" fill="none"/><text x="22" y="27" text-anchor="middle" font-size="16" fill="#B8870A" font-family="serif">ॐ</text></svg>
+        <div class="auth-title" id="otp-title">Sign In / Register</div>
+        <div class="auth-sub" id="otp-sub">Enter your email to receive a one-time password</div>
+      </div>
+
+      <!-- STEP 1: Email entry -->
+      <div id="otp-step1">
+        <div class="fg"><label>Full Name (new users only)</label><input id="otp-name" placeholder="Your full name"/></div>
+        <div class="fg"><label>Email Address</label><input id="otp-email" type="email" placeholder="you@gmail.com"/></div>
+        <button class="btn" id="otp-send-btn" onclick="sendOTP()">Send OTP to Email ✦</button>
+        <div id="otp-err1" class="err"></div>
+        <div style="font-size:11px;color:var(--muted);text-align:center;margin-top:10px">A 6-digit code will be sent to your email · Free · Instant</div>
+      </div>
+
+      <!-- STEP 2: OTP entry -->
+      <div id="otp-step2" style="display:none">
+        <div style="text-align:center;margin-bottom:16px">
+          <div style="font-size:28px;margin-bottom:6px">📧</div>
+          <div style="font-size:13px;color:var(--ink)">OTP sent to <span id="otp-email-show" style="color:var(--gold-lt);font-weight:700"></span></div>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px">Check your inbox and spam folder</div>
+        </div>
+        <div class="fg">
+          <label>Enter 6-digit OTP</label>
+          <input id="otp-code" type="number" placeholder="Enter OTP" maxlength="6" style="font-size:22px;letter-spacing:6px;text-align:center;font-family:'Cinzel',serif"/>
+        </div>
+        <button class="btn" id="otp-verify-btn" onclick="verifyOTP()">Verify & Sign In ✦</button>
+        <div id="otp-err2" class="err"></div>
+        <div style="text-align:center;margin-top:12px">
+          <span style="font-size:12px;color:var(--muted)">Didn't receive? </span>
+          <a onclick="backToEmail()" style="font-size:12px;color:var(--gold);cursor:pointer">Try again</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ═══ DASHBOARD ═══ -->
+<div class="pg" id="pg-dash">
+  <div class="wrap">
+    <div style="text-align:center;padding:22px 0 16px">
+      <div style="font-family:'Cinzel',serif;font-size:19px;color:var(--cream)" id="dash-nm">Namaste 🙏</div>
+      <div style="display:inline-flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--gold);border-radius:20px;padding:3px 13px;font-size:11px;color:var(--gold-lt);font-weight:700;margin-top:6px" id="dash-plan">✦ Loading</div>
+    </div>
+    <div style="text-align:right;margin-bottom:8px">
+      <button class="ud-edit-btn" style="font-size:11px;padding:5px 12px" onclick="nav('userdetails')" id="edit-details-btn">
+        ✏ Edit My Details
+      </button>
+    </div>
+    <div id="dash-ud-bar"></div>
+    <div class="stat-grid">
+      <div class="stat"><div class="stat-n" id="s-k">0</div><div class="stat-l">Kundlis</div></div>
+      <div class="stat"><div class="stat-n" id="s-v">—</div><div class="stat-l">Valid Till</div></div>
+    </div>
+    <div class="action-grid" id="act-grid"></div>
+    <div id="hist-wrap"></div>
+    <div id="upg-wrap"></div>
+  </div>
+</div>
+
+<!-- ═══ USER DETAILS SETUP ═══ -->
+<div class="pg" id="pg-userdetails">
+  <div class="wrap">
+    <div style="font-family:'Cinzel',serif;font-size:17px;color:var(--cream);margin:14px 0 4px" id="ud-page-title">My Birth Details</div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:16px">Fill once — used across all services automatically</div>
+    <div class="card">
+      <div class="sh">✦ Personal Information</div>
+      <div class="fg"><label>Full Name / ପୂର୍ଣ ନାମ</label><input id="ud-name" placeholder="Enter your full name"/></div>
+      <div class="fg"><label>Date of Birth</label><input id="ud-dob" type="date"/></div>
+      <div class="fg"><label>Time of Birth</label>
+        <div class="time-picker">
+          <select id="ud-tob-h" onchange="syncUDTime()">
+            <option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option>
+          </select>
+          <span class="time-picker-sep">:</span>
+          <select id="ud-tob-m" onchange="syncUDTime()">
+            <option value="00">00</option><option value="05">05</option><option value="10">10</option><option value="15">15</option><option value="20">20</option><option value="25">25</option><option value="30">30</option><option value="35">35</option><option value="40">40</option><option value="45">45</option><option value="50">50</option><option value="55">55</option>
+          </select>
+          <select id="ud-tob-ampm" onchange="syncUDTime()">
+            <option value="AM">AM</option>
+            <option value="PM">PM</option>
+          </select>
+        </div>
+        <input type="hidden" id="ud-tob" value="06:00"/>
+      </div>
+      <div class="fg">
+        <label>Gender / ଲିଙ୍ଗ</label>
+        <div class="grow-row">
+          <button class="gbtn on" id="ud-gm" onclick="setUDGender('Male')">Male / ପୁରୁଷ</button>
+          <button class="gbtn" id="ud-gf" onclick="setUDGender('Female')">Female / ସ୍ତ୍ରୀ</button>
+          <button class="gbtn" id="ud-go" onclick="setUDGender('Other')">Other</button>
+        </div>
+      </div>
+      <div class="fg"><label>Gotra (Optional)</label><input id="ud-gotra" placeholder="e.g. Kashyap, Bharadwaj"/></div>
+    </div>
+    <div class="card">
+      <div class="sh">✦ Birth Place</div>
+      <div class="fg">
+        <label>State</label>
+        <select id="ud-state" onchange="updateUDDistricts()">
+          <option value="odisha">Odisha</option>
+          <option value="other">Other State</option>
+        </select>
+      </div>
+      <div id="ud-odisha-fields">
+        <div class="state-district-row">
+          <div class="fg">
+            <label>District</label>
+            <select id="ud-district" onchange="updateUDCity()">
+              <option value="angul">Angul</option>
+<option value="balangir">Balangir</option>
+<option value="balasore">Balasore</option>
+<option value="bargarh">Bargarh</option>
+<option value="bhadrak">Bhadrak</option>
+<option value="boudh">Boudh</option>
+<option value="cuttack">Cuttack</option>
+<option value="deogarh">Deogarh</option>
+<option value="dhenkanal">Dhenkanal</option>
+<option value="gajapati">Gajapati</option>
+<option value="ganjam">Ganjam</option>
+<option value="jagatsinghpur">Jagatsinghpur</option>
+<option value="jajpur">Jajpur</option>
+<option value="jharsuguda">Jharsuguda</option>
+<option value="kalahandi">Kalahandi</option>
+<option value="kandhamal">Kandhamal</option>
+<option value="kendrapada">Kendrapada</option>
+<option value="kendujhar">Kendujhar</option>
+<option value="khurda">Khurda</option>
+<option value="koraput">Koraput</option>
+<option value="malkangiri">Malkangiri</option>
+<option value="mayurbhanj">Mayurbhanj</option>
+<option value="nabarangpur">Nabarangpur</option>
+<option value="nayagarh">Nayagarh</option>
+<option value="nuapada">Nuapada</option>
+<option value="puri">Puri</option>
+<option value="rayagada">Rayagada</option>
+<option value="sambalpur">Sambalpur</option>
+<option value="subarnapur">Subarnapur</option>
+<option value="sundargarh">Sundargarh</option>
+            </select>
+          </div>
+          <div class="fg">
+            <label>City / Town</label>
+            <select id="ud-city-select">
+              <option value="">Select city</option>
+            </select>
+          </div>
+        </div>
+        <div class="fg">
+          <label>Or type city name</label>
+          <input id="ud-city-manual" placeholder="e.g. Bhubaneswar, Cuttack"/>
+        </div>
+      </div>
+      <div id="ud-other-state-fields" style="display:none">
+        <div class="fg"><label>City, State</label><input id="ud-city-other" placeholder="e.g. Mumbai, Maharashtra"/></div>
+      </div>
+    </div>
+    <div id="ud-err" class="err"></div>
+    <button class="btn" onclick="saveUserDetails()">✦ Save My Details</button>
+    <button class="btn-outline" onclick="dashGo('dash')" style="margin-top:6px">Skip for now</button>
+  </div>
+</div>
+
+<!-- ═══ KUNDLI FORM ═══ -->
+<div class="pg" id="pg-form">
+  <div class="wrap"><div class="back" onclick="dashGo('dash')">← Dashboard</div>
+    <div style="font-family:'Cinzel',serif;font-size:17px;color:var(--cream);margin-bottom:4px">New Kundli Reading</div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:14px" class="od">ନୂଆ ଜ୍ୟୋତିଷ ଚିଠା</div>
+    <div class="card">
+      <div class="fg"><label>Full Name / ପୂର୍ଣ ନାମ</label><input id="k-nm" placeholder="Enter full name"/></div>
+      <div class="g2">
+        <div class="fg"><label>Date of Birth</label><input id="k-dob" type="date"/></div>
+        <div class="fg"><label>Time of Birth (IST)</label><div class="time-picker" id="k-tob-picker">
+          <select id="k-tob-h" onchange="syncTime('k-tob')">
+            <option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option>
+          </select>
+          <span class="time-picker-sep">:</span>
+          <select id="k-tob-m" onchange="syncTime('k-tob')">
+            <option value="00">00</option><option value="05">05</option><option value="10">10</option><option value="15">15</option><option value="20">20</option><option value="25">25</option><option value="30">30</option><option value="35">35</option><option value="40">40</option><option value="45">45</option><option value="50">50</option><option value="55">55</option>
+          </select>
+          <select id="k-tob-ampm" onchange="syncTime('k-tob')">
+            <option value="AM">AM</option>
+            <option value="PM">PM</option>
+          </select>
+          <input type="hidden" id="k-tob" value="06:00"/>
+        </div></div>
+      </div>
+      <div class="fg">
+        <label>Place of Birth / ଜନ୍ମ ସ୍ଥାନ</label>
+        <input id="k-pob" placeholder="e.g. Bhubaneswar, Puri, Mumbai"/>
+        <div style="font-size:10px;color:var(--muted);margin-top:3px">50+ Indian cities supported for accurate Lagna calculation</div>
+      </div>
+      <div class="fg"><label>Gotra / ଗୋତ୍ର (Optional)</label><input id="k-gotra" placeholder="e.g. Kashyap, Bharadwaj"/></div>
+      <div class="fg">
+        <label>Gender / ଲିଙ୍ଗ</label>
+        <div class="grow-row">
+          <button class="gbtn on" id="kg-m" onclick="setKG('Male')">Male / ପୁରୁଷ</button>
+          <button class="gbtn" id="kg-f" onclick="setKG('Female')">Female / ସ୍ତ୍ରୀ</button>
+          <button class="gbtn" id="kg-o" onclick="setKG('Other')">Other</button>
+        </div>
+      </div>
+      <div id="k-err" class="err"></div>
+      <button class="btn" id="k-gen-btn" onclick="doKundli()">✦ Calculate Kundli Accurately</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ KUNDLI RESULT ═══ -->
+<div class="pg" id="pg-result">
+  <div class="wrap">
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px">
+      <div class="back" onclick="dashGo('kundli')" style="flex:1">← New Reading</div>
+      <button onclick="shareKundli()" style="background:rgba(184,135,10,.15);border:1px solid rgba(184,135,10,.3);border-radius:7px;padding:6px 12px;font-size:11px;color:var(--gold-lt);cursor:pointer;font-family:'Lato',sans-serif">📤 Share</button>
+    </div>
+    <button class="pdf-btn" id="main-pdf-btn" onclick="downloadPDF()" style="margin-bottom:8px">⬇ Download Kundli PDF</button>
+    <button onclick="openGPTChat()" style="width:100%;background:linear-gradient(135deg,#10a37f,#1a7a5e);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Lato',sans-serif;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:14px">
+      <span style="font-size:20px">🤖</span>
+      <div style="text-align:left"><div id="ai-chat-btn-txt">Chat with AI — Know More About Your Kundli</div><div style="font-size:10px;font-weight:400;opacity:.8">GPT-5 · 15 min FREE · Kundli auto-attached</div></div>
+    </button>
+    <div class="chat-read-banner" id="read-kundli-banner" onclick="startAstrologerChat()">
+      <div class="chat-read-banner-ic">🔮</div>
+      <div class="chat-read-banner-txt">
+        <div class="chat-read-banner-title" id="read-banner-title">Read My Kundli — Astrologer Speaks</div>
+        <div class="chat-read-banner-sub" id="read-banner-sub">Tap to reveal your marriage, career, dasha & more...</div>
+      </div>
+      <div style="color:var(--gold-lt);font-size:18px">→</div>
+    </div>
+    <div class="pdf-lang-row">
+      <button class="pdf-lang-btn on" id="pdfl-en" onclick="setPdfLang('en')">English PDF</button>
+      <button class="pdf-lang-btn" id="pdfl-od" onclick="setPdfLang('od')">ଓଡ଼ିଆ PDF</button>
+    </div>
+    <button class="pdf-btn" onclick="downloadPDF()">⬇ Download Kundli Report</button>
+    <button class="wa-btn" onclick="shareKundliWA()" style="margin-bottom:12px">
+      <div class="wa-btn-ic">📱</div>
+      <div><div class="wa-btn-txt" id="wa-share-txt">Share on WhatsApp</div>
+      <div class="wa-btn-sub" id="wa-share-sub">Invite friends to get their Kundli</div></div>
+    </button>
+    <div class="lang-toggle">
+      <button class="lt-btn on" id="lt-en" onclick="setLang('en')">English</button>
+      <button class="lt-btn" id="lt-od" onclick="setLang('od')">ଓଡ଼ିଆ</button>
+    </div>
+    <div id="result-body"></div>
+  </div>
+</div>
+
+
+<!-- ═══ ANKA SHASTRA ═══ -->
 <div class="pg" id="pg-anka">
   <div class="wrap">
     <div style="font-family:'Cinzel',serif;font-size:17px;color:var(--cream);margin:14px 0 2px">Anka Shastra</div>
@@ -1731,13 +1953,11 @@ function selectAppLang(lang){
   if(pdflOd) pdflOd.classList.toggle('on', lang==='od');
   // Update chat suggestions
   updateChatSuggestions(lang);
-  // Navigate to landing or dashboard
-  if(S.user){ buildDash(); nav('dash'); }
-  else { nav('landing'); }
+  // Rebuild dashboard if logged in
+  if(S.user){ buildDash(); }
 }
 
 function updateChatSuggestions(lang){
-  const chatBody2 = document.getElementById('chat-messages') || document.getElementById('chat-body');
   const sugsEl = document.getElementById('chat-suggestions');
   if(!sugsEl) return;
   const sugs = lang==='od' ? [
@@ -1787,6 +2007,7 @@ function t(key){ return (T[APP_LANG||'en']||T.en)[key] || (T.en)[key] || key; }
 
 const S={user:null,token:null,plan:null,kGender:'Male',lang:'en',calcResult:null};
 let chatHistory = [];
+let chatLang = 'en';
 // Restore session token immediately on load
 (function(){try{const s=localStorage.getItem('jyotish_session');if(s){const d=JSON.parse(s);if(d&&d.token){S.token=d.token;}}}catch(e){}})();
 const PLANS={basic:{n:'Jataka Reading',od:'ଜାତକ ପଠନ',price:100,days:365,tag:'One-Time'},monthly:{n:'Monthly Predictions',od:'ମାସିକ ଭବିଷ୍ୟ',price:50,days:30,tag:'Monthly'},yearly:{n:'Varshik Annual',od:'ବାର୍ଷିକ',price:500,days:365,tag:'Annual'}};
@@ -1854,11 +2075,6 @@ function dashGo(tab){
   },50);}
   else if(tab==='santaan'){nav('santaan');}
   else if(tab==='userdetails'){nav('userdetails');}
-  else if(tab==='astro-onboard'){nav('astro-onboard');}
-  else if(tab==='chat'){
-    const chatPage=document.getElementById('chat-page');
-    if(chatPage)chatPage.classList.add('open');
-  }
 }
 
 /* ─── PLAN removed duplicate ──────────────────────────────────────────────*/
@@ -1990,9 +2206,6 @@ async function activatePlan(){
 /* ─── DASHBOARD ─────────────────────────────────────────*/
 function buildDash(){
   const u=S.user;if(!u)return;
-  const isOdD=APP_LANG==='od';
-  const editBtn=document.getElementById('edit-details-btn');
-  if(editBtn) editBtn.innerHTML='✏ '+(isOdD?'ବିବରଣ ସଂପାଦନ':'Edit My Details');
   g('dash-nm').textContent=`Namaste, ${u.name.split(' ')[0]} 🙏`;
   const pl=u.plan?PLANS[u.plan]:null;
   g('dash-plan').textContent=pl?`✦ ${pl.n}`:'✦ No Active Plan';
@@ -2340,15 +2553,6 @@ function renderResult(res){
 
   const rems=isOd?r.remedies_od:r.remedies;
   const gems=isOd?r.gemstones_od:r.gemstones;
-
-  // Update action buttons text
-  const isOdBtn = APP_LANG==='od';
-  const pdfBtn = document.getElementById('main-pdf-btn');
-  if(pdfBtn) pdfBtn.textContent = isOdBtn ? '⬇ କୁଣ୍ଡଳୀ PDF ଡାଉନଲୋଡ' : '⬇ Download Kundli PDF Report';
-  const chatBtnTxt = document.getElementById('ai-chat-btn-txt');
-  if(chatBtnTxt) chatBtnTxt.textContent = isOdBtn ? 'AI ଚାଟ — ଆପଣଙ୍କ କୁଣ୍ଡଳୀ ବିଷୟରେ ଜାଣନ୍ତୁ' : 'Chat with AI — Know More About Your Kundli';
-  const actionBtns = document.getElementById('result-action-btns');
-  if(actionBtns) actionBtns.style.display = 'block';
 
   g('result-body').innerHTML=`
   <div class="rhero">
@@ -3271,100 +3475,11 @@ async function downloadPDF(){
 }
 
 
-let chatLang = APP_LANG || 'en';
-
-function setChatLang(lang){
-  chatLang = lang;
-  const enBtn = document.getElementById('chat-lang-en');
-  const odBtn = document.getElementById('chat-lang-od');
-  if(enBtn){
-    enBtn.style.background = lang==='en' ? 'var(--maroon)' : 'transparent';
-    enBtn.style.color = lang==='en' ? 'var(--cream)' : 'var(--muted)';
-    enBtn.style.border = lang==='en' ? 'none' : '1px solid var(--border)';
-  }
-  if(odBtn){
-    odBtn.style.background = lang==='od' ? 'var(--maroon)' : 'transparent';
-    odBtn.style.color = lang==='od' ? 'var(--cream)' : 'var(--muted)';
-    odBtn.style.border = lang==='od' ? 'none' : '1px solid var(--border)';
-  }
-  // Update placeholder
-  const input = document.getElementById('chat-input');
-  if(input) input.placeholder = lang==='od' ? 'ଆପଣଙ୍କ ଜ୍ୟୋତିଷ ପ୍ରଶ୍ନ ଲିଖନ୍ତୁ...' : 'Ask your astrology question...';
-  // Update quick prompts
-  buildChatQuickPrompts(lang);
-}
-
-function buildChatQuickPrompts(lang){
-  const sugsEl = document.getElementById('chat-suggestions');
-  if(!sugsEl) return;
-  const sugs = lang==='od' ? [
-    'ମୋ ବ୍ୟକ୍ତିତ୍ୱ ଓ ଜୀବନ ଲକ୍ଷ୍ୟ',
-    'ବିବାହ କେବେ ଓ କେଉଁ ପ୍ରକାର',
-    'ଜୀବନ ସାଥୀ କେଉଁ ପ୍ରକାର ହେବ',
-    'ମୋ କ୍ୟାରିୟର ଓ ଶ୍ରେଷ୍ଠ ବର୍ଷ',
-    'ଦଶା ଫଳ ଓ ଉପଚାର',
-    'ସ୍ୱାସ୍ଥ୍ୟ ଓ ଆୟୁ ବିଷୟ',
-    'ବିଦେଶ ଯୋଗ ଅଛି କି',
-    'ଧନ ଓ ସ୍ଥାୟୀ ସମ୍ପତ୍ତି',
-  ] : [
-    'Tell me about my personality',
-    'When will I get married?',
-    'What will my spouse be like?',
-    'My career & best years ahead',
-    'My current Dasha effect & remedy',
-    'My health prediction',
-    'Foreign travel or settlement?',
-    'My wealth & property prospects',
-  ];
-  sugsEl.innerHTML = sugs.map(s=>`<button class="chat-sug" onclick="chatSuggest(this)">${s}</button>`).join('');
-  sugsEl.style.display = 'flex';
-}
-
-function formatChatMsg(text){
-  if(!text) return '';
-  let lines = text.split('\n');
-  let html = lines.map(function(line){
-    var t = line.trim();
-    // --- divider
-    if(t === '---' || t === '***' || t === '___') return '<hr style="border:none;border-top:1px solid rgba(184,135,10,.2);margin:10px 0"/>';
-    // ### Header (3 hashes)
-    if(t.startsWith('### ')) return '<div style="font-family:\'Cinzel\',serif;font-size:12px;color:var(--cream);font-weight:700;margin:12px 0 5px;letter-spacing:.5px">'+t.substring(4)+'</div>';
-    // ## Header (2 hashes)
-    if(t.startsWith('## ')) return '<div style="font-family:\'Cinzel\',serif;font-size:13px;color:var(--gold-lt);font-weight:700;margin:14px 0 6px;padding-bottom:4px;border-bottom:1px solid rgba(184,135,10,.25)">✦ '+t.substring(3)+'</div>';
-    // # Header (1 hash)
-    if(t.startsWith('# ')) return '<div style="font-family:\'Cinzel\',serif;font-size:15px;color:var(--gold-lt);font-weight:700;margin:14px 0 8px;text-align:center">'+t.substring(2)+'</div>';
-    // Numbered list: 1. text
-    var numMatch = t.match(/^(\d+)\.\s+(.+)$/);
-    if(numMatch) return '<div style="display:flex;gap:8px;margin:6px 0;padding:8px 12px;background:rgba(184,135,10,.05);border-left:2px solid var(--gold);border-radius:0 7px 7px 0"><span style="color:var(--gold);font-weight:700;flex-shrink:0;min-width:18px">'+numMatch[1]+'.</span><span style="line-height:1.7">'+numMatch[2]+'</span></div>';
-    // Bullet: - text or * text or ✦ text
-    if(t.startsWith('- ') || t.startsWith('* ')) return '<div style="display:flex;gap:8px;margin:4px 0 4px 4px;line-height:1.7"><span style="color:var(--gold);flex-shrink:0;margin-top:2px">✦</span><span>'+t.substring(2)+'</span></div>';
-    if(t.startsWith('✦') && t.length > 2) return '<div style="display:flex;gap:8px;margin:4px 0 4px 4px;line-height:1.7"><span style="color:var(--gold);flex-shrink:0">✦</span><span>'+t.substring(1).trim()+'</span></div>';
-    // Empty line
-    if(t === '') return '<div style="margin:4px 0"></div>';
-    // Normal text
-    return '<div style="line-height:1.85;margin:2px 0">'+line+'</div>';
-  }).join('');
-
-  // **bold** → gold bold
-  html = html.split('**').map(function(s,i){
-    return i%2===1 ? '<strong style="color:var(--gold-lt)">'+s+'</strong>' : s;
-  }).join('');
-
-  return html;
-}
-
-
-function chatKey(e){
-  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChat();}
-}
-
 function chatSuggest(btn){
   const msg = btn ? btn.textContent.trim() : '';
   if(!msg) return;
-  // Hide suggestions
   const sugs = document.getElementById('chat-suggestions');
   if(sugs) sugs.style.display = 'none';
-  // Send the message
   addChatBubble(msg, 'user');
   chatHistory.push({role:'user', content: msg});
   sendChatMsg(msg);
@@ -3381,7 +3496,44 @@ async function sendChatMsg(msg){
   if(sendBtn) sendBtn.disabled = false;
   const input = document.getElementById('chat-input');
   if(input) input.focus();
-  return true;
+}
+
+async function formatChatMsg(text){
+  if(!text) return '';
+  let lines = text.split('\n');
+  let html = lines.map(function(line){
+    var t = line.trim();
+    if(t==='---'||t==='***') return '<hr style="border:none;border-top:1px solid rgba(184,135,10,.2);margin:10px 0"/>';
+    if(t.startsWith('### ')) return '<div style="font-family:\'Cinzel\',serif;font-size:12px;color:var(--cream);font-weight:700;margin:12px 0 5px">'+t.substring(4)+'</div>';
+    if(t.startsWith('## ')) return '<div style="font-family:\'Cinzel\',serif;font-size:13px;color:var(--gold-lt);font-weight:700;margin:14px 0 6px;padding-bottom:4px;border-bottom:1px solid rgba(184,135,10,.25)">✦ '+t.substring(3)+'</div>';
+    if(t.startsWith('# ')) return '<div style="font-family:\'Cinzel\',serif;font-size:15px;color:var(--gold-lt);font-weight:700;margin:14px 0 8px;text-align:center">'+t.substring(2)+'</div>';
+    var nm = t.match(/^(\d+)\.\s+(.+)$/);
+    if(nm) return '<div style="display:flex;gap:8px;margin:6px 0;padding:8px 12px;background:rgba(184,135,10,.05);border-left:2px solid var(--gold);border-radius:0 7px 7px 0"><span style="color:var(--gold);font-weight:700;flex-shrink:0;min-width:18px">'+nm[1]+'.</span><span style="line-height:1.7">'+nm[2]+'</span></div>';
+    if(t.startsWith('- ')||t.startsWith('* ')) return '<div style="display:flex;gap:8px;margin:4px 0 4px 4px;line-height:1.7"><span style="color:var(--gold);flex-shrink:0">✦</span><span>'+t.substring(2)+'</span></div>';
+    if(t==='' ) return '<div style="margin:4px 0"></div>';
+    return '<div style="line-height:1.85;margin:2px 0">'+line+'</div>';
+  }).join('');
+  html = html.split('**').map(function(s,i){ return i%2===1?'<strong style="color:var(--gold-lt)">'+s+'</strong>':s; }).join('');
+  return html;
+}
+
+function setChatLang(lang){
+  chatLang = lang;
+  const enBtn=document.getElementById('chat-lang-en');
+  const odBtn=document.getElementById('chat-lang-od');
+  if(enBtn){enBtn.style.background=lang==='en'?'var(--maroon)':'transparent';enBtn.style.color=lang==='en'?'var(--cream)':'var(--muted)';}
+  if(odBtn){odBtn.style.background=lang==='od'?'var(--maroon)':'transparent';odBtn.style.color=lang==='od'?'var(--cream)':'var(--muted)';}
+  const input=document.getElementById('chat-input');
+  if(input) input.placeholder=lang==='od'?'ଆପଣଙ୍କ ଜ୍ୟୋତିଷ ପ୍ରଶ୍ନ ଲିଖନ୍ତୁ...':'Ask your astrology question...';
+  buildChatQuickPrompts(lang);
+}
+
+function buildChatQuickPrompts(lang){
+  const sugsEl=document.getElementById('chat-suggestions');
+  if(!sugsEl) return;
+  const sugs=lang==='od'?['ମୋ ବ୍ୟକ୍ତିତ୍ୱ ଓ ଜୀବନ ଲକ୍ଷ୍ୟ','ବିବାହ କେବେ ଓ କେଉଁ ପ୍ରକାର','ମୋ କ୍ୟାରିୟର ଓ ଶ୍ରେଷ୍ଠ ବର୍ଷ','ଦଶା ଫଳ ଓ ଉପଚାର','ସ୍ୱାସ୍ଥ୍ୟ ଓ ଆୟୁ ବିଷୟ','ବିଦେଶ ଯୋଗ ଅଛି କି']:['Tell me about my personality','When will I get married?','My career & best years','Current Dasha effect & remedy','My health prediction','Foreign travel or settlement?'];
+  sugsEl.innerHTML=sugs.map(s=>`<button class="chat-sug" onclick="chatSuggest(this)">${s}</button>`).join('');
+  sugsEl.style.display='flex';
 }
 
 async function sendChat(){
@@ -3390,7 +3542,6 @@ async function sendChat(){
   const msg=input.value.trim();
   if(!msg)return;
   input.value='';
-  const chatBody2 = document.getElementById('chat-messages') || document.getElementById('chat-body');
   const sugsEl = document.getElementById('chat-suggestions');
   if(sugsEl) sugsEl.style.display='none';
 
@@ -3402,15 +3553,7 @@ async function sendChat(){
   addChatBubble('Consulting the stars...','ai thinking',thinkId);
   await _doAIChat(msg, thinkId);
   sendBtn.disabled=false;
-  const cm=document.getElementById('chat-messages');if(cm)cm.scrollTop=cm.scrollHeight;
   document.getElementById('chat-input').focus();
-  // If in astrologer sequence, continue after user manually types
-  if(astroTopics.length > 0 && astroCurrentIndex < astroTopics.length){
-    clearTimeout(astroMsgTimer);
-    astroMsgTimer = setTimeout(()=>{
-      showNextAstroTopic(astroTopics, astroCurrentIndex);
-    }, 3000);
-  }
 }
 
 async function _doAIChat(msg, thinkId){
@@ -3420,111 +3563,58 @@ async function _doAIChat(msg, thinkId){
     const res=S.calcResult;
     const p=res.planets||[];
     const p0=res.planets||[];
-    const asc0=res.ascendant||{};
-    const nak0=res.moonNak||{};
-    const dasha0=res.currDasha||{};
-    const antar0=res.currAntar||{};
-    const HOUSES0=['','1st','2nd','3rd','4th','5th','6th','7th','8th','9th','10th','11th','12th'];
-    const planetLines0=p0.map(pl=>`${pl.name}: ${pl.rashiName}, House ${pl.house} (${HOUSES0[pl.house]}), ${(pl.lon%30).toFixed(1)}°, ${pl.dignity||''}${pl.isRetro?' Retro':''}`).join('\n');
-    const dashaEnd0=dasha0.end?new Date(dasha0.end).getFullYear():'';
-    const antarEnd0=antar0.end?new Date(antar0.end).getFullYear():'';
-    kundliContext=`
-=== COMPLETE BIRTH CHART ===
-Name: ${res.input?.nm||''} | DOB: ${res.input?.dob||''} | TOB: ${res.input?.tob||''} | POB: ${res.input?.pob||''}
-Lagna: ${asc0.rashiName||''} | Moon: ${p0[1]?.rashiName||''} | Nakshatra: ${nak0.name||''} Pada ${nak0.pada||''}
-Mahadasha: ${dasha0.planet||''} till ${dashaEnd0} | Antardasha: ${antar0.planet||''} till ${antarEnd0}
-
-PLANETS:
-${planetLines0}
-
-7th House: ${p0.find(x=>x.house===7)?.name||'Empty'} | 10th: ${p0.find(x=>x.house===10)?.name||'Empty'} | 5th: ${p0.find(x=>x.house===5)?.name||'Empty'}
-===========================`;
+    kundliContext='Name:'+res.input?.nm+' Lagna:'+res.ascendant?.rashiName+' Moon:'+p0[1]?.rashiName+' Nak:'+res.moonNak?.name+' Dasha:'+res.currDasha?.planet+' till '+res.currDasha?.end?.getFullYear()+' Antar:'+res.currAntar?.planet+' Planets:'+p0.map(x=>x.name[0]+x.rashiName[0]+'H'+x.house).join(',');
   }
 
-  const isOdia = (chatLang || APP_LANG) === 'od';
+  const isOdia = APP_LANG === 'od';
   const langNote = isOdia
-    ? `ସ୍ୱଭାବିକ ଓ ଗଭୀର ଓଡ଼ିଆ ଭାଷାରେ ଉତ୍ତର ଦିଅ। ନିମ୍ନ format ଅନୁସରଣ କର:
+    ? `ସ୍ୱଭାବିକ ଓ ସ୍ୱଚ୍ଛ ଓଡ଼ିଆ ଭାଷାରେ ଉତ୍ତର ଦିଅ। ଠିକ୍ ନିମ୍ନ style ଅନୁସରଣ କର:
 
-FORMAT:
-- ## ଦ୍ୱାରା section header (ଯଥା: ## ବିବାହ ସମୟ, ## ଆପଣଙ୍କ ଶକ୍ତି, ## ଉପାୟ)
-- **bold** ଦ୍ୱାରା ଗ୍ରହ ନାମ (**ଶୁକ୍ର**, **ଶନି**) ଓ ଗୁରୁତ୍ୱପୂର୍ଣ ଶବ୍ଦ
-- ଭାବ ନମ୍ବର (7ମ ଭାବ, 10ମ ଭାବ) ଓ ନିର୍ଦ୍ଦିଷ୍ଟ ବର୍ଷ (**2026-2027**) ଦିଅ
-- ଉପଚାର section ରେ 1. 2. 3. numbered list
-- ଶେଷରେ ବ୍ୟକ୍ତିଗତ ଆଶୀର୍ବଦ 🙏
-- ଅନ୍ତତ ୧୫-୨୦ ବାକ୍ୟ, ଉଷ୍ମ ଓ ବ୍ୟକ୍ତିଗତ ଭାଷା`
-    : `Respond like a warm, knowledgeable Vedic astrologer. Use this exact format:
+EXACT STYLE TO FOLLOW:
+ସ୍ୱାସ୍ଥ୍ୟ
+Stress ଓ overthinking କମ୍ କରିବା ଦରକାର।
+ନିଦ୍ରା ଠିକ୍ ରଖ।
+ଗ୍ୟାସ୍, ପେଟ, ମାନସିକ ଚାପ କିମ୍ବା body pain ଆସିପାରେ।
+Routine maintain କଲେ health ଭଲ ରହିବ।
 
-FORMAT RULES:
-- Use ## for section headers (e.g.: ## Marriage Timeline, ## Your Hidden Strength, ## Remedies)
-- Use **bold** for planet names (**Venus**, **Saturn**) and key phrases
-- Mention house numbers (7th house, 10th house) and specific years (**2026-2027**)
-- Use numbered list (1. 2. 3.) for remedies with ritual details
-- End with a personal blessing message 🙏
-- Minimum 15-20 sentences
-- Warm, personal tone — address them by name`;
+ନିୟମ:
+- ଛୋଟ ଛୋଟ ବାକ୍ୟ ବ୍ୟବହାର କର
+- English words ଯେମିତି stress, routine, yoga, career ଓଡ଼ିଆ ଭିତରେ ରଖ
+- ଗ୍ରହ ନାମ (Venus, Saturn, Jupiter) ଓ ଭାବ ନମ୍ବର (10ମ ଭାବ, 7ମ ଭାବ) ଉଲ୍ଲେଖ କର
+- ନିର୍ଦ୍ଦିଷ୍ଟ ବର୍ଷ ଦିଅ (2027, 2028 ଭଳି)
+- ଶେଷରେ ଉପଚାର ଭାଗ ଲିଖ
+- ଅନ୍ତତ ୧୨-୧୫ ବାକ୍ୟ ଲିଖ`
+    : `Respond like a real astrologer talking warmly to the person. Follow this exact style:
+
+EXACT STYLE TO FOLLOW:
+Health
+Stress and overthinking need to be reduced.
+Keep your sleep consistent.
+Issues related to gas, stomach, mental pressure or body pain may arise.
+Maintaining a proper routine will keep health good.
+
+Your Hidden Strength
+Your chart shows Saraswati Yoga.
+This means your creativity and intelligence are exceptional.
+You have talent in writing, communication, music, editing, social media or public interaction.
+People are drawn to your style and words.
+
+Remedies
+Based on your Kundli:
+Chant Gayatri Mantra every morning.
+Light a sesame oil lamp at Shiva temple on Saturdays.
+Donating yellow items brings good fortune.
+Keeping your mind calm is your greatest strength.
+
+RULES:
+- Short punchy sentences
+- Mention planet names (Venus, Saturn) and house numbers (10th house, 7th house)
+- Give specific years (2027, 2028)
+- Minimum 12-15 sentences
+- Always end with a Remedies section with 3 specific rituals`;
 
   const chartNote = kundliContext ? 'CHART:'+kundliContext : '';
-  const isOdiaChat = (chatLang||APP_LANG)==='od';
-  
-  // Detect if this is a full reading request
-  const isFullReading = /kundali|kundli|about me|mora|bisayare|kuhantu|janao|tell me|full reading|sab kuch|sabakichu|poora|complete/i.test(msg);
-  
-  // Build rich full-reading system prompt (like ChatGPT)
-  const fullReadingPrompt = isOdiaChat ? `ଆପଣ ଏକ ବିଶেষଜ୍ଞ ଓଡ଼ିଆ ଜ୍ୟୋତିଷ AI। ନିମ୍ନ ନିୟମ ଅନୁସରଣ କରି ଉତ୍ତର ଦିଅ:
-
-LANGUAGE: ସ୍ୱାଭାବିକ ଓ ଆଧୁନିକ ଓଡ଼ିଆ ଭାଷା ବ୍ୟବହାର କର। English technical words ଯଥା career, stress, business, online ଓଡ଼ିଆ ମଧ୍ୟରେ ରଖ।
-
-FORMAT (ଏହି exactly format use କର):
-## ✨ [Section Title]
-- bullet points with details
-- **bold** for planet names and key years
----
-
-SECTIONS TO COVER (each with ##):
-1. ବ୍ୟକ୍ତିତ୍ୱ ଓ ସ୍ୱଭାବ (Personality)
-2. Career & Finance  
-3. ଧନ ଓ ସମ୍ପତ୍ତି (Wealth)
-4. Marriage & Love Life
-5. Health
-6. Foreign/Settlement Yoga
-7. Current Mahadasha effect
-8. ଉପାୟ - numbered remedies (1. 2. 3. 4.)
-9. Overall Reading + best years 2025-2030
-
-END WITH: "ଆପଣ ଚାହିଲେ ମୁଁ ଏବେ [list 5 follow-up topics] ବିଷୟରେ ଆହୁରି ବିସ୍ତାରରେ କହିପାରିବି। 🙏"
-
-CHART DATA: ${chartNote}` 
-  : `You are an expert Vedic astrologer AI. Follow this exact ChatGPT-style format:
-
-LANGUAGE: Warm, personal English mixed with technical astrology terms.
-
-FORMAT:
-## ✨ [Section Title]
-- bullet points with specific details
-- **bold** for planet names and key years
----
-
-SECTIONS TO COVER (each with ##):
-1. Personality & Nature
-2. Career & Finance
-3. Wealth & Property  
-4. Marriage & Love Life
-5. Health Predictions
-6. Foreign/Settlement Yoga
-7. Current Mahadasha (${S.calcResult?.currDasha?.planet||''} dasha) effect
-8. Remedies - numbered (1. 2. 3. 4.)
-9. Overall Reading + turning points
-
-END WITH: "If you want, I can now give detailed reading on [list 5 follow-up topics] 🙏"
-
-CHART DATA: ${chartNote}`;
-
-  // Short question prompt - for specific questions
-  const quickPrompt = isOdiaChat
-    ? 'ବିଶেষਜ୍ଞ ଓଡ଼ିଆ ଜ୍ୟୋତିଷ AI। ## headers, **bold** planets, numbered remedies use କର। ୧୨+ ବାକ୍ୟ। 🙏 ରେ ଶେଷ। CHART: '+chartNote
-    : 'Expert Vedic astrologer AI. Use ## headers, **bold** planets, numbered remedies. Min 12 sentences. End with 🙏. CHART: '+chartNote;
-
-  const systemPrompt = isFullReading ? fullReadingPrompt : quickPrompt;
+  const systemPrompt = 'You are Jyotish AI, an expert Vedic astrologer who gives rich detailed personal readings. Never give short answers. '+langNote+(chartNote?' '+chartNote:'');
 
   try{
     const messages=[...chatHistory.slice(-8)];
@@ -3533,9 +3623,9 @@ CHART DATA: ${chartNote}`;
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
         model:'claude-haiku-4-5-20251001',
-        max_tokens:1500,
+        max_tokens:1000,
         system:systemPrompt,
-        messages:messages.slice(-6)
+        messages
       })
     });
     const data=await resp.json();
@@ -3556,15 +3646,20 @@ CHART DATA: ${chartNote}`;
     const thinkEl=document.getElementById(thinkId);
     if(thinkEl){
       thinkEl.classList.remove('thinking');
-      const isOd2 = (chatLang||APP_LANG)==='od';
-      thinkEl.textContent = isOd2
-        ? 'ଉତ୍ତର ଦେଇ ପାରିଲୁ ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।'
-        : 'Server busy. Please try again.';
+      const isOd = APP_LANG==='od';
+      if(e.message.includes('504')||e.message.includes('timeout')){
+        thinkEl.textContent = isOd
+          ? 'ସର୍ଭର ବ୍ୟସ୍ତ ଅଛି। ଦୟାକରି ୩୦ ସେକେଣ୍ଡ ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।'
+          : 'Server is busy. Please wait 30 seconds and try again.';
+      } else {
+        thinkEl.textContent = isOd
+          ? 'ଉତ୍ତର ଦେଇ ପାରିଲୁ ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।'
+          : 'Could not get response. Please try again.';
+      }
     }
   }
-  if(sendBtn) sendBtn.disabled=false;
-  const ci=document.getElementById('chat-input');
-  if(ci) ci.focus();
+  sendBtn.disabled=false;
+  document.getElementById('chat-input').focus();
 }
 
 
@@ -4249,10 +4344,6 @@ async function doGunaMilan(btnEl){
   const verdictColor = total>=30?'var(--green-l)':total>=24?'var(--gold-lt)':total>=18?'#E8A870':'var(--red-l)';
 
   // AI reading
-  const nm1=gmName||'Person1', nm2=gfName||'Person2';
-  const asc1=mCalc?.ascendant?.rashiName||'Unknown', asc2=fCalc?.ascendant?.rashiName||'Unknown';
-  const moon1=E.RASHI_N[mRashi]||'Unknown', moon2=E.RASHI_N[fRashi]||'Unknown';
-  const nak1=mNakName||'Unknown', nak2=fNakName||'Unknown';
   const gunaLang = APP_LANG==='od'?'Write ALL in Odia script':'Write in English';
   const prompt='Kundli matching expert. '+gunaLang+'. P1:'+nm1+' Lagna:'+asc1+' Moon:'+moon1+' Nak:'+nak1+'. P2:'+nm2+' Lagna:'+asc2+' Moon:'+moon2+' Nak:'+nak2+'. JSON only:{"total_gunas":28,"koot_scores":{"varna":1,"vashya":2,"tara":3,"yoni":2,"graha_maitri":4,"gana":5,"bhakoot":7,"nadi":8},"compatibility_percent":78,"verdict":"Recommended/Good/Average/Not Recommended","strengths":["strength1","strength2","strength3"],"challenges":["challenge1","challenge2"],"mangal_dosha_p1":"Yes/No with effect","mangal_dosha_p2":"Yes/No with effect","nadi_dosha":"Present/Absent","bhakoot_dosha":"Present/Absent","remedies":["remedy1","remedy2","remedy3"],"best_wedding_months":["Month Year","Month Year"],"overall_advice":"4 sentences","od_summary":"3 Odia sentences"}';
 
@@ -4401,7 +4492,6 @@ function getLahiriPanch(jd){
 
 function buildPanchang(){
   const isOd=APP_LANG==='od';
-  try{
   const now=new Date();
   const Y=now.getFullYear(),M=now.getMonth()+1,D=now.getDate();
   const h=now.getHours(),min=now.getMinutes();
@@ -4505,7 +4595,6 @@ function buildPanchang(){
     <div><div class="wa-btn-txt">${isOd?'WhatsApp ରେ ଭାଗ କରନ୍ତୁ':'Share on WhatsApp'}</div>
     <div class="wa-btn-sub">${isOd?'ବନ୍ଧୁଙ୍କ ସହ ଆଜର ପଞ୍ଚାଙ୍ଗ ଭାଗ କରନ୍ତୁ':'Share today Panchang with friends'}</div></div>
   </button>`;
-  }catch(e){console.error('Panchang:',e);const pb=g('panchang-body');if(pb)pb.innerHTML='<div class="err">Panchang error: '+e.message+'</div>';}
 }
 
 /* ─── DAILY HOROSCOPE ───────────────────────────────*/
@@ -4533,6 +4622,188 @@ function buildHoroscope(){
 function selectHoroscopeRashi(idx){
   selectedHoroscopeRashi=idx;
   buildHoroscope();
+}
+
+/* ═══ 15-MIN TIMED AI CHAT ═══ */
+let chatTimerInterval=null,chatSecondsLeft=15*60,chatStarted=false;
+let isPaidSession=false,timedChatHistory=[],attachedPDFBase64=null;
+
+function openGPTChat(){
+  const isOd=APP_LANG==='od';
+  const page=document.getElementById('timed-chat-page');
+  if(page){page.style.display='flex';page.style.flexDirection='column';}
+  document.body.style.overflow='hidden';
+  const badge=document.getElementById('timed-model-badge');
+  if(badge)badge.textContent=isOd?'GPT-5.4-mini · ୧୫ ମିନିଟ ମାଗଣା':'GPT-5.4-mini · Free 15 min';
+  if(!chatStarted){chatStarted=true;chatSecondsLeft=15*60;startChatTimer();setTimeout(sendAutoKundliMessage,800);}
+}
+
+function closeTimedChat(){
+  const p=document.getElementById('timed-chat-page');
+  if(p)p.style.display='none';
+  document.body.style.overflow='';
+}
+
+function startChatTimer(){
+  chatTimerInterval=setInterval(()=>{
+    chatSecondsLeft--;
+    const m=Math.floor(chatSecondsLeft/60),s=chatSecondsLeft%60;
+    const t=document.getElementById('timed-chat-timer');
+    if(t){t.textContent=m+':'+(s<10?'0':'')+s;t.style.color=chatSecondsLeft<120?'#ef4444':chatSecondsLeft<300?'#f97316':'#4ade80';}
+    if(chatSecondsLeft<=0){clearInterval(chatTimerInterval);lockTimedChat();}
+  },1000);
+}
+
+function lockTimedChat(){
+  const ov=document.getElementById('chat-locked-overlay');
+  if(ov){ov.style.display='flex';ov.style.flexDirection='column';}
+  const inp=document.getElementById('timed-chat-input'),btn=document.getElementById('timed-send-btn');
+  if(inp)inp.disabled=true;if(btn)btn.disabled=true;
+}
+
+function payForChat(){
+  const isOd=APP_LANG==='od';
+  const ov=document.createElement('div');
+  ov.id='rzp-chat-ov';
+  ov.style.cssText='position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.95);display:flex;align-items:center;justify-content:center;padding:20px';
+  ov.innerHTML=`<div style="background:#1A0E06;border:1px solid var(--gold);border-radius:16px;padding:28px;max-width:360px;width:100%;text-align:center">
+    <div style="font-size:40px;margin-bottom:12px">💎</div>
+    <div style="font-family:'Cinzel',serif;font-size:18px;color:var(--gold-lt);margin-bottom:16px">${isOd?'ଚାଟ ଜାରି ରଖନ୍ତୁ':'Continue AI Chat'}</div>
+    <div style="display:flex;gap:10px;margin-bottom:20px">
+      <div onclick="selectChatPlan(this,49,'30min')" style="flex:1;background:rgba(184,135,10,.08);border:2px solid var(--gold);border-radius:10px;padding:14px;cursor:pointer">
+        <div style="font-family:'Cinzel',serif;font-size:20px;color:var(--gold-lt);font-weight:700">₹49</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:3px">30 Minutes</div>
+      </div>
+      <div onclick="selectChatPlan(this,89,'60min')" style="flex:1;background:rgba(184,135,10,.04);border:1px solid var(--border);border-radius:10px;padding:14px;cursor:pointer">
+        <div style="font-family:'Cinzel',serif;font-size:20px;color:var(--cream);font-weight:700">₹89</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:3px">60 Minutes</div>
+        <div style="font-size:9px;color:#4ade80;margin-top:2px">BEST VALUE</div>
+      </div>
+    </div>
+    <button id="rzp-pay-btn" onclick="initiateRazorpay(49,'30min')" style="width:100%;background:linear-gradient(135deg,#10a37f,#0d8c6d);color:#fff;border:none;border-radius:12px;padding:15px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Cinzel',serif;margin-bottom:10px">💳 Pay Now — ₹49</button>
+    <button onclick="document.getElementById('rzp-chat-ov').remove()" style="width:100%;background:transparent;border:1px solid var(--border);border-radius:10px;padding:11px;font-size:13px;color:var(--muted);cursor:pointer">Not Now</button>
+  </div>`;
+  document.body.appendChild(ov);
+}
+
+let _rzpAmt=49,_rzpPlan='30min';
+function selectChatPlan(el,amt,plan){
+  _rzpAmt=amt;_rzpPlan=plan;
+  const btn=document.getElementById('rzp-pay-btn');
+  if(btn)btn.textContent='💳 Pay Now — ₹'+amt;
+  el.parentElement.querySelectorAll('div[onclick]').forEach(d=>{d.style.border='1px solid var(--border)';d.style.background='rgba(184,135,10,.04)';});
+  el.style.border='2px solid var(--gold)';el.style.background='rgba(184,135,10,.08)';
+}
+
+function initiateRazorpay(amt,plan){
+  if(typeof Razorpay==='undefined'){
+    const s=document.createElement('script');s.src='https://checkout.razorpay.com/v1/checkout.js';
+    s.onload=()=>openRazorpay(amt,plan);s.onerror=()=>toast('Payment gateway error. Try again.');
+    document.head.appendChild(s);return;
+  }
+  openRazorpay(amt,plan);
+}
+
+function openRazorpay(amt,plan){
+  const opts={key:'rzp_test_YOUR_KEY_HERE',amount:amt*100,currency:'INR',name:'Jyotish AI',description:'AI Chat '+plan,
+    handler:function(){
+      document.getElementById('rzp-chat-ov')?.remove();
+      isPaidSession=true;
+      const mins=plan==='30min'?30:60;
+      chatSecondsLeft=mins*60;
+      const lo=document.getElementById('chat-locked-overlay');if(lo)lo.style.display='none';
+      const inp=document.getElementById('timed-chat-input'),btn=document.getElementById('timed-send-btn');
+      if(inp)inp.disabled=false;if(btn)btn.disabled=false;
+      const badge=document.getElementById('timed-model-badge');
+      if(badge){badge.textContent='GPT-5.5 · Premium ✨';badge.style.color='var(--gold-lt)';}
+      clearInterval(chatTimerInterval);startChatTimer();
+      toast('Thank you! '+mins+' min added — Now using GPT-5.5 ✨');
+    },
+    theme:{color:'#B8870A'}};
+  try{new Razorpay(opts).open();}catch(e){toast('Payment error: '+e.message);}
+}
+
+function sendAutoKundliMessage(){
+  if(!S.calcResult)return;
+  const isOd=APP_LANG==='od',res=S.calcResult;
+  const sum=isOd
+    ?`🔮 ${res.input?.nm||''} ଙ୍କ କୁଣ୍ଡଳୀ ସଂଲଗ୍ନ
+✦ ଲଗ୍ନ: ${res.ascendant?.rashiName||''} | ରାଶି: ${res.planets?.[1]?.rashiName||''} | ନକ୍ଷତ୍ର: ${res.moonNak?.name||''} | ଦଶା: ${res.currDasha?.planet||''}`
+    :`🔮 Kundli attached for ${res.input?.nm||''}
+✦ Lagna: ${res.ascendant?.rashiName||''} | Moon: ${res.planets?.[1]?.rashiName||''} | Nak: ${res.moonNak?.name||''} | Dasha: ${res.currDasha?.planet||''}`;
+  addTimedBubble(sum,'assistant');
+  setTimeout(()=>{
+    const q=isOd?'ମୋ ସମ୍ପୂର୍ଣ କୁଣ୍ଡଳୀ ବିଶ୍ଳେଷଣ କର':'Tell me everything about my Kundli';
+    addTimedBubble(q,'user');timedChatHistory.push({role:'user',content:q});sendTimedChatMsg(q);
+  },1000);
+}
+
+function addTimedBubble(text,role){
+  const msgs=document.getElementById('timed-chat-messages');if(!msgs)return;
+  const div=document.createElement('div');
+  div.className='chat-bubble '+(role==='user'?'user':'ai');
+  div.style.cssText='max-width:90%;font-size:13px;line-height:1.85;padding:14px 16px;font-family:'+(APP_LANG==='od'?"'Noto Serif Oriya',serif":"'Lato',sans-serif");
+  if(role!=='user')div.innerHTML=formatChatMsg(text);else div.textContent=text;
+  msgs.appendChild(div);msgs.scrollTop=msgs.scrollHeight;return div;
+}
+
+async function sendTimedChat(){
+  if(chatSecondsLeft<=0)return;
+  const inp=document.getElementById('timed-chat-input');
+  const msg=inp?.value.trim();if(!msg)return;
+  inp.value='';addTimedBubble(msg,'user');timedChatHistory.push({role:'user',content:msg});
+  await sendTimedChatMsg(msg);
+}
+
+async function sendTimedChatMsg(msg){
+  const btn=document.getElementById('timed-send-btn');if(btn)btn.disabled=true;
+  const typing=addTimedBubble('...','assistant');if(typing)typing.style.color='var(--muted)';
+  try{
+    let ctx='No chart loaded';
+    if(S.calcResult){
+      const res=S.calcResult,p=res.planets||[];
+      const HOUSES=['','1st','2nd','3rd','4th','5th','6th','7th','8th','9th','10th','11th','12th'];
+      const pl=p.map(x=>x.name+':'+x.rashiName+' '+HOUSES[x.house]+' '+(x.lon%30).toFixed(1)+'°'+(x.isRetro?'R':'')).join(' | ');
+      const de=res.currDasha?.end?new Date(res.currDasha.end).getFullYear():'';
+      ctx=`Name:${res.input?.nm} DOB:${res.input?.dob} TOB:${res.input?.tob} Place:${res.input?.pob}
+Lagna:${res.ascendant?.rashiName} Moon:${p[1]?.rashiName} Nak:${res.moonNak?.name} Pada:${res.moonNak?.pada}
+Dasha:${res.currDasha?.planet} till ${de} Antar:${res.currAntar?.planet}
+Planets: ${pl}
+H7:${p.find(x=>x.house===7)?.name||'Empty'} H10:${p.find(x=>x.house===10)?.name||'Empty'} H5:${p.find(x=>x.house===5)?.name||'Empty'}`;
+    }
+    const isOd=APP_LANG==='od';
+    const sys=(isOd
+      ?'Expert Odia Vedic astrologer AI. Reply in Odia script. ## headers, **bold** planets, numbered remedies. 15+ sentences. End 🙏.'
+      :'Expert Vedic astrologer AI. ## headers, **bold** planets, numbered remedies. Min 15 sentences. End 🙏.'
+    )+' CHART: '+ctx;
+    const r=await fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'gpt-5.4-mini',max_tokens:isPaidSession?2000:1500,system:sys,messages:[...timedChatHistory.slice(-8)],paid:isPaidSession})});
+    const data=await r.json();
+    const reply=(data.content||[]).map(c=>c.text||'').join('')||'Please try again.';
+    if(typing)typing.remove();
+    addTimedBubble(reply,'assistant');timedChatHistory.push({role:'assistant',content:reply});
+  }catch(e){if(typing)typing.textContent='Error. Please try again.';}
+  if(btn)btn.disabled=false;
+}
+
+function timedChipAsk(btn){
+  const isOd=APP_LANG==='od';
+  const m={'💑 Marriage & Spouse':isOd?'ବିବାହ ସମୟ ଓ ଜୀବନ ସାଥୀ ବିଷୟ ବିସ୍ତାରରେ ଜଣାଅ':'Tell me in detail about marriage timing and spouse',
+    '💼 Career & Finance':isOd?'ମୋ କ୍ୟାରିୟର ଓ ଅର୍ଥ ଜଣାଅ':'Tell me about career, income and best business',
+    '🧠 Health Prediction':isOd?'ମୋ ସ୍ୱାସ୍ଥ୍ୟ ଓ ଉପଚାର ଜଣାଅ':'Tell me about health and remedies',
+    '🪐 Dasha Effects':isOd?'ଦଶା ଫଳ ଜଣାଅ':'Explain current Mahadasha and Antardasha effects',
+    '🌍 Foreign Yoga':isOd?'ବିଦେଶ ଯୋଗ ଜଣାଅ':'Tell me about foreign travel and settlement yoga',
+    '💰 Wealth & Property':isOd?'ଧନ ଓ ସ୍ଥାୟୀ ସମ୍ପତ୍ତି ଜଣାଅ':'Tell me about wealth and property prospects',
+    '🔮 Lucky Gem & Remedy':isOd?'ଭାଗ୍ୟ ରତ୍ନ ଓ ଉପଚାର ଜଣାଅ':'Tell me my lucky gemstone and specific remedies'};
+  const msg=m[btn.textContent.trim()]||btn.textContent.trim();
+  addTimedBubble(msg,'user');timedChatHistory.push({role:'user',content:msg});sendTimedChatMsg(msg);
+}
+
+function handlePDFAttach(input){
+  const file=input.files[0];if(!file)return;
+  const s=document.getElementById('kundli-attached-status');
+  if(s)s.textContent='✓ '+file.name;
+  toast('PDF attached!');
 }
 
 async function getHoroscope(btnEl){
@@ -4596,8 +4867,7 @@ async function getHoroscope(btnEl){
       };
     }
 
-    const rating=Math.max(1,Math.min(5,parseInt(r?.rating)||4));
-    const stars='★'.repeat(rating)+'☆'.repeat(5-rating);
+    const rating=Math.max(1,Math.min(5,parseInt(r?.rating)||4)); const stars='★'.repeat(rating)+'☆'.repeat(5-rating);
     if(horoResult)horoResult.innerHTML=`
     <div class="result-hero">
       <div style="font-size:36px;margin-bottom:6px">${RASHI_SYMBOLS[selectedHoroscopeRashi]}</div>
@@ -5359,555 +5629,8 @@ function shareKundli(){
   }
 }
 
-function closeChat(){
-  const chatPage = document.getElementById('chat-page');
-  if(chatPage) chatPage.classList.remove('open');
-}
-
 function openChat(){
-  const chatPage = document.getElementById('chat-page');
-  if(chatPage) chatPage.classList.add('open');
-  // Set chat language to match app language
-  chatLang = APP_LANG || 'en';
-  setChatLang(chatLang);
-  buildChatQuickPrompts(chatLang);
-  const input = document.getElementById('chat-input');
-  if(input) setTimeout(()=>input.focus(), 300);
-}
-
-/* ═══════════════════════════════════════════
-   20-MIN TIMED AI CHAT SYSTEM
-═══════════════════════════════════════════*/
-let chatTimerInterval = null;
-let chatSecondsLeft = 15 * 60; // 15 minutes
-let chatStarted = false;
-let attachedPDFBase64 = null;
-let timedChatHistory = [];
-let isPaidSession = false; // false = gpt-5.4-mini, true = gpt-5.5
-const FREE_CHAT_SECONDS = 15 * 60;
-
-function downloadPDFAndShowChat(){
-  downloadPDF();
-}
-
-function showAIChatPopup(){
-  const isOd = APP_LANG==='od';
-  const popup = document.getElementById('ai-chat-popup');
-  if(!popup) return;
-  // Update text based on language
-  const title = document.getElementById('popup-title');
-  const sub = document.getElementById('popup-sub');
-  const btnTxt = document.getElementById('popup-chat-btn-txt');
-  if(title) title.textContent = isOd ? 'AI ଚାଟରେ ଆପଣଙ୍କ କୁଣ୍ଡଳୀ ବିଷୟରେ ଜାଣନ୍ତୁ' : 'Ask AI About Your Kundli';
-  if(sub) sub.textContent = isOd ? 'GPT-4o ସହ ଚାଟ — PDF ଅପଲୋଡ କରନ୍ତୁ ଓ ଯାହା ଜଣିବ ପ୍ରଶ୍ନ କରନ୍ତୁ' : 'Chat with GPT-4o — Upload PDF and ask anything';
-  if(btnTxt) btnTxt.textContent = isOd ? 'AI ଚାଟ ଖୋଲନ୍ତୁ — ମୋ କୁଣ୍ଡଳୀ ବିଷୟରେ ଜଣାଅ' : 'Open AI Chat — Ask About My Kundli';
-  popup.classList.add('show');
-  document.body.style.overflow = 'hidden';
-}
-
-function closeAIChatPopup(){
-  const popup = document.getElementById('ai-chat-popup');
-  if(popup) popup.classList.remove('show');
-  document.body.style.overflow = '';
-}
-
-function openGPTChat(){
-  closeAIChatPopup();
-  const isOd = APP_LANG==='od';
-  // Update timed chat title
-  const title = document.getElementById('timed-chat-title');
-  if(title) title.textContent = isOd ? 'Jyotish AI ଚାଟ' : 'Jyotish AI Chat';
-  const inp = document.getElementById('timed-chat-input');
-  if(inp) inp.placeholder = isOd ? 'ଆପଣଙ୍କ ପ୍ରଶ୍ନ ଲିଖନ୍ତୁ...' : 'Ask about your Kundli...';
-  // Update result page button
-  const btn = document.getElementById('ai-chat-btn-txt');
-  if(btn) btn.textContent = isOd ? 'AI ଚାଟ — ଆପଣଙ୍କ କୁଣ୍ଡଳୀ ବିଷୟରେ ଜାଣନ୍ତୁ' : 'Chat with AI — Know More About Your Kundli';
-  // Open the timed chat full screen
-  const page = document.getElementById('timed-chat-page');
-  if(page){
-    page.style.display = 'flex';
-    page.style.flexDirection = 'column';
-  }
-  // Update chip language and model badge
-  setTimeout(updateChipLanguage, 100);
-  const badge = document.getElementById('timed-model-badge');
-  if(badge){
-    const isOd2 = APP_LANG==='od';
-    badge.textContent = isOd2 ? 'GPT-5.4-mini · ମାଗଣା ୧୫ ମିନିଟ' : 'GPT-5.4-mini · Free 15 min';
-    badge.style.color = 'var(--muted)';
-  }
-  document.body.style.overflow = 'hidden';
-  // Start timer if not started
-  if(!chatStarted){
-    chatStarted = true;
-    chatSecondsLeft = FREE_CHAT_SECONDS;
-    startChatTimer();
-    setTimeout(sendAutoKundliMessage, 800);
-  }
-}
-
-function closeTimedChat(){
-  const page = document.getElementById('timed-chat-page');
-  if(page) page.style.display = 'none';
-  document.body.style.overflow = '';
-}
-
-function startChatTimer(){
-  chatTimerInterval = setInterval(()=>{
-    chatSecondsLeft--;
-    updateTimerDisplay();
-    if(chatSecondsLeft <= 0){
-      clearInterval(chatTimerInterval);
-      lockChat();
-    }
-  }, 1000);
-}
-
-function updateTimerDisplay(){
-  const mins = Math.floor(chatSecondsLeft/60);
-  const secs = chatSecondsLeft % 60;
-  const display = mins+':'+(secs<10?'0':'')+secs;
-  const t1 = document.getElementById('timed-chat-timer');
-  const t2 = document.getElementById('popup-timer');
-  if(t1) {
-    t1.textContent = display;
-    t1.style.color = chatSecondsLeft < 120 ? 'var(--red-l)' : chatSecondsLeft < 300 ? '#E8A870' : 'var(--green-l)';
-  }
-  if(t2) t2.textContent = display;
-}
-
-function lockChat(){
-  const overlay = document.getElementById('chat-locked-overlay');
-  if(overlay){ overlay.style.display='flex'; overlay.style.flexDirection='column'; }
-  const isOd = APP_LANG==='od';
-  const t = document.getElementById('locked-title');
-  const s = document.getElementById('locked-sub');
-  if(t) t.textContent = isOd ? 'ମାଗଣା ଚାଟ ଶେଷ ହୋଇଗଲା' : 'Free Chat Ended';
-  if(s) s.textContent = isOd ? 'ଆପଣଙ୍କ ୨୦ ମିନିଟ ମାଗଣା AI ପରାମର୍ଶ ସଂପୂର୍ଣ ହୋଇଛି। ଅଧିକ ଜାଣିବା ପାଇଁ ଜାରି ରଖନ୍ତୁ।' : 'Your 20 minutes of free AI consultation is complete. Continue for deeper insights.';
-  // Disable input
-  const inp = document.getElementById('timed-chat-input');
-  const btn = document.getElementById('timed-send-btn');
-  if(inp) inp.disabled = true;
-  if(btn) btn.disabled = true;
-}
-
-function payForChat(){
-  const isOd = APP_LANG==='od';
-  // Show Razorpay payment page
-  showRazorpayChat(isOd);
-}
-
-function showRazorpayChat(isOd){
-  // Create payment page overlay
-  const overlay = document.createElement('div');
-  overlay.id = 'razorpay-overlay';
-  overlay.style.cssText = 'position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.95);display:flex;align-items:center;justify-content:center;padding:20px';
-  overlay.innerHTML = `
-    <div style="background:#1A0E06;border:1px solid var(--gold);border-radius:16px;padding:28px;max-width:380px;width:100%;text-align:center">
-      <div style="font-size:40px;margin-bottom:12px">💎</div>
-      <div style="font-family:'Cinzel',serif;font-size:20px;color:var(--gold-lt);margin-bottom:6px">
-        ${isOd?'AI ଚାଟ ଜାରି ରଖନ୍ତୁ':'Continue AI Consultation'}
-      </div>
-      <div style="font-size:12px;color:var(--muted);margin-bottom:20px;line-height:1.7">
-        ${isOd?'ଆପଣଙ୍କ ୨୦ ମିନିଟ ମାଗଣା ଚାଟ ଶେଷ ହୋଇଛି।':'Your 20 minutes free chat is complete.'}
-      </div>
-      
-      <!-- Plan options -->
-      <div style="display:flex;gap:10px;margin-bottom:20px">
-        <div onclick="selectChatPlan(this,'30min',49)" style="flex:1;background:rgba(184,135,10,.08);border:2px solid var(--gold);border-radius:10px;padding:14px;cursor:pointer;transition:.2s">
-          <div style="font-family:'Cinzel',serif;font-size:18px;color:var(--gold-lt);font-weight:700">₹49</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:3px">${isOd?'30 ମିନିଟ':'30 Minutes'}</div>
-        </div>
-        <div onclick="selectChatPlan(this,'60min',89)" style="flex:1;background:rgba(184,135,10,.04);border:1px solid var(--border);border-radius:10px;padding:14px;cursor:pointer;transition:.2s">
-          <div style="font-family:'Cinzel',serif;font-size:18px;color:var(--cream);font-weight:700">₹89</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:3px">${isOd?'60 ମିନିଟ':'60 Minutes'}</div>
-          <div style="font-size:9px;color:var(--green-l);margin-top:2px">BEST VALUE</div>
-        </div>
-      </div>
-
-      <button id="rzp-pay-btn" onclick="initiateRazorpay(49,'30min')" style="width:100%;background:linear-gradient(135deg,#10a37f,#0d8c6d);color:#fff;border:none;border-radius:12px;padding:15px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Cinzel',serif;margin-bottom:10px">
-        💳 ${isOd?'ଏବେ ପେ କରନ୍ତୁ':'Pay Now'} — ₹49
-      </button>
-      <button onclick="document.getElementById('razorpay-overlay').remove()" style="width:100%;background:transparent;border:1px solid var(--border);border-radius:10px;padding:11px;font-size:13px;color:var(--muted);cursor:pointer">
-        ${isOd?'ଏବେ ନୁହେଁ':'Not Now'}
-      </button>
-    </div>`;
-  document.body.appendChild(overlay);
-}
-
-let selectedPlanAmount = 49;
-let selectedPlanDuration = '30min';
-
-function selectChatPlan(el, duration, amount){
-  selectedPlanAmount = amount;
-  selectedPlanDuration = duration;
-  // Update button
-  const btn = document.getElementById('rzp-pay-btn');
-  if(btn) btn.textContent = '💳 Pay Now — ₹'+amount;
-  // Highlight selected
-  el.parentElement.querySelectorAll('div[onclick]').forEach(d=>{
-    d.style.borderColor='var(--border)';d.style.borderWidth='1px';
-    d.style.background='rgba(184,135,10,.04)';
-  });
-  el.style.borderColor='var(--gold)';el.style.borderWidth='2px';
-  el.style.background='rgba(184,135,10,.08)';
-  el.onclick = ()=>{}; // prevent recursive call
-}
-
-function initiateRazorpay(amount, plan){
-  // Check if Razorpay is loaded
-  if(typeof Razorpay === 'undefined'){
-    // Load Razorpay script dynamically
-    const script = document.createElement('script');
-    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-    script.onload = () => openRazorpay(amount, plan);
-    script.onerror = () => toast('Payment gateway loading failed. Try again.');
-    document.head.appendChild(script);
-    return;
-  }
-  openRazorpay(amount, plan);
-}
-
-function openRazorpay(amount, plan){
-  const isOd = APP_LANG==='od';
-  const userName = S.user?.name || 'User';
-  const userEmail = S.user?.email || '';
-  
-  const options = {
-    key: 'rzp_test_YOUR_KEY_HERE', // Replace with your Razorpay key
-    amount: amount * 100, // in paise
-    currency: 'INR',
-    name: 'Jyotish AI',
-    description: 'AI Chat — '+plan,
-    image: 'https://jyotishaiodisha.netlify.app/icon.png',
-    handler: function(response){
-      // Payment success
-      document.getElementById('razorpay-overlay')?.remove();
-      const extraMins = plan==='30min'?30:60;
-      chatSecondsLeft = extraMins * 60;
-      // Unlock chat — upgrade to GPT-5.5 for paid session
-      isPaidSession = true;
-      const badge = document.getElementById('timed-model-badge');
-      if(badge){ badge.textContent = 'GPT-5.5 · Premium ✨'; badge.style.color='var(--gold-lt)'; }
-      const lo=document.getElementById('chat-locked-overlay');if(lo)lo.style.display='none';
-      const inp = document.getElementById('timed-chat-input');
-      const btn = document.getElementById('timed-send-btn');
-      if(inp) inp.disabled = false;
-      if(btn) btn.disabled = false;
-      // Restart timer
-      clearInterval(chatTimerInterval);
-      startChatTimer();
-      toast(isOd?'ଧନ୍ୟବାଦ! '+extraMins+' ମିନିଟ ଯୋଡ଼ା ହୋଇଛି':'Thank you! '+extraMins+' min added');
-    },
-    prefill: { name: userName, email: userEmail },
-    theme: { color: '#B8870A' }
-  };
-  
-  try{
-    const rzp = new Razorpay(options);
-    rzp.on('payment.failed', function(resp){
-      toast('Payment failed: '+resp.error.description);
-    });
-    rzp.open();
-  }catch(e){
-    toast('Payment error: '+e.message);
-  }
-}
-
-function handlePDFAttach(input){
-  const file = input.files[0];
-  if(!file) return;
-  const nameEl = document.getElementById('attached-file-name');
-  if(nameEl) nameEl.textContent = '✓ '+file.name;
-  // Read file as base64 for sending to API
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    attachedPDFBase64 = e.target.result.split(',')[1];
-    toast('PDF attached — now ask your question');
-  };
-  reader.readAsDataURL(file);
-}
-
-function addTimedBubble(text, role){
-  const msgs = document.getElementById('timed-chat-messages');
-  if(!msgs) return;
-  const div = document.createElement('div');
-  div.className = 'chat-bubble '+(role==='user'?'user':'ai');
-  div.style.maxWidth = '90%';
-  div.style.fontFamily = APP_LANG==='od' ? "'Noto Serif Oriya','Lato',serif" : "'Lato',sans-serif";
-  div.style.fontSize = '13px';
-  div.style.lineHeight = '1.85';
-  if(role === 'assistant') div.innerHTML = formatChatMsg(text);
-  else div.textContent = text;
-  msgs.appendChild(div);
-  msgs.scrollTop = msgs.scrollHeight;
-  return div;
-}
-
-function sendAutoKundliMessage(){
-  if(!S.calcResult) return;
-  const isOd = APP_LANG==='od';
-  // Update status bar
-  const statusEl = document.getElementById('kundli-attached-status');
-  const detailEl = document.getElementById('kundli-attached-detail');
-  if(statusEl) statusEl.textContent = isOd ? 'କୁଣ୍ଡଳୀ ସଂଲଗ୍ନ ହୋଇଛି' : 'Kundli Auto-Attached';
-  if(detailEl) detailEl.textContent = isOd ? 'AI ଆପଣଙ୍କ ସମ୍ପୂର୍ଣ ଚାର୍ଟ ଦେଖୁଛି' : 'AI has your full chart data';
-  const res = S.calcResult;
-  const nm = res.input?.nm || '';
-  const asc = res.ascendant?.rashiName || '';
-  const moon = res.planets?.[1]?.rashiName || '';
-  const nak = res.moonNak?.name || '';
-  const dasha = res.currDasha?.planet || '';
-
-  // Show kundli summary bubble
-  const summary = isOd
-    ? `🔮 ${nm} ଙ୍କ କୁଣ୍ଡଳୀ ସଂଲଗ୍ନ ହୋଇଛି
-✦ ଲଗ୍ନ: ${asc} | ରାଶି: ${moon} | ନକ୍ଷତ୍ର: ${nak} | ଦଶା: ${dasha}`
-    : `🔮 Kundli attached for ${nm}
-✦ Lagna: ${asc} | Moon: ${moon} | Nakshatra: ${nak} | Dasha: ${dasha}`;
-  
-  addTimedBubble(summary, 'assistant');
-
-  // Auto send first question after 1 sec
-  setTimeout(()=>{
-    const q = isOd ? 'ମୋ ସମ୍ପୂର୍ଣ କୁଣ୍ଡଳୀ ବିଶ୍ଳେଷଣ କର' : 'Tell me everything about my Kundli';
-    addTimedBubble(q, 'user');
-    timedChatHistory.push({role:'user', content: q});
-    sendTimedChatMsg(q);
-  }, 1000);
-}
-
-async function sendTimedChat(){
-  if(chatSecondsLeft <= 0) return;
-  const inp = document.getElementById('timed-chat-input');
-  const msg = inp?.value.trim();
-  if(!msg) return;
-  inp.value = '';
-  addTimedBubble(msg, 'user');
-  timedChatHistory.push({role:'user', content: msg});
-  await sendTimedChatMsg(msg);
-}
-
-async function sendTimedChatMsg(msg){
-  const btn = document.getElementById('timed-send-btn');
-  if(btn) btn.disabled = true;
-  
-  // Typing indicator
-  const typing = addTimedBubble('...', 'assistant');
-  if(typing) typing.style.color = 'var(--muted)';
-
-  try{
-    // Build FULL kundli context - same as pasting into ChatGPT
-    let ctx = '';
-    if(S.calcResult){
-      const res = S.calcResult;
-      const p = res.planets||[];
-      const asc = res.ascendant||{};
-      const nak = res.moonNak||{};
-      const dasha = res.currDasha||{};
-      const antar = res.currAntar||{};
-      const nm = res.input?.nm||'';
-      const dob = res.input?.dob||'';
-      const tob = res.input?.tob||'';
-      const pob = res.input?.pob||'';
-      const gender = res.input?.gender||'';
-
-      // Planet details - full format
-      const HOUSES = ['','1st','2nd','3rd','4th','5th','6th','7th','8th','9th','10th','11th','12th'];
-      const planetLines = p.map(pl=>pl.name+': '+pl.rashiName+', H'+pl.house+', '+(pl.lon%30).toFixed(1)+'deg, '+(pl.dignity||'')+(pl.isRetro?' R':'')).join(' | ');
-
-      // Special yogas from result
-      const yogas = res.yogas||[];
-      const yogaLines = yogas.length ? yogas.map(y=>y.name||y).join(', ') : 'To be analyzed';
-
-      // Dasha details
-      const dashaEnd = dasha.end ? new Date(dasha.end).getFullYear() : '';
-      const antarEnd = antar.end ? new Date(antar.end).getFullYear() : '';
-
-      // Aspects
-      const aspects = res.aspects||[];
-      const aspectLines = aspects.slice(0,6).map(a=>`${a.planet1} aspects ${a.planet2} (${a.type||''})`).join(', ');
-
-      ctx = `
-=== COMPLETE BIRTH CHART / KUNDLI ===
-Name: ${nm}
-Date of Birth: ${dob}
-Time of Birth: ${tob}
-Place of Birth: ${pob}
-Gender: ${gender}
-
---- ASCENDANT (LAGNA) ---
-Lagna: ${asc.rashiName} (${asc.rashiOd||asc.rashiName})
-Lagna Lord: ${asc.lord||''}
-Lagna Degree: ${(asc.lon%30||0).toFixed(1)}°
-
---- MOON (CHANDRA) ---
-Moon Sign (Rashi): ${p[1]?.rashiName||''} 
-Nakshatra: ${nak.name||''}, Pada ${nak.pada||''}
-Nakshatra Lord: ${nak.lord||''}
-Moon House: ${p[1]?.house||''}th Bhava
-
---- ALL PLANETS ---
-${planetLines}
-
---- CURRENT DASHA ---
-Mahadasha: ${dasha.planet||''} (until ${dashaEnd})
-Antardasha: ${antar.planet||''} (until ${antarEnd})
-
---- YOGAS PRESENT ---
-${yogaLines}
-
---- KEY ASPECTS ---
-${aspectLines||'Standard planetary aspects apply'}
-
---- SPECIAL NOTES ---
-Lagna Lord in ${p.find(x=>x.name===asc.lord)?.house||'?'}th House
-7th House: ${p.find(x=>x.house===7)?.name||'Empty'}
-10th House: ${p.find(x=>x.house===10)?.name||'Empty'}
-5th House: ${p.find(x=>x.house===5)?.name||'Empty'}
-==============================`;
-    }
-
-    const isOd = APP_LANG==='od';
-    const sysPart = isOd
-      ? 'ବିଶেষଜ୍ଞ ଓଡ଼ିଆ ଜ୍ୟୋତିଷ AI। ## headers, **bold** planets, numbered remedies। ୧୫+ ବାକ୍ୟ। 🙏 ରେ ଶେଷ।'
-      : 'Expert Vedic astrologer AI. Use ## headers, **bold** planets, numbered remedies. Min 15 sentences. End with 🙏.';
-    
-    const systemPrompt = sysPart + (ctx ? ' CHART: '+ctx : '');
-
-    const resp = await fetch('/.netlify/functions/chat', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        model:'gpt-5.4-mini', // overridden in chat.js based on paid flag
-        max_tokens: isPaidSession ? 2000 : 1500,
-        system:systemPrompt,
-        messages:[...timedChatHistory.slice(-8)],
-        paid: isPaidSession
-      })
-    });
-    const data = await resp.json();
-    const reply = (data.content||[]).map(c=>c.text||'').join('') || 'Please try again.';
-    
-    if(typing) typing.remove();
-    addTimedBubble(reply, 'assistant');
-    timedChatHistory.push({role:'assistant', content:reply});
-
-    // Show follow-up suggestions
-    showTimedChatSuggestions();
-
-  }catch(e){
-    if(typing) typing.textContent = 'Error: '+e.message+'. Please try again.';
-  }
-  if(btn) btn.disabled = false;
-}
-
-function showTimedChatSuggestions(){
-  const isOd = APP_LANG==='od';
-  const msgs = document.getElementById('timed-chat-messages');
-  if(!msgs) return;
-  const sugs = isOd ? [
-    'ବିବାହ ସମୟ ଓ ଜୀବନ ସାଥୀ',
-    'କ୍ୟାରିୟର ଓ ଅର୍ଥ',
-    'ସ୍ୱାସ୍ଥ୍ୟ ଓ ଉପଚାର',
-    'ଦଶା ଫଳ ଓ ଭବିଷ୍ୟ',
-    'ବିଦେଶ ଓ ସ୍ଥାୟୀ ସମ୍ପତ୍ତି',
-  ] : [
-    'Tell me about marriage & spouse',
-    'My career & best years',
-    'Health & remedies',
-    'Current Dasha & predictions',
-    'Foreign & property prospects',
-  ];
-  
-  // Remove old suggestions
-  const old = msgs.querySelector('.timed-sugs');
-  if(old) old.remove();
-  
-  const div = document.createElement('div');
-  div.className = 'timed-sugs';
-  div.style.cssText = 'display:flex;flex-wrap:wrap;gap:6px;margin:8px 0';
-  div.innerHTML = sugs.map(s=>`<button class="chat-topic-btn" style="font-size:11px" onclick="timedQuickAsk('${s.replace(/'/g,"\'")}',this.parentElement)">${s}</button>`).join('');
-  msgs.appendChild(div);
-  msgs.scrollTop = msgs.scrollHeight;
-}
-
-function timedChipAsk(btn){
-  const isOd = APP_LANG==='od';
-  const topicMap = {
-    '💑 Marriage & Spouse': isOd ? 'ବିବାହ ସମୟ ଓ ଜୀବନ ସାଥୀ ବିଷୟରେ ବିସ୍ତାରରେ ଜଣାଅ' : 'Tell me in detail about my marriage timing and what my spouse will be like',
-    '💼 Career & Finance': isOd ? 'ମୋ କ୍ୟାରିୟର, ଆୟ ଓ ଶ୍ରେଷ୍ଠ ବ୍ୟବସାୟ ସମ୍ପର୍କରେ ଜଣାଅ' : 'Tell me about my career, income sources and best business options',
-    '🧠 Health Prediction': isOd ? 'ମୋ ସ୍ୱାସ୍ଥ୍ୟ, ରୋଗ ଯୋଗ ଓ ଉପଚାର ଜଣାଅ' : 'Tell me about my health, disease risks and preventive remedies',
-    '🪐 Dasha Effects': isOd ? 'ବର୍ତ୍ତମାନ ଦଶା ଓ ଅନ୍ତର୍ଦଶା ଫଳ ବିସ୍ତାରରେ ଜଣାଅ' : 'Explain my current Mahadasha and Antardasha effects in detail',
-    '🌍 Foreign Yoga': isOd ? 'ବିଦେଶ ଯୋଗ, ଯାତ୍ରା ଓ ସ୍ଥାୟୀ ବସବାସ ବିଷୟ ଜଣାଅ' : 'Tell me about foreign travel, settlement yoga in my chart',
-    '💰 Wealth & Property': isOd ? 'ଧନ ଯୋଗ, ସ୍ଥାୟୀ ସମ୍ପତ୍ତି ଓ ଅର୍ଥ ଲାଭ ସମ୍ପର୍କରେ ଜଣାଅ' : 'Tell me about wealth yoga, property and financial growth in my chart',
-    '👶 Children Yoga': isOd ? 'ସନ୍ତାନ ଯୋଗ, ସଂଖ୍ୟା ଓ ସମୟ ଜଣାଅ' : 'Tell me about children yoga, timing and number of children in my chart',
-    '🔮 Lucky Gem & Remedy': isOd ? 'ମୋ ପାଇଁ ଶ୍ରେଷ୍ଠ ରତ୍ନ, ଯନ୍ତ୍ର ଓ ଉପଚାର ଜଣାଅ' : 'Tell me my lucky gemstone, yantra and specific remedies based on my chart',
-  };
-  const text = btn.textContent.trim();
-  const msg = topicMap[text] || text;
-  addTimedBubble(msg, 'user');
-  timedChatHistory.push({role:'user', content: msg});
-  sendTimedChatMsg(msg);
-  // Update chip languages if needed
-  updateChipLanguage();
-}
-
-function updateChipLanguage(){
-  const isOd = APP_LANG==='od';
-  const chips = document.querySelectorAll('.quick-chip');
-  const odLabels = ['💑 ବିବାହ ଓ ଜୀବନ ସାଥୀ','💼 କ୍ୟାରିୟର ଓ ଅର୍ଥ','🧠 ସ୍ୱାସ୍ଥ୍ୟ ଭବିଷ୍ୟ','🪐 ଦଶା ଫଳ','🌍 ବିଦେଶ ଯୋଗ','💰 ଧନ ଓ ସମ୍ପତ୍ତି','👶 ସନ୍ତାନ ଯୋଗ','🔮 ଭାଗ୍ୟ ରତ୍ନ ଓ ଉପଚାର'];
-  const enLabels = ['💑 Marriage & Spouse','💼 Career & Finance','🧠 Health Prediction','🪐 Dasha Effects','🌍 Foreign Yoga','💰 Wealth & Property','👶 Children Yoga','🔮 Lucky Gem & Remedy'];
-  chips.forEach((chip, i)=>{
-    chip.textContent = isOd ? (odLabels[i]||chip.textContent) : (enLabels[i]||chip.textContent);
-  });
-}
-
-function timedQuickAsk(topic, container){
-  if(container) container.remove();
-  addTimedBubble(topic, 'user');
-  timedChatHistory.push({role:'user', content:topic});
-  sendTimedChatMsg(topic);
-}
-
-function showAstrologerInfo(){
-  toast('ଶୀଘ୍ର ଆସୁଛି! Coming Soon — Real Astrologer Video Call feature');
-}
-
-function showAstrologerJoinForm(){
-  nav('astro-onboard');
-}
-
-function submitAstrologerJoin(){
-  const name = document.getElementById('aj-name')?.value.trim();
-  const phone = document.getElementById('aj-phone')?.value.trim();
-  const exp = document.getElementById('aj-exp')?.value;
-  const city = document.getElementById('aj-city')?.value.trim();
-  if(!name||!phone||!exp||!city){
-    toast('ସବୁ * ଫିଲ୍ଡ ପୂରଣ କରନ୍ତୁ'); return;
-  }
-  const specs = [...document.querySelectorAll('.aj-spec:checked')].map(c=>c.value).join(', ');
-  const langs = [...document.querySelectorAll('.aj-lang:checked')].map(c=>c.value).join(', ');
-  const bio = document.getElementById('aj-bio')?.value||'';
-  const upi = document.getElementById('aj-upi')?.value||'';
-  const avail = document.getElementById('aj-avail')?.value||'';
-  const wa = document.getElementById('aj-wa')?.value||phone;
-  // Send via WhatsApp to admin
-  const msg = `🌟 NEW ASTROLOGER APPLICATION 🌟
-  
-Name: ${name}
-Phone: ${phone}
-WhatsApp: ${wa}
-City: ${city}
-Experience: ${exp}
-Specialization: ${specs}
-Languages: ${langs}
-Available: ${avail}
-UPI: ${upi}
-Bio: ${bio}`;
-  window.open('https://wa.me/91XXXXXXXXXX?text='+encodeURIComponent(msg),'_blank');
-  toast('ଆବেদন ପଠାଯାଇଛି! ଆମ ଦଳ ଶୀଘ୍ର ଯୋଗାଯୋଗ କରିବ।');
-  setTimeout(()=>nav('landing'), 1500);
+  dashGo('chat');
 }
 
 function clearKundliCache(){
@@ -5924,8 +5647,6 @@ function clearKundliCache(){
 let astroMsgTimer = null;
 let astroTopicIndex = 0;
 let astroStarted = false;
-let astroTopics = [];
-let astroCurrentIndex = 0;
 
 function startAstrologerChat(){
   if(!S.calcResult){toast('Please generate a Kundli first.');return;}
@@ -5941,9 +5662,8 @@ function startAstrologerChat(){
 
   setTimeout(()=>{
     // Clear existing chat
-    if(typeof chatHistory === 'undefined') window.chatHistory = [];
     chatHistory = [];
-    const chatBody = document.getElementById('chat-messages') || document.getElementById('chat-body');
+    const chatBody = document.getElementById('chat-body');
     if(chatBody) chatBody.innerHTML = '';
     const sugs = document.getElementById('chat-suggestions');
     if(sugs) sugs.style.display = 'none';
@@ -5969,14 +5689,13 @@ function runAstrologerSequence(){
   // Build topic sequence from actual reading data
   const topics = isOd ? [
     {
-      delay: 400,
-      msg: `🔮 ${nm} ଙ୍କ ଜନ୍ମ ଚକ୍ର ଦେଖିଲି।
+      delay: 600,
+      msg: `🔮 ${nm} ଙ୍କ ଜନ୍ମ ଚକ୍ର ଦେଖିଲି...
 
-**${asc} ଲଗ୍ନ · ${moonRashi} ରାଶି · ${nak} ନକ୍ଷତ୍ର · ${dasha} ମହାଦଶା**
+**${asc} ଲଗ୍ନ · ${moonRashi} ରାଶି · ${nak} ନକ୍ଷତ୍ର**
 
-ଆପଣଙ୍କ ସମ୍ପୂର୍ଣ କୁଣ୍ଡଳୀ ବିଶ୍ଳେଷଣ ଆରମ୍ଭ କରୁଛି...`,
-      delay_after: 1000,
-      auto_ask: 'ମୋ କୁଣ୍ଡଳୀ ସମ୍ପର୍କରେ ବିସ୍ତାରିତ ଜଣାଅ'
+ତୁମ ଜୀବନ ବିଷୟରେ ବହୁ ଗୁରୁତ୍ୱପୂର୍ଣ ବାର୍ତ୍ତା ଅଛି। ଗୋଟିଏ ଗୋଟିଏ ଭାବେ ଜଣାଉଛି...`,
+      delay_after: 2500
     },
     {
       delay: 2500,
@@ -6058,14 +5777,13 @@ _ଉଦାହରଣ: "ମୋ ବ୍ୟବସାୟ ଆରମ୍ଭ ପାଇଁ 
     }
   ] : [
     {
-      delay: 400,
-      msg: `🔮 ${nm}, I have your complete birth chart ready.
+      delay: 600,
+      msg: `🔮 I've analyzed ${nm}'s birth chart...
 
-**${asc} Lagna · ${moonRashi} Moon · ${nak} Nakshatra · ${dasha} Mahadasha**
+**${asc} Lagna · ${moonRashi} Moon · ${nak} Nakshatra**
 
-Let me start with your complete Kundli reading...`,
-      delay_after: 1000,
-      auto_ask: isOd ? 'ମୋ କୁଣ୍ଡଳୀ ସମ୍ପର୍କରେ ବିସ୍ତାରିତ ଜଣାଅ' : 'Tell me everything about my Kundli'
+There are important insights about your life. Let me reveal them one by one...`,
+      delay_after: 2500
     },
     {
       delay: 2500,
@@ -6147,9 +5865,7 @@ _Example: "What's the best time to start a business?" or "What remedies for my h
     }
   ];
 
-  // Store topics globally and start sequence
-  astroTopics = topics;
-  astroCurrentIndex = 0;
+  // Show topics sequentially
   showNextAstroTopic(topics, 0);
 }
 
@@ -6165,24 +5881,6 @@ function showNextAstroTopic(topics, index){
     // Remove typing indicator
     const typingEl = document.getElementById(typingId);
     if(typingEl) typingEl.remove();
-
-    // If this topic has auto_ask, send it automatically as user message
-    if(topic.auto_ask){
-      setTimeout(()=>{
-        addChatBubble(topic.auto_ask, 'user');
-        chatHistory.push({role:'user', content: topic.auto_ask});
-        sendChatMsg(topic.auto_ask).then(()=>{
-          // After AI responds, show next topic
-          if(index + 1 < topics.length){
-            clearTimeout(astroMsgTimer);
-            astroMsgTimer = setTimeout(()=>{
-              showNextAstroTopic(topics, index + 1);
-            }, 2000);
-          }
-        });
-      }, topic.delay_after || 1000);
-      return; // Don't show followup button for auto_ask topics
-    }
 
     // Format message
     let formatted = topic.msg;
@@ -6213,7 +5911,6 @@ function showNextAstroTopic(topics, index){
     }
 
     // Schedule next topic
-    astroCurrentIndex = index + 1;
     if(!topic.final && index + 1 < topics.length){
       astroMsgTimer = setTimeout(()=>{
         showNextAstroTopic(topics, index + 1);
@@ -6241,14 +5938,7 @@ function showNextAstroTopic(topics, index){
         ];
         const btnDiv = document.createElement('div');
         btnDiv.style.cssText = 'display:flex;flex-wrap:wrap;gap:6px;margin:8px 0;padding-left:4px';
-        sugs.forEach(s=>{
-          const fb = document.createElement('button');
-          fb.className = 'chat-topic-btn';
-          fb.textContent = '💬 ' + s;
-          fb.dataset.topic = s;
-          fb.onclick = function(){ chatTopicTap(this, this.dataset.topic); };
-          btnDiv.appendChild(fb);
-        });
+        btnDiv.innerHTML = sugs.map(s=>`<button class="chat-topic-btn" onclick="chatTopicTap(this,'${s.replace(/'/g,"\'")}')">💬 ${s}</button>`).join('');
         chatBody.appendChild(btnDiv);
         if(chatBody)chatBody.scrollTop = chatBody.scrollHeight;
       }, 500);
@@ -6259,22 +5949,14 @@ function showNextAstroTopic(topics, index){
 function chatTopicTap(btn, topic){
   // Remove the button row that was tapped
   if(btn && btn.parentElement) btn.parentElement.remove();
-  // Stop current auto sequence timer
-  clearTimeout(astroMsgTimer);
   // Add as user bubble immediately
   addChatBubble(topic, 'user');
   chatHistory.push({role:'user', content: topic});
+  // Clear input just in case
   const input = document.getElementById('chat-input');
   if(input) input.value = '';
-  // AI responds, then continue sequence
-  sendChatMsg(topic).then(()=>{
-    // After AI replies, show next auto-topic after 2.5s
-    if(astroTopics.length > 0 && astroCurrentIndex < astroTopics.length){
-      astroMsgTimer = setTimeout(()=>{
-        showNextAstroTopic(astroTopics, astroCurrentIndex);
-      }, 2500);
-    }
-  }).catch(()=>{});
+  // Trigger AI response directly (bypass input check in sendChat)
+  sendChatMsg(topic);
 }
 
 function addChatBubble(text, type, id){
@@ -6288,7 +5970,9 @@ function addChatBubble(text, type, id){
     div.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
   } else if(type === 'user'){
     div.className = 'chat-bubble user';
-    div.textContent = text;
+    div.innerHTML = formatChatMsg(text);
+    div.style.padding='14px 16px';
+    div.style.maxWidth='95%';
   } else if(type === 'ai-html'){
     div.className = 'chat-bubble ai';
     div.style.fontFamily = APP_LANG==='od' ? "'Noto Serif Oriya','Lato',serif" : "'Lato',sans-serif";
@@ -6297,13 +5981,17 @@ function addChatBubble(text, type, id){
     div.innerHTML = text;
   } else if(type === 'ai'){
     div.className = 'chat-bubble ai';
-    div.style.fontFamily = (chatLang||APP_LANG)==='od' ? "'Noto Serif Oriya','Lato',serif" : "'Lato',sans-serif";
-    div.style.lineHeight = '1.95';
+    div.style.fontFamily = APP_LANG==='od' ? "'Noto Serif Oriya','Lato',serif" : "'Lato',sans-serif";
+    div.style.lineHeight = '1.85';
     div.style.fontSize = '13px';
     div.innerHTML = formatChatMsg(text);
+    div.style.padding='14px 16px';
+    div.style.maxWidth='95%';
   } else if(type === 'ai thinking'){
     div.className = 'chat-bubble ai thinking';
-    div.textContent = text;
+    div.innerHTML = formatChatMsg(text);
+    div.style.padding='14px 16px';
+    div.style.maxWidth='95%';
   }
 
   chatBody.appendChild(div);
@@ -6373,153 +6061,53 @@ function addChatBubble(text, type, id){
   }catch(e){console.log('Result restore error',e);}
 })();
 </script>
-<!-- ═══ ASTROLOGER ONBOARDING PAGE (separate URL/page) ═══ -->
-<div id="pg-astro-onboard" class="pg" style="display:none;background:#0C0602;min-height:100vh">
-  <div style="background:linear-gradient(180deg,#1A0E06,#0C0602);padding:20px 20px 40px">
 
-    <!-- Back -->
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:24px">
-      <button onclick="nav('landing')" style="background:transparent;border:none;color:var(--muted);font-size:22px;cursor:pointer">←</button>
-      <div style="font-family:'Cinzel',serif;font-size:15px;color:var(--gold-lt)">Astrologer Onboarding</div>
+<!-- ═══ 15-MIN TIMED AI CHAT ═══ -->
+<div id="timed-chat-page" style="display:none;position:fixed;inset:0;z-index:450;background:var(--bg);flex-direction:column">
+  <div style="display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0">
+    <svg width="28" height="28" viewBox="0 0 28 28"><circle cx="14" cy="14" r="13" fill="#1E110A" stroke="#B8870A" stroke-width=".8"/><text x="14" y="18" text-anchor="middle" font-size="11" fill="#B8870A" font-family="serif">ॐ</text></svg>
+    <div style="flex:1">
+      <div style="font-family:'Cinzel',serif;font-size:14px;color:var(--cream)" id="timed-chat-title">Jyotish AI Chat</div>
+      <div style="font-size:10px;color:var(--muted)" id="timed-model-badge">GPT-5.4-mini · Free 15 min</div>
     </div>
-
-    <!-- Hero -->
-    <div style="text-align:center;margin-bottom:28px">
-      <div style="font-size:44px;margin-bottom:10px">🌟</div>
-      <div style="font-family:'Cinzel',serif;font-size:20px;color:var(--gold-lt);margin-bottom:8px">Join as Astrologer</div>
-      <div style="font-size:12px;color:var(--muted);line-height:1.7">Reach thousands of Odia users.<br/>Earn from home via chat & video call.</div>
+    <div style="background:rgba(184,135,10,.1);border:1px solid rgba(184,135,10,.2);border-radius:20px;padding:4px 12px;text-align:center">
+      <div style="font-size:8px;color:var(--muted);text-transform:uppercase">Free time</div>
+      <div style="font-family:'Cinzel',serif;font-size:14px;color:#4ade80;font-weight:700" id="timed-chat-timer">15:00</div>
     </div>
-
-    <!-- Benefits -->
-    <div style="background:rgba(184,135,10,.07);border:1px solid rgba(184,135,10,.2);border-radius:14px;padding:18px;margin-bottom:24px">
-      <div style="font-family:'Cinzel',serif;font-size:13px;color:var(--gold-lt);margin-bottom:12px">✦ What You Get</div>
-      <div style="display:flex;flex-direction:column;gap:10px">
-        <div style="display:flex;gap:10px;align-items:flex-start">
-          <span style="color:var(--gold);flex-shrink:0">✦</span>
-          <div><div style="font-size:12px;color:var(--cream);font-weight:700">70% Earnings Per Session</div><div style="font-size:10px;color:var(--muted);margin-top:2px">You keep 70% of every chat/call fee</div></div>
-        </div>
-        <div style="display:flex;gap:10px;align-items:flex-start">
-          <span style="color:var(--gold);flex-shrink:0">✦</span>
-          <div><div style="font-size:12px;color:var(--cream);font-weight:700">Weekly UPI Payments</div><div style="font-size:10px;color:var(--muted);margin-top:2px">Earnings paid every Monday to your UPI</div></div>
-        </div>
-        <div style="display:flex;gap:10px;align-items:flex-start">
-          <span style="color:var(--gold);flex-shrink:0">✦</span>
-          <div><div style="font-size:12px;color:var(--cream);font-weight:700">Your Own Profile Page</div><div style="font-size:10px;color:var(--muted);margin-top:2px">Photo, bio, specialization shown to users</div></div>
-        </div>
-        <div style="display:flex;gap:10px;align-items:flex-start">
-          <span style="color:var(--gold);flex-shrink:0">✦</span>
-          <div><div style="font-size:12px;color:var(--cream);font-weight:700">Zero Investment</div><div style="font-size:10px;color:var(--muted);margin-top:2px">Free to join. No hidden charges.</div></div>
-        </div>
-        <div style="display:flex;gap:10px;align-items:flex-start">
-          <span style="color:var(--gold);flex-shrink:0">✦</span>
-          <div><div style="font-size:12px;color:var(--cream);font-weight:700">Set Your Own Rate</div><div style="font-size:10px;color:var(--muted);margin-top:2px">₹10–₹500 per minute — you decide</div></div>
-        </div>
-      </div>
+    <button onclick="closeTimedChat()" style="background:transparent;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:4px">✕</button>
+  </div>
+  <div id="timed-file-area" style="padding:8px 16px;background:#0C0602;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+    <div style="display:flex;align-items:center;gap:8px">
+      <span style="font-size:14px">✅</span>
+      <div><div style="font-size:11px;color:#4ade80;font-weight:700" id="kundli-attached-status">Kundli Auto-Attached</div><div style="font-size:10px;color:var(--muted)">AI has your full chart data</div></div>
     </div>
-
-    <!-- Application Form -->
-    <div style="font-family:'Cinzel',serif;font-size:14px;color:var(--gold-lt);margin-bottom:16px">✦ Application Form</div>
-    <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:24px">
-
-      <div>
-        <div style="font-size:10px;color:var(--gold-lt);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px">Full Name *</div>
-        <input id="aj-name" placeholder="Your full name" style="width:100%;background:#0C0602;border:1px solid var(--border);border-radius:8px;padding:11px 14px;font-size:13px;color:var(--ink);font-family:'Lato',sans-serif;box-sizing:border-box;outline:none"/>
-      </div>
-
-      <div>
-        <div style="font-size:10px;color:var(--gold-lt);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px">Mobile Number *</div>
-        <input id="aj-phone" placeholder="10 digit mobile" type="tel" style="width:100%;background:#0C0602;border:1px solid var(--border);border-radius:8px;padding:11px 14px;font-size:13px;color:var(--ink);font-family:'Lato',sans-serif;box-sizing:border-box;outline:none"/>
-      </div>
-
-      <div>
-        <div style="font-size:10px;color:var(--gold-lt);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px">WhatsApp Number</div>
-        <input id="aj-wa" placeholder="WhatsApp (if different)" type="tel" style="width:100%;background:#0C0602;border:1px solid var(--border);border-radius:8px;padding:11px 14px;font-size:13px;color:var(--ink);font-family:'Lato',sans-serif;box-sizing:border-box;outline:none"/>
-      </div>
-
-      <div>
-        <div style="font-size:10px;color:var(--gold-lt);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px">Years of Experience *</div>
-        <select id="aj-exp" style="width:100%;background:#0C0602;border:1px solid var(--border);border-radius:8px;padding:11px 14px;font-size:13px;color:var(--ink);font-family:'Lato',sans-serif;box-sizing:border-box;outline:none">
-          <option value="">Select...</option>
-          <option>1–3 years</option>
-          <option>3–5 years</option>
-          <option>5–10 years</option>
-          <option>10–20 years</option>
-          <option>20+ years</option>
-        </select>
-      </div>
-
-      <div>
-        <div style="font-size:10px;color:var(--gold-lt);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px">Specialization *</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-          <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--cream);cursor:pointer"><input type="checkbox" value="Vedic" class="aj-spec" style="accent-color:var(--gold)"/> Vedic Jyotish</label>
-          <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--cream);cursor:pointer"><input type="checkbox" value="KP" class="aj-spec" style="accent-color:var(--gold)"/> KP System</label>
-          <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--cream);cursor:pointer"><input type="checkbox" value="Numerology" class="aj-spec" style="accent-color:var(--gold)"/> Numerology</label>
-          <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--cream);cursor:pointer"><input type="checkbox" value="Vastu" class="aj-spec" style="accent-color:var(--gold)"/> Vastu</label>
-          <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--cream);cursor:pointer"><input type="checkbox" value="Palmistry" class="aj-spec" style="accent-color:var(--gold)"/> Palmistry</label>
-          <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--cream);cursor:pointer"><input type="checkbox" value="Tarot" class="aj-spec" style="accent-color:var(--gold)"/> Tarot</label>
-        </div>
-      </div>
-
-      <div>
-        <div style="font-size:10px;color:var(--gold-lt);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px">Languages *</div>
-        <div style="display:flex;gap:14px;flex-wrap:wrap">
-          <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--cream);cursor:pointer"><input type="checkbox" value="Odia" class="aj-lang" style="accent-color:var(--gold)" checked/> ଓଡ଼ିଆ</label>
-          <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--cream);cursor:pointer"><input type="checkbox" value="Hindi" class="aj-lang" style="accent-color:var(--gold)"/> Hindi</label>
-          <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--cream);cursor:pointer"><input type="checkbox" value="English" class="aj-lang" style="accent-color:var(--gold)"/> English</label>
-        </div>
-      </div>
-
-      <div>
-        <div style="font-size:10px;color:var(--gold-lt);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px">City / District *</div>
-        <input id="aj-city" placeholder="Your city" style="width:100%;background:#0C0602;border:1px solid var(--border);border-radius:8px;padding:11px 14px;font-size:13px;color:var(--ink);font-family:'Lato',sans-serif;box-sizing:border-box;outline:none"/>
-      </div>
-
-      <div>
-        <div style="font-size:10px;color:var(--gold-lt);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px">Your Rate (₹ per minute)</div>
-        <select id="aj-rate" style="width:100%;background:#0C0602;border:1px solid var(--border);border-radius:8px;padding:11px 14px;font-size:13px;color:var(--ink);font-family:'Lato',sans-serif;box-sizing:border-box;outline:none">
-          <option>₹10/min</option>
-          <option>₹20/min</option>
-          <option>₹30/min</option>
-          <option>₹50/min</option>
-          <option>₹100/min</option>
-        </select>
-      </div>
-
-      <div>
-        <div style="font-size:10px;color:var(--gold-lt);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px">Daily Available Time</div>
-        <select id="aj-avail" style="width:100%;background:#0C0602;border:1px solid var(--border);border-radius:8px;padding:11px 14px;font-size:13px;color:var(--ink);font-family:'Lato',sans-serif;box-sizing:border-box;outline:none">
-          <option>Morning (6am–12pm)</option>
-          <option>Afternoon (12pm–6pm)</option>
-          <option>Evening (6pm–10pm)</option>
-          <option>Any time</option>
-        </select>
-      </div>
-
-      <div>
-        <div style="font-size:10px;color:var(--gold-lt);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px">About You</div>
-        <textarea id="aj-bio" placeholder="Brief intro — your experience, education, achievements..." style="width:100%;background:#0C0602;border:1px solid var(--border);border-radius:8px;padding:11px 14px;font-size:13px;color:var(--ink);font-family:'Lato',sans-serif;box-sizing:border-box;outline:none;resize:none;height:80px"></textarea>
-      </div>
-
-      <div>
-        <div style="font-size:10px;color:var(--gold-lt);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px">UPI ID (for payments)</div>
-        <input id="aj-upi" placeholder="yourname@upi" style="width:100%;background:#0C0602;border:1px solid var(--border);border-radius:8px;padding:11px 14px;font-size:13px;color:var(--ink);font-family:'Lato',sans-serif;box-sizing:border-box;outline:none"/>
-      </div>
+    <label style="cursor:pointer">
+      <input type="file" id="kundli-pdf-input" accept=".pdf,image/*" style="display:none" onchange="handlePDFAttach(this)"/>
+      <span style="background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:10px;color:var(--muted);cursor:pointer">📎 Add PDF too</span>
+    </label>
+  </div>
+  <div id="timed-chat-messages" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px"></div>
+  <div id="chat-locked-overlay" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,.92);z-index:10;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center">
+    <div style="font-size:48px;margin-bottom:16px">⏰</div>
+    <div style="font-family:'Cinzel',serif;font-size:20px;color:var(--gold-lt);margin-bottom:8px" id="locked-title">Free Chat Ended</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:24px;line-height:1.7">Your 15 minutes of free AI consultation is complete.</div>
+    <button onclick="payForChat()" style="background:linear-gradient(135deg,#10a37f,#0d8c6d);color:#fff;border:none;border-radius:12px;padding:16px 32px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Cinzel',serif;margin-bottom:10px;width:100%">💳 Continue — ₹49 for 30 min</button>
+    <button onclick="closeTimedChat()" style="background:transparent;border:1px solid var(--border);border-radius:10px;padding:12px;font-size:13px;color:var(--muted);cursor:pointer;width:100%">Close Chat</button>
+  </div>
+  <div style="flex-shrink:0">
+    <div id="timed-quick-chips" style="display:flex;gap:6px;padding:8px 12px;overflow-x:auto;background:var(--surface);border-top:1px solid var(--border);scrollbar-width:none">
+      <button class="quick-chip" onclick="timedChipAsk(this)">💑 Marriage & Spouse</button>
+      <button class="quick-chip" onclick="timedChipAsk(this)">💼 Career & Finance</button>
+      <button class="quick-chip" onclick="timedChipAsk(this)">🧠 Health Prediction</button>
+      <button class="quick-chip" onclick="timedChipAsk(this)">🪐 Dasha Effects</button>
+      <button class="quick-chip" onclick="timedChipAsk(this)">🌍 Foreign Yoga</button>
+      <button class="quick-chip" onclick="timedChipAsk(this)">💰 Wealth & Property</button>
+      <button class="quick-chip" onclick="timedChipAsk(this)">🔮 Lucky Gem & Remedy</button>
     </div>
-
-    <!-- Terms box -->
-    <div style="background:rgba(184,135,10,.06);border-radius:10px;padding:14px;margin-bottom:20px;font-size:11px;color:var(--muted);line-height:1.8">
-      <div style="color:var(--gold-lt);font-weight:700;margin-bottom:6px">✦ Terms & Conditions</div>
-      ✓ You earn 70% of every session fee<br/>
-      ✓ Weekly payout every Monday via UPI<br/>
-      ✓ Your profile visible to all app users<br/>
-      ✓ Minimum ₹50 guaranteed per session<br/>
-      ✓ Must maintain 4★+ rating to stay active<br/>
-      ✓ Team will verify and onboard within 48 hrs
+    <div style="display:flex;gap:8px;padding:10px 12px;background:var(--surface)">
+      <textarea id="timed-chat-input" style="flex:1;background:#0C0602;border:1px solid var(--border);border-radius:18px;padding:10px 14px;font-size:13px;color:var(--ink);font-family:'Lato',sans-serif;outline:none;resize:none;max-height:80px" placeholder="Ask about your Kundli..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendTimedChat();}"></textarea>
+      <button onclick="sendTimedChat()" id="timed-send-btn" style="background:var(--gold);border:none;border-radius:50%;width:40px;height:40px;cursor:pointer;font-size:18px;flex-shrink:0;align-self:flex-end">➤</button>
     </div>
-
-    <button onclick="submitAstrologerJoin()" style="width:100%;background:linear-gradient(135deg,var(--gold),var(--saffron));color:#0C0602;border:none;border-radius:12px;padding:15px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Cinzel',serif;margin-bottom:30px">
-      ✦ Submit Application
-    </button>
   </div>
 </div>
 
