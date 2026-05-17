@@ -4789,34 +4789,92 @@ async function sendTimedChat(){
 }
 
 async function sendTimedChatMsg(msg){
-  const btn=document.getElementById('timed-send-btn');if(btn)btn.disabled=true;
-  const typing=addTimedBubble('...','assistant');if(typing)typing.style.color='var(--muted)';
+  const btn=document.getElementById('timed-send-btn');
+  if(btn) btn.disabled=true;
+
+  // Show typing indicator
+  const typingDiv=addTimedBubble('ଭାବୁଛି...','assistant');
+  if(typingDiv) typingDiv.style.color='var(--muted)';
+
+  let replyText = '';
   try{
-    let ctx='No chart loaded';
+    // Build kundli context
+    let ctx='';
     if(S.calcResult){
-      const res=S.calcResult,p=res.planets||[];
+      const res=S.calcResult, p=res.planets||[];
       const HOUSES=['','1st','2nd','3rd','4th','5th','6th','7th','8th','9th','10th','11th','12th'];
-      const pl=p.map(x=>x.name+':'+x.rashiName+' '+HOUSES[x.house]+' '+(x.lon%30).toFixed(1)+'°'+(x.isRetro?'R':'')).join(' | ');
-      const de=res.currDasha?.end?new Date(res.currDasha.end).getFullYear():'';
-      ctx='Name:'+(res.input?.nm||'')+' DOB:'+(res.input?.dob||'')+' TOB:'+(res.input?.tob||'')+' Place:'+(res.input?.pob||'')
-        +' | Lagna:'+(res.ascendant?.rashiName||'')+' Moon:'+(p[1]?.rashiName||'')+' Nak:'+(res.moonNak?.name||'')+' Pada:'+(res.moonNak?.pada||'')
-        +' | Dasha:'+(res.currDasha?.planet||'')+' till '+de+' Antar:'+(res.currAntar?.planet||'')
-        +' | Planets: '+pl
-        +' | H7:'+(p.find(x=>x.house===7)?.name||'Empty')+' H10:'+(p.find(x=>x.house===10)?.name||'Empty')+' H5:'+(p.find(x=>x.house===5)?.name||'Empty');
+      const pl=p.map(function(x){return x.name+':'+x.rashiName+' '+HOUSES[x.house]+' '+(x.lon%30).toFixed(1)+(x.isRetro?'R':'');}).join(' | ');
+      const de=res.currDasha&&res.currDasha.end ? new Date(res.currDasha.end).getFullYear() : '';
+      ctx = 'Name:'+(res.input&&res.input.nm||'')
+          +' DOB:'+(res.input&&res.input.dob||'')
+          +' TOB:'+(res.input&&res.input.tob||'')
+          +' Place:'+(res.input&&res.input.pob||'')
+          +' Lagna:'+(res.ascendant&&res.ascendant.rashiName||'')
+          +' Moon:'+(p[1]&&p[1].rashiName||'')
+          +' Nak:'+(res.moonNak&&res.moonNak.name||'')
+          +' Pada:'+(res.moonNak&&res.moonNak.pada||'')
+          +' Dasha:'+(res.currDasha&&res.currDasha.planet||'')+' till '+de
+          +' Antar:'+(res.currAntar&&res.currAntar.planet||'')
+          +' Planets:'+pl
+          +' H7:'+(p.find(function(x){return x.house===7;})||{name:'Empty'}).name
+          +' H10:'+(p.find(function(x){return x.house===10;})||{name:'Empty'}).name
+          +' H5:'+(p.find(function(x){return x.house===5;})||{name:'Empty'}).name;
     }
-    const isOd=APP_LANG==='od';
-    const sys=(isOd
-      ?'Expert Odia Vedic astrologer AI. Reply in Odia script. ## headers, **bold** planets, numbered remedies. 15+ sentences. End 🙏.'
-      :'Expert Vedic astrologer AI. ## headers, **bold** planets, numbered remedies. Min 15 sentences. End 🙏.'
-    )+' CHART: '+ctx;
-    const r=await fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'gpt-5.4-mini',max_tokens:isPaidSession?2000:1500,system:sys,messages:[...timedChatHistory.slice(-8)],paid:isPaidSession})});
-    const data=await r.json();
-    const reply=(data.content||[]).map(c=>c.text||'').join('')||'Please try again.';
-    if(typing)typing.remove();
-    addTimedBubble(reply,'assistant');timedChatHistory.push({role:'assistant',content:reply});
-  }catch(e){if(typing)typing.textContent='Error. Please try again.';}
-  if(btn)btn.disabled=false;
+
+    const isOd = APP_LANG==='od';
+    const sysPrompt = (isOd
+      ? 'You are an expert Odia Vedic astrologer AI. Always reply in Odia script. Use ## for section headers, **bold** for planet names, numbered list for remedies. Write minimum 15 sentences. End with 🙏 blessing.'
+      : 'You are an expert Vedic astrologer AI. Use ## for section headers, **bold** for planet names, numbered list for remedies. Write minimum 15 sentences. End with 🙏 blessing.'
+    ) + (ctx ? ' BIRTH CHART DATA: ' + ctx : '');
+
+    const model = isPaidSession ? 'gpt-4o' : 'gpt-4o-mini';
+
+    const response = await fetch('/.netlify/functions/chat', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model: model,
+        max_tokens: isPaidSession ? 2000 : 1500,
+        system: sysPrompt,
+        messages: timedChatHistory.slice(-8),
+        paid: isPaidSession
+      })
+    });
+
+    if(!response.ok){
+      throw new Error('Server error: ' + response.status);
+    }
+
+    const data = await response.json();
+
+    // Handle both OpenAI and Claude response formats
+    if(data.error){
+      throw new Error(data.error.message || 'API error');
+    }
+
+    // Claude format: data.content = [{type:'text', text:'...'}]
+    // OpenAI format (converted in chat.js): same Claude format
+    if(data.content && Array.isArray(data.content)){
+      replyText = data.content.map(function(c){ return c.text || ''; }).join('').trim();
+    }
+
+    if(!replyText) replyText = isOd ? 'ଦୟାକରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।' : 'Sorry, could not get a response. Please try again.';
+
+  } catch(err){
+    console.error('Chat error:', err);
+    const isOd2 = APP_LANG==='od';
+    replyText = isOd2 ? 'ଉତ୍ତର ଦେଇ ପାରିଲୁ ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ। (' + err.message + ')' : 'Could not respond. Please try again. (' + err.message + ')';
+  }
+
+  // Remove typing indicator
+  if(typingDiv && typingDiv.parentNode) typingDiv.remove();
+
+  // Show reply - ensure it's a string
+  var finalReply = String(replyText);
+  addTimedBubble(finalReply, 'assistant');
+  timedChatHistory.push({role:'assistant', content: finalReply});
+
+  if(btn) btn.disabled=false;
 }
 
 function timedChipAsk(btn){
