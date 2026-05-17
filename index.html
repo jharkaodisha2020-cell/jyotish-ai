@@ -20,6 +20,7 @@ html,body{min-height:100%;font-family:'Lato',sans-serif;background:var(--bg);col
 /* pages */
 .pg{display:none;min-height:100vh}
 .pg.on{display:block;animation:fi .3s ease}
+#pg-landing.on{display:flex!important;align-items:center;justify-content:center;padding:24px;overflow-y:auto;background:radial-gradient(circle at top,#28113d,#07010f)}
 @keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 /* layout */
 .wrap{max-width:500px;margin:0 auto;padding:0 16px 80px}
@@ -645,7 +646,7 @@ select option{background:#0C0602}
 
 
 
-<div class="pg on" id="pg-landing" style="background:radial-gradient(circle at top,#28113d,#07010f);display:flex;align-items:center;justify-content:center;padding:24px;overflow-y:auto;min-height:100vh">
+<div class="pg on" id="pg-landing">
   <div style="width:100%;max-width:480px;padding:36px 24px;border-radius:28px;text-align:center;background:rgba(255,255,255,.06);border:1px solid rgba(255,215,0,.35);box-shadow:0 0 40px rgba(255,215,0,.12);backdrop-filter:blur(12px);margin:24px 0">
 
     <div style="width:72px;height:72px;margin:0 auto 18px;border-radius:50%;display:grid;place-items:center;font-size:34px;color:gold;border:1.5px solid gold;background:rgba(255,215,0,.08)">ॐ</div>
@@ -2018,7 +2019,9 @@ const PLANS={basic:{n:'Jataka Reading',od:'ଜାତକ ପଠନ',price:100,day
 /* ─── PAGE NAV ──────────────────────────────────────────*/
 function nav(id){
   document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
-  document.getElementById('pg-'+id).classList.add('on');
+  const target = document.getElementById('pg-'+id);
+  if(target){ target.classList.add('on'); }
+  else { console.warn('Page not found: pg-'+id); return; }
   window.scrollTo(0,0);
 }
 function goHome(){S.user?dashGo('dash'):nav('landing');}
@@ -4005,7 +4008,7 @@ const HEALTH_PLANETS={
 };
 
 let hrG='Male';
-function setHRG(gen){hrG=gen;['m','f'].forEach(x=>g('hr-g'+x)?.classList.toggle('on',x===(gen==='Male'?'m':'f')));}
+
 
 async function analyzeHealth(btnEl){
   const dob=g('hr-dob').value,tob=g('hr-tob').value,pob=g('hr-pob').value.trim();
