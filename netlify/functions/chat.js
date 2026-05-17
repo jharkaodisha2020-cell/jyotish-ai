@@ -12,24 +12,19 @@ exports.handler = async function(event) {
 
   try{
     const body = JSON.parse(event.body);
-    const isChat = !!(body.system); // has system prompt = chat request
+    const isChat = !!(body.system);
 
     if(isChat){
-      // ── CHAT: Use OpenAI GPT-4o ──
       const openaiKey = process.env.OPENAI_API_KEY;
-      if(!openaiKey){
-        // Fallback to Claude if no OpenAI key
-        return await callClaude(body, event, headers);
-      }
+      if(!openaiKey) return await callClaude(body, headers);
 
-      // Convert Claude format → OpenAI format
+      const isPaid = body.paid === true;
+      // Use valid OpenAI model names
+      const model = isPaid ? 'gpt-4o' : 'gpt-4o-mini';
+
       const messages = [];
-      if(body.system){
-        messages.push({ role: 'system', content: body.system });
-      }
-      (body.messages||[]).forEach(m => {
-        messages.push({ role: m.role, content: m.content });
-      });
+      if(body.system) messages.push({ role:'system', content: body.system });
+      (body.messages||[]).forEach(m => messages.push({ role: m.role, content: m.content }));
 
       const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
@@ -38,7 +33,7 @@ exports.handler = async function(event) {
           'Authorization': 'Bearer ' + openaiKey
         },
         body: JSON.stringify({
-          model: 'gpt-4o',
+          model: model,
           messages: messages,
           max_tokens: body.max_tokens || 1500,
           temperature: 0.7
@@ -46,26 +41,32 @@ exports.handler = async function(event) {
       });
 
       const data = await response.json();
+
       if(data.error){
-        // Fallback to Claude on OpenAI error
-        return await callClaude(body, event, headers);
+        console.error('OpenAI error:', JSON.stringify(data.error));
+        return await callClaude(body, headers);
       }
 
-      // Convert OpenAI response → Claude format (so app works without changes)
-      const text = data.choices?.[0]?.message?.content || '';
+      const text = data.choices && data.choices[0] && data.choices[0].message
+        ? data.choices[0].message.content
+        : '';
+
+      // Return in Claude format so frontend works unchanged
       return {
         statusCode: 200, headers,
         body: JSON.stringify({
-          content: [{ type: 'text', text }]
+          content: [{ type: 'text', text: text || '' }],
+          model_used: model
         })
       };
 
     } else {
-      // ── KUNDLI JSON: Use Claude Haiku (fast + cheap) ──
-      return await callClaude(body, event, headers);
+      // Kundli JSON generation → Claude Haiku (fast, structured)
+      return await callClaude(body, headers);
     }
 
-  }catch(e){
+  } catch(e){
+    console.error('Function error:', e.message);
     return {
       statusCode: 500, headers,
       body: JSON.stringify({ error: { message: e.message } })
@@ -73,27 +74,29 @@ exports.handler = async function(event) {
   }
 };
 
-async function callClaude(body, event, headers){
-  const anthropicKey = process.env.ANTHROPIC_API_KEY;
-  if(!anthropicKey){
-    return {
-      statusCode: 200, headers,
-      body: JSON.stringify({ content: [{ type: 'text', text: 'API key not configured.' }] })
-    };
-  }
+async function callClaude(body, headers){
+  const key = process.env.ANTHROPIC_API_KEY;
+  if(!key) return {
+    statusCode: 200, headers,
+    body: JSON.stringify({ content:[{ type:'text', text:'API key not configured.' }] })
+  };
 
   const isChat = !!(body.system);
-  body.model = isChat ? 'claude-sonnet-4-6' : 'claude-haiku-4-5-20251001';
-  body.max_tokens = Math.min(body.max_tokens || 1000, isChat ? 1500 : 900);
+  const claudeBody = {
+    model: isChat ? 'claude-sonnet-4-6' : 'claude-haiku-4-5-20251001',
+    max_tokens: Math.min(body.max_tokens || 1000, isChat ? 1500 : 900),
+    messages: body.messages || []
+  };
+  if(body.system) claudeBody.system = body.system;
 
   const response = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'x-api-key': anthropicKey,
+      'x-api-key': key,
       'anthropic-version': '2023-06-01'
     },
-    body: JSON.stringify(body)
+    body: JSON.stringify(claudeBody)
   });
 
   const data = await response.json();
