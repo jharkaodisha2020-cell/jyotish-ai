@@ -4665,6 +4665,8 @@ function openGPTChat(){
   const title=document.getElementById('timed-chat-title');
   if(title)title.textContent=isOd?'Jyotish AI ଚାଟ':'Jyotish AI Chat';
   if(!chatStarted){chatStarted=true;chatSecondsLeft=15*60;startChatTimer();setTimeout(sendAutoKundliMessage,800);}
+  // Sync language toggle with current app language
+  setTimedChatLang(APP_LANG||'en');
 }
 
 function closeTimedChat(){
@@ -4813,7 +4815,7 @@ async function sendTimedChatMsg(msg){
     ) + ' CHART: ' + ctx;
 
     var reqBody = {
-      model: isPaidSession ? 'gpt-4o' : 'gpt-4o-mini',
+      model: isPaidSession ? 'gpt-5.5' : 'gpt-5.4-mini',
       max_tokens: isPaidSession ? 2000 : 1500,
       system: sysPrompt,
       messages: timedChatHistory.slice(-6),
@@ -4860,6 +4862,37 @@ async function sendTimedChatMsg(msg){
   timedChatHistory.push({ role: 'assistant', content: replyText });
 
   if(btn) btn.disabled = false;
+}
+
+function setTimedChatLang(lang){
+  APP_LANG = lang;
+  // Update toggle buttons
+  const enBtn = document.getElementById('tc-lang-en');
+  const odBtn = document.getElementById('tc-lang-od');
+  if(enBtn){
+    enBtn.style.background = lang==='en' ? 'var(--maroon)' : 'transparent';
+    enBtn.style.color = lang==='en' ? 'var(--cream)' : 'var(--muted)';
+    enBtn.style.border = lang==='en' ? 'none' : '1px solid var(--border)';
+  }
+  if(odBtn){
+    odBtn.style.background = lang==='od' ? 'var(--maroon)' : 'transparent';
+    odBtn.style.color = lang==='od' ? 'var(--cream)' : 'var(--muted)';
+    odBtn.style.border = lang==='od' ? 'none' : '1px solid var(--border)';
+  }
+  // Update input placeholder
+  const inp = document.getElementById('timed-chat-input');
+  if(inp) inp.placeholder = lang==='od' ? 'ଆପଣଙ୍କ ପ୍ରଶ୍ନ ଲିଖନ୍ତୁ...' : 'Ask about your Kundli...';
+  // Update chip labels
+  const chips = document.querySelectorAll('.quick-chip');
+  const enLabels = ['💑 Marriage & Spouse','💼 Career & Finance','🧠 Health Prediction','🪐 Dasha Effects','🌍 Foreign Yoga','💰 Wealth & Property','🔮 Lucky Gem & Remedy'];
+  const odLabels = ['💑 ବିବାହ ଓ ଜୀବନ ସାଥୀ','💼 କ୍ୟାରିୟର ଓ ଅର୍ଥ','🧠 ସ୍ୱାସ୍ଥ୍ୟ ଭବିଷ୍ୟ','🪐 ଦଶା ଫଳ','🌍 ବିଦେଶ ଯୋଗ','💰 ଧନ ଓ ସମ୍ପତ୍ତି','🔮 ଭାଗ୍ୟ ରତ୍ନ'];
+  chips.forEach(function(chip, i){
+    chip.textContent = lang==='od' ? (odLabels[i]||chip.textContent) : (enLabels[i]||chip.textContent);
+  });
+  // Update kundli status text
+  const status = document.getElementById('kundli-attached-status');
+  if(status) status.textContent = lang==='od' ? 'କୁଣ୍ଡଳୀ ସଂଲଗ୍ନ ହୋଇଛି' : 'Kundli Auto-Attached';
+  toast(lang==='od' ? 'ଓଡ଼ିଆ ମୋଡ ଆକ୍ଟିଭ — AI ଓଡ଼ିଆରେ ଉତ୍ତର ଦେବ' : 'English mode — AI will reply in English');
 }
 
 function buildKundliContext(){
@@ -6174,8 +6207,14 @@ function addChatBubble(text, type, id){
       <div style="font-family:'Cinzel',serif;font-size:14px;color:var(--cream)" id="timed-chat-title">Jyotish AI Chat</div>
       <div style="font-size:10px;color:var(--muted)" id="timed-model-badge">GPT-5.4-mini · Free 15 min</div>
     </div>
+    <!-- Language toggle -->
+    <div style="display:flex;gap:4px">
+      <button id="tc-lang-en" onclick="setTimedChatLang('en')" style="background:var(--maroon);color:var(--cream);border:none;border-radius:12px;padding:3px 10px;font-size:10px;font-weight:700;cursor:pointer;font-family:'Lato',sans-serif">EN</button>
+      <button id="tc-lang-od" onclick="setTimedChatLang('od')" style="background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:12px;padding:3px 10px;font-size:10px;font-weight:700;cursor:pointer;font-family:'Noto Serif Oriya',serif">ଓଡ଼ିଆ</button>
+    </div>
+    <!-- Timer -->
     <div style="background:rgba(184,135,10,.1);border:1px solid rgba(184,135,10,.2);border-radius:20px;padding:4px 12px;text-align:center">
-      <div style="font-size:8px;color:var(--muted);text-transform:uppercase">Free time</div>
+      <div style="font-size:8px;color:var(--muted);text-transform:uppercase">Free</div>
       <div style="font-family:'Cinzel',serif;font-size:14px;color:#4ade80;font-weight:700" id="timed-chat-timer">15:00</div>
     </div>
     <button onclick="closeTimedChat()" style="background:transparent;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:4px">✕</button>
