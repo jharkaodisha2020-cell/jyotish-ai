@@ -19,8 +19,8 @@ exports.handler = async function(event) {
       if(!openaiKey) return await callClaude(body, headers);
 
       const isPaid = body.paid === true;
-      // Use valid OpenAI model names
-      const model = isPaid ? 'gpt-4o' : 'gpt-4o-mini';
+      // Latest OpenAI models (May 2026)
+      const model = isPaid ? 'gpt-5.5' : 'gpt-5.4-mini';
 
       const messages = [];
       if(body.system) messages.push({ role:'system', content: body.system });
@@ -40,28 +40,34 @@ exports.handler = async function(event) {
         })
       });
 
-      const data = await response.json();
+      const rawText = await response.text();
+      let data;
+      try { data = JSON.parse(rawText); }
+      catch(e) {
+        console.error('OpenAI parse error:', rawText.substring(0,200));
+        return await callClaude(body, headers);
+      }
 
       if(data.error){
-        console.error('OpenAI error:', JSON.stringify(data.error));
+        console.error('OpenAI API error:', JSON.stringify(data.error));
+        // Fallback to Claude if OpenAI fails
         return await callClaude(body, headers);
       }
 
       const text = data.choices && data.choices[0] && data.choices[0].message
-        ? data.choices[0].message.content
+        ? data.choices[0].message.content || ''
         : '';
 
-      // Return in Claude format so frontend works unchanged
       return {
         statusCode: 200, headers,
         body: JSON.stringify({
-          content: [{ type: 'text', text: text || '' }],
+          content: [{ type: 'text', text: text }],
           model_used: model
         })
       };
 
     } else {
-      // Kundli JSON generation → Claude Haiku (fast, structured)
+      // Kundli JSON generation → Claude Haiku
       return await callClaude(body, headers);
     }
 
