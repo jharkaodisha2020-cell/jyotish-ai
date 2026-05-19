@@ -3501,7 +3501,7 @@ async function sendChatMsg(msg){
   if(input) input.focus();
 }
 
-async function formatChatMsg(text){
+function formatChatMsg(text){
   if(!text) return '';
   if(typeof text !== 'string') text = String(text);
   if(text === '[object Promise]') return '<em style="color:var(--muted)">Loading...</em>';
@@ -4776,7 +4776,14 @@ function addTimedBubble(text,role){
   const div=document.createElement('div');
   div.className='chat-bubble '+(role==='user'?'user':'ai');
   div.style.cssText='max-width:90%;font-size:13px;line-height:1.85;padding:14px 16px;font-family:'+(APP_LANG==='od'?"'Noto Serif Oriya',serif":"'Lato',sans-serif");
-  if(role!=='user')div.innerHTML=formatChatMsg(text);else div.textContent=text;
+  // Ensure text is always a string - never a Promise
+  var safeText = '';
+  if(text === null || text === undefined){ safeText = ''; }
+  else if(typeof text === 'string'){ safeText = text; }
+  else if(typeof text.then === 'function'){ safeText = '(loading...)'; }
+  else { safeText = String(text); }
+  if(role!=='user') div.innerHTML = formatChatMsg(safeText);
+  else div.textContent = safeText;
   msgs.appendChild(div);msgs.scrollTop=msgs.scrollHeight;return div;
 }
 
@@ -4789,92 +4796,98 @@ async function sendTimedChat(){
 }
 
 async function sendTimedChatMsg(msg){
-  const btn=document.getElementById('timed-send-btn');
-  if(btn) btn.disabled=true;
+  var btn = document.getElementById('timed-send-btn');
+  if(btn) btn.disabled = true;
 
-  // Show typing indicator
-  const typingDiv=addTimedBubble('ଭାବୁଛି...','assistant');
-  if(typingDiv) typingDiv.style.color='var(--muted)';
+  var typingDiv = addTimedBubble('...', 'assistant');
+  if(typingDiv) typingDiv.style.color = 'var(--muted)';
 
-  let replyText = '';
-  try{
-    // Build kundli context
-    let ctx='';
-    if(S.calcResult){
-      const res=S.calcResult, p=res.planets||[];
-      const HOUSES=['','1st','2nd','3rd','4th','5th','6th','7th','8th','9th','10th','11th','12th'];
-      const pl=p.map(function(x){return x.name+':'+x.rashiName+' '+HOUSES[x.house]+' '+(x.lon%30).toFixed(1)+(x.isRetro?'R':'');}).join(' | ');
-      const de=res.currDasha&&res.currDasha.end ? new Date(res.currDasha.end).getFullYear() : '';
-      ctx = 'Name:'+(res.input&&res.input.nm||'')
-          +' DOB:'+(res.input&&res.input.dob||'')
-          +' TOB:'+(res.input&&res.input.tob||'')
-          +' Place:'+(res.input&&res.input.pob||'')
-          +' Lagna:'+(res.ascendant&&res.ascendant.rashiName||'')
-          +' Moon:'+(p[1]&&p[1].rashiName||'')
-          +' Nak:'+(res.moonNak&&res.moonNak.name||'')
-          +' Pada:'+(res.moonNak&&res.moonNak.pada||'')
-          +' Dasha:'+(res.currDasha&&res.currDasha.planet||'')+' till '+de
-          +' Antar:'+(res.currAntar&&res.currAntar.planet||'')
-          +' Planets:'+pl
-          +' H7:'+(p.find(function(x){return x.house===7;})||{name:'Empty'}).name
-          +' H10:'+(p.find(function(x){return x.house===10;})||{name:'Empty'}).name
-          +' H5:'+(p.find(function(x){return x.house===5;})||{name:'Empty'}).name;
-    }
+  var replyText = '';
 
-    const isOd = APP_LANG==='od';
-    const sysPrompt = (isOd
-      ? 'You are an expert Odia Vedic astrologer AI. Always reply in Odia script. Use ## for section headers, **bold** for planet names, numbered list for remedies. Write minimum 15 sentences. End with 🙏 blessing.'
-      : 'You are an expert Vedic astrologer AI. Use ## for section headers, **bold** for planet names, numbered list for remedies. Write minimum 15 sentences. End with 🙏 blessing.'
-    ) + (ctx ? ' BIRTH CHART DATA: ' + ctx : '');
+  try {
+    var isOd = APP_LANG === 'od';
+    var ctx = buildKundliContext();
+    var sysPrompt = (isOd
+      ? 'Expert Odia Vedic astrologer. Reply ONLY in Odia script. Use ## headers, **bold** planets, numbered remedies. Min 15 sentences. End 🙏.'
+      : 'Expert Vedic astrologer. Use ## headers, **bold** planet names, numbered remedies. Min 15 sentences. End 🙏.'
+    ) + ' CHART: ' + ctx;
 
-    const model = isPaidSession ? 'gpt-4o' : 'gpt-4o-mini';
+    var reqBody = {
+      model: isPaidSession ? 'gpt-4o' : 'gpt-4o-mini',
+      max_tokens: isPaidSession ? 2000 : 1500,
+      system: sysPrompt,
+      messages: timedChatHistory.slice(-6),
+      paid: isPaidSession
+    };
 
-    const response = await fetch('/.netlify/functions/chat', {
+    var response = await fetch('/.netlify/functions/chat', {
       method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({
-        model: model,
-        max_tokens: isPaidSession ? 2000 : 1500,
-        system: sysPrompt,
-        messages: timedChatHistory.slice(-8),
-        paid: isPaidSession
-      })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(reqBody)
     });
 
-    if(!response.ok){
-      throw new Error('Server error: ' + response.status);
+    var rawText = await response.text();
+    var data = JSON.parse(rawText);
+
+    if(data && data.content && Array.isArray(data.content) && data.content.length > 0){
+      var parts = [];
+      for(var i = 0; i < data.content.length; i++){
+        if(data.content[i] && typeof data.content[i].text === 'string'){
+          parts.push(data.content[i].text);
+        }
+      }
+      replyText = parts.join('').trim();
     }
 
-    const data = await response.json();
-
-    // Handle both OpenAI and Claude response formats
-    if(data.error){
-      throw new Error(data.error.message || 'API error');
+    if(!replyText && data && data.error){
+      replyText = 'API Error: ' + (data.error.message || 'Unknown error');
     }
 
-    // Claude format: data.content = [{type:'text', text:'...'}]
-    // OpenAI format (converted in chat.js): same Claude format
-    if(data.content && Array.isArray(data.content)){
-      replyText = data.content.map(function(c){ return c.text || ''; }).join('').trim();
+    if(!replyText){
+      replyText = isOd ? 'ଦୟାକରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।' : 'No response received. Please try again.';
     }
 
-    if(!replyText) replyText = isOd ? 'ଦୟାକରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।' : 'Sorry, could not get a response. Please try again.';
-
-  } catch(err){
-    console.error('Chat error:', err);
-    const isOd2 = APP_LANG==='od';
-    replyText = isOd2 ? 'ଉତ୍ତର ଦେଇ ପାରିଲୁ ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ। (' + err.message + ')' : 'Could not respond. Please try again. (' + err.message + ')';
+  } catch(err) {
+    console.error('sendTimedChatMsg error:', err);
+    replyText = 'Error: ' + String(err.message || err);
   }
 
-  // Remove typing indicator
   if(typingDiv && typingDiv.parentNode) typingDiv.remove();
 
-  // Show reply - ensure it's a string
-  var finalReply = String(replyText);
-  addTimedBubble(finalReply, 'assistant');
-  timedChatHistory.push({role:'assistant', content: finalReply});
+  // Force string - never allow Promise or object
+  replyText = typeof replyText === 'string' ? replyText : String(replyText);
+  addTimedBubble(replyText, 'assistant');
+  timedChatHistory.push({ role: 'assistant', content: replyText });
 
-  if(btn) btn.disabled=false;
+  if(btn) btn.disabled = false;
+}
+
+function buildKundliContext(){
+  if(!S.calcResult) return 'No Kundli loaded';
+  var res = S.calcResult;
+  var p = res.planets || [];
+  var HOUSES = ['','1st','2nd','3rd','4th','5th','6th','7th','8th','9th','10th','11th','12th'];
+  var pl = [];
+  for(var i=0;i<p.length;i++){
+    var planet = p[i];
+    pl.push(planet.name+':'+planet.rashiName+' '+HOUSES[planet.house]+(planet.isRetro?'(R)':''));
+  }
+  var dEnd = '';
+  try{ if(res.currDasha&&res.currDasha.end) dEnd = new Date(res.currDasha.end).getFullYear(); }catch(e){}
+  var h7 = '', h10 = '', h5 = '';
+  for(var j=0;j<p.length;j++){
+    if(p[j].house===7) h7=p[j].name;
+    if(p[j].house===10) h10=p[j].name;
+    if(p[j].house===5) h5=p[j].name;
+  }
+  return 'Name:'+((res.input&&res.input.nm)||'')
+    +' DOB:'+((res.input&&res.input.dob)||'')
+    +' Lagna:'+((res.ascendant&&res.ascendant.rashiName)||'')
+    +' Moon:'+((p[1]&&p[1].rashiName)||'')
+    +' Nak:'+((res.moonNak&&res.moonNak.name)||'')
+    +' Dasha:'+((res.currDasha&&res.currDasha.planet)||'')+' till '+dEnd
+    +' Planets:'+pl.join('|')
+    +' H7:'+(h7||'empty')+' H10:'+(h10||'empty')+' H5:'+(h5||'empty');
 }
 
 function timedChipAsk(btn){
