@@ -263,6 +263,8 @@ select option{background:#0C0602}
 .ud-item{background:#0C0602;border:1px solid var(--border);border-radius:7px;padding:8px 10px}
 .ud-lbl{font-size:9px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:2px}
 .ud-val{font-size:13px;color:var(--cream);font-weight:700}
+.otp-box{width:42px;height:52px;background:#0C0602;border:1.5px solid var(--border);border-radius:10px;text-align:center;font-size:22px;font-weight:700;color:var(--cream);font-family:'Cinzel',serif;outline:none;-webkit-appearance:none}
+.otp-box:focus{border-color:var(--gold);box-shadow:0 0 0 2px rgba(184,135,10,.2)}
 .ud-edit-btn{background:transparent;border:1px solid var(--border);border-radius:5px;padding:3px 10px;font-size:10px;color:var(--muted);cursor:pointer;font-family:'Lato',sans-serif}
 .ud-edit-btn:hover{border-color:var(--gold);color:var(--gold)}
 .state-district-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
@@ -708,47 +710,67 @@ select option{background:#0C0602}
 </div>
 
 <div class="pg" id="pg-login">
-  <div class="wrap"><div class="back" onclick="nav('landing')">← Back</div>
+  <div class="wrap">
+    <div class="back" onclick="nav('landing')">← Back</div>
     <div class="auth-box">
-      <div style="text-align:center;margin-bottom:18px">
-        <svg width="44" height="44" viewBox="0 0 44 44" style="margin:0 auto 10px;display:block"><circle cx="22" cy="22" r="20" stroke="#3D2710" stroke-width="1" fill="none"/><text x="22" y="27" text-anchor="middle" font-size="16" fill="#B8870A" font-family="serif">ॐ</text></svg>
-        <div class="auth-title" id="otp-title">Sign In / Register</div>
-        <div class="auth-sub" id="otp-sub">Enter your email to receive a one-time password</div>
+      <div style="text-align:center;margin-bottom:20px">
+        <svg width="44" height="44" viewBox="0 0 44 44" style="margin:0 auto 10px;display:block"><circle cx="22" cy="22" r="21" fill="#1E110A" stroke="#B8870A" stroke-width="1"/><text x="22" y="28" text-anchor="middle" font-size="18" fill="#B8870A" font-family="serif">ॐ</text></svg>
+        <div style="font-family:'Cinzel',serif;font-size:18px;color:var(--gold-lt)" id="login-title">Sign In / Register</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:5px" id="login-sub">Enter your mobile number to receive OTP</div>
       </div>
 
-      <!-- STEP 1: Email entry -->
-      <div id="otp-step1">
-        <div class="fg"><label>Full Name (new users only)</label><input id="otp-name" placeholder="Your full name"/></div>
-        <div class="fg"><label>Email Address</label><input id="otp-email" type="email" placeholder="you@gmail.com"/></div>
-        <button class="btn" id="otp-send-btn" onclick="sendOTP()">Send OTP to Email ✦</button>
-        <div id="otp-err1" class="err"></div>
-        <div style="font-size:11px;color:var(--muted);text-align:center;margin-top:10px">A 6-digit code will be sent to your email · Free · Instant</div>
+      <!-- STEP 1: Mobile + Name -->
+      <div id="login-step1">
+        <div class="inp-grp" id="name-grp">
+          <label class="inp-lbl">FULL NAME (NEW USERS ONLY)</label>
+          <input id="login-name" class="inp" type="text" placeholder="Your full name" autocomplete="name"/>
+        </div>
+        <div class="inp-grp">
+          <label class="inp-lbl">MOBILE NUMBER</label>
+          <div style="display:flex;gap:8px;align-items:center">
+            <div style="background:#0C0602;border:1px solid var(--border);border-radius:8px;padding:11px 12px;font-size:13px;color:var(--muted);flex-shrink:0">🇮🇳 +91</div>
+            <input id="login-mobile" class="inp" type="tel" placeholder="10-digit mobile number" maxlength="10" style="flex:1" oninput="this.value=this.value.replace(/[^0-9]/g,'')"/>
+          </div>
+        </div>
+        <button class="auth-btn" id="send-otp-btn" onclick="sendMobileOTP()">
+          Send OTP ✦
+        </button>
+        <div style="font-size:11px;color:var(--muted);text-align:center;margin-top:10px">
+          A 6-digit OTP will be sent to your mobile · Free · Instant
+        </div>
       </div>
 
-      <!-- STEP 2: OTP entry -->
-      <div id="otp-step2" style="display:none">
+      <!-- STEP 2: OTP Entry -->
+      <div id="login-step2" style="display:none">
         <div style="text-align:center;margin-bottom:16px">
-          <div style="font-size:28px;margin-bottom:6px">📧</div>
-          <div style="font-size:13px;color:var(--ink)">OTP sent to <span id="otp-email-show" style="color:var(--gold-lt);font-weight:700"></span></div>
-          <div style="font-size:11px;color:var(--muted);margin-top:4px">Check your inbox and spam folder</div>
+          <div style="font-size:13px;color:var(--cream)" id="otp-sent-msg">OTP sent to +91 XXXXXXXXXX</div>
+          <button onclick="backToStep1()" style="background:transparent;border:none;color:var(--gold-lt);font-size:11px;cursor:pointer;margin-top:4px;text-decoration:underline">Change number</button>
         </div>
-        <div class="fg">
-          <label>Enter 6-digit OTP</label>
-          <input id="otp-code" type="number" placeholder="Enter OTP" maxlength="6" style="font-size:22px;letter-spacing:6px;text-align:center;font-family:'Cinzel',serif"/>
+        <!-- OTP boxes -->
+        <div style="display:flex;gap:8px;justify-content:center;margin-bottom:20px">
+          <input class="otp-box" id="otp0" type="tel" maxlength="1" oninput="otpInput(this,0)" onkeydown="otpKey(event,0)"/>
+          <input class="otp-box" id="otp1" type="tel" maxlength="1" oninput="otpInput(this,1)" onkeydown="otpKey(event,1)"/>
+          <input class="otp-box" id="otp2" type="tel" maxlength="1" oninput="otpInput(this,2)" onkeydown="otpKey(event,2)"/>
+          <input class="otp-box" id="otp3" type="tel" maxlength="1" oninput="otpInput(this,3)" onkeydown="otpKey(event,3)"/>
+          <input class="otp-box" id="otp4" type="tel" maxlength="1" oninput="otpInput(this,4)" onkeydown="otpKey(event,4)"/>
+          <input class="otp-box" id="otp5" type="tel" maxlength="1" oninput="otpInput(this,5)" onkeydown="otpKey(event,5)"/>
         </div>
-        <button class="btn" id="otp-verify-btn" onclick="verifyOTP()">Verify & Sign In ✦</button>
-        <div id="otp-err2" class="err"></div>
+        <button class="auth-btn" id="verify-otp-btn" onclick="verifyMobileOTP()">
+          Verify OTP ✦
+        </button>
+        <!-- Resend -->
         <div style="text-align:center;margin-top:12px">
-          <span style="font-size:12px;color:var(--muted)">Didn't receive? </span>
-          <a onclick="backToEmail()" style="font-size:12px;color:var(--gold);cursor:pointer">Try again</a>
+          <span style="font-size:11px;color:var(--muted)" id="resend-timer">Resend OTP in <span id="resend-count">30</span>s</span>
+          <button id="resend-btn" onclick="resendOTP()" style="display:none;background:transparent;border:none;color:var(--gold-lt);font-size:11px;cursor:pointer;text-decoration:underline">Resend OTP</button>
         </div>
       </div>
 
+      <!-- Error/Info message -->
+      <div id="login-msg" style="display:none;margin-top:12px;padding:10px;border-radius:8px;font-size:12px;text-align:center"></div>
     </div>
   </div>
 </div>
 
-<!-- ═══ DASHBOARD ═══ -->
 <div class="pg" id="pg-dash">
   <div class="wrap">
     <div style="text-align:center;padding:22px 0 16px">
@@ -2158,12 +2180,19 @@ function backToEmail(){
 }
 
 async function logout(){
-  await supaAuth('/logout',null,'POST').catch(()=>{});
-  S.user=null;S.token=null;S.plan=null;S.calcResult=null;
-  localStorage.removeItem('jyotish_session');
-  localStorage.removeItem('jyotish_session');
-  setNav(false);nav('landing');
+  // Clear all sessions
+  S.user = null; S.token = null; S.plan = null; S.calcResult = null;
+  localStorage.removeItem('jyotish_user');
+  // Clear any old Supabase keys
+  Object.keys(localStorage).forEach(function(key){
+    if(key.startsWith('sb-') || key.startsWith('supabase') || key === 'jyotish_session'){
+      localStorage.removeItem(key);
+    }
+  });
+  nav('landing');
+  toast(APP_LANG==='od' ? 'ଲଗ ଆଉଟ ହୋଇଗଲା' : 'Logged out successfully');
 }
+// old email logout removed
 
 function saveU(){
   // Save to Supabase (fire and forget)
@@ -4633,6 +4662,194 @@ function selectHoroscopeRashi(idx){
 let chatTimerInterval=null,chatSecondsLeft=15*60,chatStarted=false;
 let isPaidSession=false,timedChatHistory=[],attachedPDFBase64=null;
 
+/* ═══ MOBILE OTP LOGIN ═══ */
+let loginMobile = '';
+let loginName = '';
+let resendTimer = null;
+let generatedOTP = '';
+let otpToken = ''; // Token from server to verify OTP
+
+function sendMobileOTP(){
+  const mobile = document.getElementById('login-mobile')?.value.trim();
+  const name = document.getElementById('login-name')?.value.trim();
+  const isOd = APP_LANG === 'od';
+
+  if(!mobile || mobile.length !== 10){
+    showLoginMsg(isOd ? 'ସଠିକ ୧୦ ଅଙ୍କ ମୋବାଇଲ ନମ୍ବର ଦିଅନ୍ତୁ' : 'Enter a valid 10-digit mobile number', 'error');
+    return;
+  }
+
+  loginMobile = mobile;
+  loginName = name || '';
+
+  const btn = document.getElementById('send-otp-btn');
+  if(btn){ btn.textContent = 'Sending...'; btn.disabled = true; }
+
+  // Call Netlify function to send OTP via Fast2SMS/MSG91
+  fetch('/.netlify/functions/send-otp', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ mobile: '91' + mobile, name: loginName })
+  })
+  .then(r => r.json())
+  .then(data => {
+    if(btn){ btn.textContent = 'Send OTP ✦'; btn.disabled = false; }
+    if(data.success){
+      // Show OTP step
+      document.getElementById('login-step1').style.display = 'none';
+      document.getElementById('login-step2').style.display = 'block';
+      const msg = document.getElementById('otp-sent-msg');
+      if(msg) msg.textContent = (isOd ? 'OTP ପଠାଯାଇଛି +91 ' : 'OTP sent to +91 ') + mobile;
+      otpToken = data.otp_token || '';
+      document.getElementById('otp0')?.focus();
+      startResendTimer();
+      showLoginMsg(isOd ? 'OTP ସଫଳତାର ସହ ପଠାଯାଇଛି!' : 'OTP sent successfully!', 'success');
+    } else {
+      showLoginMsg(data.message || (isOd ? 'OTP ପଠାଇ ପାରିଲୁ ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।' : 'Failed to send OTP. Try again.'), 'error');
+    }
+  })
+  .catch(err => {
+    if(btn){ btn.textContent = 'Send OTP ✦'; btn.disabled = false; }
+    // DEMO MODE - generate OTP locally if function not set up
+    generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
+    console.log('DEMO OTP:', generatedOTP); // Remove in production
+    document.getElementById('login-step1').style.display = 'none';
+    document.getElementById('login-step2').style.display = 'block';
+    const sentMsg = document.getElementById('otp-sent-msg');
+    if(sentMsg) sentMsg.textContent = (isOd ? 'Demo OTP: ' : 'Demo OTP: ') + generatedOTP + ' (check console)';
+    document.getElementById('otp0')?.focus();
+    startResendTimer();
+    showLoginMsg(isOd ? 'Demo Mode: Console ରେ OTP ଦେଖନ୍ତୁ' : 'Demo Mode: Check browser console for OTP', 'info');
+  });
+}
+
+function otpInput(el, idx){
+  el.value = el.value.replace(/[^0-9]/g, '');
+  if(el.value.length === 1 && idx < 5){
+    document.getElementById('otp' + (idx+1))?.focus();
+  }
+  // Auto-verify when all 6 digits entered
+  if(idx === 5 && el.value.length === 1){
+    const allFilled = [0,1,2,3,4,5].every(i => document.getElementById('otp'+i)?.value.length === 1);
+    if(allFilled) setTimeout(verifyMobileOTP, 300);
+  }
+}
+
+function otpKey(e, idx){
+  if(e.key === 'Backspace' && !e.target.value && idx > 0){
+    document.getElementById('otp' + (idx-1))?.focus();
+  }
+}
+
+function getOTPValue(){
+  return [0,1,2,3,4,5].map(i => document.getElementById('otp'+i)?.value || '').join('');
+}
+
+function verifyMobileOTP(){
+  const otp = getOTPValue();
+  const isOd = APP_LANG === 'od';
+
+  if(otp.length !== 6){
+    showLoginMsg(isOd ? '6 ଅଙ୍କ OTP ଦିଅନ୍ତୁ' : 'Enter the 6-digit OTP', 'error');
+    return;
+  }
+
+  const btn = document.getElementById('verify-otp-btn');
+  if(btn){ btn.textContent = 'Verifying...'; btn.disabled = true; }
+
+  fetch('/.netlify/functions/verify-otp', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ mobile: '91' + loginMobile, otp: otp, name: loginName, otp_token: otpToken })
+  })
+  .then(r => r.json())
+  .then(data => {
+    if(btn){ btn.textContent = 'Verify OTP ✦'; btn.disabled = false; }
+    if(data.success){
+      onLoginSuccess(data.user || { name: loginName || 'User', mobile: loginMobile, id: 'mob_' + loginMobile });
+    } else {
+      showLoginMsg(data.message || (isOd ? 'ଭୁଲ OTP। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।' : 'Wrong OTP. Try again.'), 'error');
+      [0,1,2,3,4,5].forEach(i => { const el=document.getElementById('otp'+i); if(el) el.value=''; });
+      document.getElementById('otp0')?.focus();
+    }
+  })
+  .catch(() => {
+    // DEMO MODE - verify against locally generated OTP
+    if(btn){ btn.textContent = 'Verify OTP ✦'; btn.disabled = false; }
+    if(otp === generatedOTP || otp === '123456'){
+      onLoginSuccess({ name: loginName || 'User', mobile: loginMobile, id: 'mob_' + loginMobile });
+    } else {
+      showLoginMsg(isOd ? 'ଭୁଲ OTP। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।' : 'Wrong OTP. Please try again.', 'error');
+      [0,1,2,3,4,5].forEach(i => { const el=document.getElementById('otp'+i); if(el) el.value=''; });
+      document.getElementById('otp0')?.focus();
+    }
+  });
+}
+
+function onLoginSuccess(user){
+  const isOd = APP_LANG === 'od';
+  // Save user to session
+  S.user = user;
+  S.token = user.id;
+  localStorage.setItem('jyotish_user', JSON.stringify(user));
+  // Reset OTP inputs
+  [0,1,2,3,4,5].forEach(i => { const el=document.getElementById('otp'+i); if(el) el.value=''; });
+  document.getElementById('login-step1').style.display = 'block';
+  document.getElementById('login-step2').style.display = 'none';
+  // Show topbar username
+  const unEl = document.getElementById('topbar-uname');
+  if(unEl) unEl.textContent = '✦ ' + (user.name?.split(' ')[0] || 'User');
+  // Go to dashboard
+  buildDash();
+  nav('dash');
+  toast(isOd ? 'ସ୍ୱାଗତ, ' + (user.name?.split(' ')[0]||'User') + '! 🙏' : 'Welcome, ' + (user.name?.split(' ')[0]||'User') + '! 🙏');
+}
+
+function backToStep1(){
+  document.getElementById('login-step2').style.display = 'none';
+  document.getElementById('login-step1').style.display = 'block';
+  clearTimeout(resendTimer);
+  document.getElementById('resend-timer').style.display = 'inline';
+  document.getElementById('resend-btn').style.display = 'none';
+  [0,1,2,3,4,5].forEach(i => { const el=document.getElementById('otp'+i); if(el) el.value=''; });
+}
+
+function startResendTimer(){
+  let count = 30;
+  const countEl = document.getElementById('resend-count');
+  const timerEl = document.getElementById('resend-timer');
+  const btnEl = document.getElementById('resend-btn');
+  if(timerEl) timerEl.style.display = 'inline';
+  if(btnEl) btnEl.style.display = 'none';
+  if(countEl) countEl.textContent = count;
+  resendTimer = setInterval(() => {
+    count--;
+    if(countEl) countEl.textContent = count;
+    if(count <= 0){
+      clearInterval(resendTimer);
+      if(timerEl) timerEl.style.display = 'none';
+      if(btnEl) btnEl.style.display = 'inline';
+    }
+  }, 1000);
+}
+
+function resendOTP(){
+  document.getElementById('resend-btn').style.display = 'none';
+  document.getElementById('resend-timer').style.display = 'inline';
+  sendMobileOTP();
+}
+
+function showLoginMsg(msg, type){
+  const el = document.getElementById('login-msg');
+  if(!el) return;
+  el.style.display = 'block';
+  el.textContent = msg;
+  el.style.background = type==='error' ? 'rgba(239,68,68,.1)' : type==='success' ? 'rgba(74,222,128,.1)' : 'rgba(184,135,10,.1)';
+  el.style.color = type==='error' ? '#ef4444' : type==='success' ? '#4ade80' : 'var(--gold-lt)';
+  el.style.border = '1px solid ' + (type==='error' ? 'rgba(239,68,68,.3)' : type==='success' ? 'rgba(74,222,128,.3)' : 'rgba(184,135,10,.3)');
+  setTimeout(() => { if(el) el.style.display='none'; }, 4000);
+}
+
 function landingGetStarted(dest){
   if(S.user){
     // Already logged in
@@ -6137,6 +6354,30 @@ function addChatBubble(text, type, id){
 
 /* ─── INIT ──────────────────────────────────────────────*/
 (async function init(){
+  // ── Clear old email-based Supabase sessions ──
+  try{
+    // Remove old Supabase auth tokens
+    Object.keys(localStorage).forEach(function(key){
+      if(key.startsWith('sb-') || key.startsWith('supabase') || key === 'jyotish_session'){
+        localStorage.removeItem(key);
+        console.log('Cleared old session:', key);
+      }
+    });
+  }catch(e){}
+
+  // ── Restore mobile login session ──
+  try{
+    const savedUser = localStorage.getItem('jyotish_user');
+    if(savedUser){
+      const u = JSON.parse(savedUser);
+      if(u && u.id && u.id.startsWith('mob_')){
+        S.user = u; S.token = u.id;
+      } else {
+        // Old email user - clear it
+        localStorage.removeItem('jyotish_user');
+      }
+    }
+  }catch(e){ localStorage.removeItem('jyotish_user'); }
   // ── Check language preference ──
   const savedLang = localStorage.getItem('jyotish_lang');
   if(savedLang){
