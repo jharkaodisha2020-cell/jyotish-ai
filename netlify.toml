@@ -1,16 +1,7 @@
 [build]
-  publish = "."
-  command = "echo 'No build needed'"
-
-[functions]
-  directory = "netlify/functions"
-  node_bundler = "esbuild"
-
-[functions."chat"]
-  timeout = 26
+  functions = "netlify/functions"
 
 [[headers]]
   for = "/*"
   [headers.values]
-    X-Frame-Options = "SAMEORIGIN"
     Access-Control-Allow-Origin = "*"
